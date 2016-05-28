@@ -24,4 +24,4 @@ _testmain.go
 *.prof
 
 # c14
-c14
+/c14
