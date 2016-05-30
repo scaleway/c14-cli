@@ -1,18 +1,32 @@
 package commands
 
+import "github.com/docker/docker/pkg/mflag"
+
 type create struct {
 	Base
 }
 
 func Create() Command {
-	return &create{}
+	return &create{
+		Base: Base{
+			Config: Config{
+				UsageLine:   "",
+				Description: "",
+				Help:        "",
+				Examples:    "",
+			},
+		},
+	}
 }
 
 func (c *create) GetName() string {
 	return "create"
 }
 
-func (c *create) Parse() error {
+func (c *create) Parse(args []string) (err error) {
+	if err = mflag.CommandLine.Parse(args); err != nil {
+		return
+	}
 	return nil
 }
 
