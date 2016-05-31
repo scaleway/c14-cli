@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"errors"
+	"fmt"
 	"os"
 
 	"github.com/apex/log"
@@ -9,20 +9,22 @@ import (
 )
 
 // Root handles the commands
-type Root struct {
+type root struct {
 	commands []Command
 }
 
-// NewRoot returns a structure to handle the commands
-func NewRoot() *Root {
-	return &Root{
+var Root *root
+
+func init() {
+	Root = &root{
 		commands: []Command{
+			Help(),
 			Create(),
 		},
 	}
 }
 
-func (r *Root) Parse() (err error) {
+func (r *root) Parse() (err error) {
 	var (
 		flDebug = mflag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
 	)
@@ -31,8 +33,9 @@ func (r *Root) Parse() (err error) {
 	if err = mflag.CommandLine.Parse(args); err != nil {
 		return
 	}
+
 	env := Env{
-		Debug: *flDebug,
+		Debug: *flDebug || os.Getenv("C14_DEBUG") == "1",
 	}
 	if env.Debug {
 		log.SetLevel(log.DebugLevel)
@@ -40,7 +43,7 @@ func (r *Root) Parse() (err error) {
 
 	args = mflag.Args()
 	if len(args) < 1 {
-		err = errors.New("TODO: help message with the commands available")
+		r.printUsage(args)
 		return
 	}
 	for _, cmd := range r.commands {
@@ -49,16 +52,27 @@ func (r *Root) Parse() (err error) {
 			if args, err = cmd.Parse(args[1:]); err != nil {
 				return
 			}
-			if err = cmd.Run(args); err != nil {
-				return
-			}
+			err = cmd.Run(args)
+			return
 		}
 	}
+	err = fmt.Errorf(`c14: unknow command %v
+Run 'c14 help' for usage`, args[0])
 	return
 }
 
+func (r *root) printUsage(args []string) {
+	for _, cmd := range r.commands {
+		if cmd.GetName() == "help" {
+			cmd.Run(args)
+			os.Exit(1)
+		}
+	}
+	panic("No help method")
+}
+
 // Commands returns a string array with the commands name
-func (r *Root) Commands() (commands []string) {
+func (r *root) Commands() (commands []string) {
 	commands = make([]string, len(r.commands))
 	for i, cmd := range r.commands {
 		commands[i] = cmd.GetName()

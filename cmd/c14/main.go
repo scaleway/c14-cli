@@ -9,10 +9,8 @@ import (
 )
 
 func main() {
-	root := commands.NewRoot()
-
 	log.SetHandler(text.New(os.Stderr))
-	if err := root.Parse(); err != nil {
+	if err := commands.Root.Parse(); err != nil {
 		log.Fatalf("%v", err)
 	}
 }
