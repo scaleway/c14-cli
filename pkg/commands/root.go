@@ -8,8 +8,15 @@ import (
 	"github.com/docker/docker/pkg/mflag"
 )
 
+// Env containts the global options
+type Env struct {
+	Debug bool
+}
+
 type root struct {
 	commands []Command
+	Streams
+	Env
 }
 
 // Root handles the commands
@@ -33,11 +40,8 @@ func (r *root) Parse() (err error) {
 	if err = mflag.CommandLine.Parse(args); err != nil {
 		return
 	}
-
-	env := Env{
-		Debug: *flDebug || os.Getenv("C14_DEBUG") == "1",
-	}
-	if env.Debug {
+	r.Debug = *flDebug || os.Getenv("C14_DEBUG") == "1"
+	if r.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
 
@@ -48,7 +52,6 @@ func (r *root) Parse() (err error) {
 	}
 	for _, cmd := range r.commands {
 		if cmd.GetName() == args[0] {
-			cmd.GetBase().Env = env
 			if args, err = cmd.Parse(args[1:]); err != nil {
 				return
 			}

@@ -27,6 +27,7 @@ func (c *create) GetName() string {
 }
 
 func (c *create) Run(args []string) (err error) {
+	fmt.Println(Root.Debug)
 	fmt.Printf("args %v\n", args)
 	return
 }

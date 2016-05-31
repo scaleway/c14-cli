@@ -26,12 +26,6 @@ type Streams struct {
 	Stdin  io.Reader
 }
 
-// Env containts the global options
-type Env struct {
-	Streams
-	Debug bool
-}
-
 // Command is the interface that is used to handle the commands
 type Command interface {
 	GetBase() *Base
@@ -51,9 +45,6 @@ type Base struct {
 // Init initialises the Base structure
 func (b *Base) Init(c Config) {
 	b.Config = c
-	b.Streams.Stdout = os.Stdout
-	b.Streams.Stdin = os.Stdin
-	b.Streams.Stderr = os.Stderr
 	b.Flags.SetOutput(ioutil.Discard)
 	b.flHelp = b.Flags.Bool([]string{"h", "-help"}, false, "Print usage")
 }
