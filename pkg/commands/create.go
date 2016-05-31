@@ -1,35 +1,31 @@
 package commands
 
-import "github.com/docker/docker/pkg/mflag"
+import "fmt"
 
 type create struct {
 	Base
+	createFlags
+}
+
+type createFlags struct {
 }
 
 func Create() Command {
-	return &create{
-		Base: Base{
-			Config: Config{
-				UsageLine:   "",
-				Description: "",
-				Help:        "",
-				Examples:    "",
-			},
-		},
-	}
+	ret := &create{}
+	ret.Init(Config{
+		UsageLine:   "",
+		Description: "",
+		Help:        "",
+		Examples:    "",
+	})
+	return ret
 }
 
 func (c *create) GetName() string {
 	return "create"
 }
 
-func (c *create) Parse(args []string) (err error) {
-	if err = mflag.CommandLine.Parse(args); err != nil {
-		return
-	}
-	return nil
-}
-
-func (c *create) Run() error {
-	return nil
+func (c *create) Run(args []string) (err error) {
+	fmt.Printf("args %v\n", args)
+	return
 }

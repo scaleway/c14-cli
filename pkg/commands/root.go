@@ -46,8 +46,12 @@ func (r *Root) Parse() (err error) {
 	for _, cmd := range r.commands {
 		if cmd.GetName() == args[0] {
 			cmd.GetBase().Env = env
-			err = cmd.Parse(args[1:])
-			return
+			if args, err = cmd.Parse(args[1:]); err != nil {
+				return
+			}
+			if err = cmd.Run(args); err != nil {
+				return
+			}
 		}
 	}
 	return

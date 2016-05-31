@@ -1,19 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/QuentinPerez/c14-cli/pkg/commands"
-	"github.com/QuentinPerez/c14-cli/pkg/version"
 	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
+	"github.com/apex/log/handlers/text"
 )
 
 func main() {
 	root := commands.NewRoot()
 
-	log.SetHandler(cli.Default)
-	fmt.Println(version.VERSION, ":", version.GITCOMMIT)
+	log.SetHandler(text.New(os.Stderr))
 	if err := root.Parse(); err != nil {
 		log.Fatalf("%v", err)
 	}
