@@ -69,7 +69,13 @@ func (b *Base) Parse(args []string) (newArgs []string, err error) {
 		os.Exit(1)
 		return
 	}
+	err = b.CheckFlags()
 	newArgs = b.Flags.Args()
+	return
+}
+
+// CheckFlags can be overloaded by the commands to check the flags
+func (b *Base) CheckFlags() (err error) {
 	return
 }
 
