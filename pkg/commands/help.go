@@ -12,6 +12,7 @@ type help struct {
 	Base
 }
 
+// Help returns a new command "help"
 func Help() Command {
 	ret := &help{}
 	ret.Init(Config{

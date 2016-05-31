@@ -10,6 +10,7 @@ type create struct {
 type createFlags struct {
 }
 
+// Create returns a new command "create"
 func Create() Command {
 	ret := &create{}
 	ret.Init(Config{

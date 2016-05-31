@@ -8,11 +8,11 @@ import (
 	"github.com/docker/docker/pkg/mflag"
 )
 
-// Root handles the commands
 type root struct {
 	commands []Command
 }
 
+// Root handles the commands
 var Root *root
 
 func init() {
@@ -64,7 +64,7 @@ Run 'c14 help' for usage`, args[0])
 func (r *root) printUsage(args []string) {
 	for _, cmd := range r.commands {
 		if cmd.GetName() == "help" {
-			cmd.Run(args)
+			_ = cmd.Run(args)
 			os.Exit(1)
 		}
 	}
