@@ -14,7 +14,7 @@ func Create() Command {
 	ret := &create{}
 	ret.Init(Config{
 		UsageLine:   "",
-		Description: "test",
+		Description: "",
 		Help:        "",
 		Examples:    "",
 	})

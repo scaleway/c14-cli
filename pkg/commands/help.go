@@ -17,8 +17,14 @@ func Help() Command {
 	ret.Init(Config{
 		UsageLine:   "help [COMMAND]",
 		Description: "Help of the c14 command line",
-		Help:        "",
-		Examples:    "",
+		Help: `Help prints help information about c14 and its commands.
+By default, help lists available commands.
+When invoked with a command name, it prints the usage and the help of
+the command.`,
+		Examples: `
+    $ c14 help
+    $ c14 help create
+`,
 	})
 	return ret
 }
@@ -31,7 +37,7 @@ func (c *help) Run(args []string) (err error) {
 	if len(args) > 0 {
 		for _, cmd := range Root.commands {
 			if cmd.GetName() == args[0] {
-				//
+				cmd.GetBase().PrintUsage()
 				return
 			}
 		}
