@@ -27,6 +27,7 @@ func init() {
 		commands: []Command{
 			Help(),
 			Create(),
+			Login(),
 		},
 	}
 }
@@ -71,7 +72,7 @@ func (r *root) printUsage(args []string) {
 			os.Exit(1)
 		}
 	}
-	panic("No help method")
+	log.Fatalf("No help method")
 }
 
 // Commands returns a string array with the commands name
