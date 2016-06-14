@@ -28,10 +28,10 @@ type Streams struct {
 
 // Command is the interface that is used to handle the commands
 type Command interface {
-	GetBase() *Base
 	GetName() string
 	Parse(args []string) ([]string, error)
 	Run(args []string) error
+	PrintUsage()
 }
 
 // Base must be embedded in the commands
@@ -68,11 +68,6 @@ func (b *Base) Parse(args []string) (newArgs []string, err error) {
 // CheckFlags can be overloaded by the commands to check the flags
 func (b *Base) CheckFlags() (err error) {
 	return
-}
-
-// GetBase returns a pointer on Base
-func (b *Base) GetBase() *Base {
-	return b
 }
 
 // PrintUsage print on Stdout the usage message

@@ -38,7 +38,7 @@ func (c *help) Run(args []string) (err error) {
 	if len(args) > 0 {
 		for _, cmd := range Root.commands {
 			if cmd.GetName() == args[0] {
-				cmd.GetBase().PrintUsage()
+				cmd.PrintUsage()
 				return
 			}
 		}
@@ -52,7 +52,7 @@ Interact with C14 from the command line.
 
 Options:`, `
 Commands:
-{{range .}}    {{.GetName | printf "%-9s"}} {{.GetBase.Description}}
+{{range .}}    {{.GetName | printf "%-9s"}} {{.Base.Description}}
 {{end}}
 Run 'c14 COMMAND --help' for more information on a command.
 `
