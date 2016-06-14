@@ -12,7 +12,8 @@ import (
 )
 
 type Credentials struct {
-	Token string `json:"token"`
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
 }
 
 func getCredentialsFile() (path string, err error) {
@@ -75,6 +76,9 @@ func GetCredentials() (c *Credentials, err error) {
 				err = errors.Errorf("Permissions %#o for %v are too open", perm, path)
 				return
 			}
+		} else {
+			err = errors.Errorf("You need to login first: c14 login")
+			return
 		}
 	}
 	fileContent, err = ioutil.ReadFile(path)
