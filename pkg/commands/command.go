@@ -8,7 +8,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
+	"golang.org/x/oauth2"
+
+	"github.com/QuentinPerez/c14-cli/pkg/api"
+	apiauth "github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
 	"github.com/docker/docker/pkg/mflag"
 )
 
@@ -39,7 +42,8 @@ type Command interface {
 type Base struct {
 	Env
 	Config
-	Flags  mflag.FlagSet
+	Flags mflag.FlagSet
+	*api.OnlineAPI
 	flHelp *bool
 }
 
@@ -51,12 +55,12 @@ func (b *Base) Init(c Config) {
 }
 
 func (b *Base) InitAPI() (err error) {
-	var c *oauth2.Credentials
+	var c *apiauth.Credentials
 
-	if c, err = oauth2.GetCredentials(); err != nil {
+	if c, err = apiauth.GetCredentials(); err != nil {
 		return
 	}
-	_ = c
+	b.OnlineAPI = api.NewC14API(*oauth2.NewClient(oauth2.NoContext, c))
 	return
 }
 

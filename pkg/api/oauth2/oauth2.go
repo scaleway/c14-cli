@@ -9,6 +9,8 @@ import (
 	"os/user"
 	"runtime"
 
+	"golang.org/x/oauth2"
+
 	"github.com/QuentinPerez/go-encodeUrl"
 	"github.com/juju/errors"
 )
@@ -90,6 +92,11 @@ func getCredentialsPath() (path string, err error) {
 		return
 	}
 	path = fmt.Sprintf("%s/.c14rc", u.HomeDir)
+	return
+}
+
+func (c *Credentials) Token() (t *oauth2.Token, err error) {
+	err = errors.New("Not implemented yet")
 	return
 }
 
