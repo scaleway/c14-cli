@@ -1,7 +1,5 @@
 package commands
 
-import "fmt"
-
 type create struct {
 	Base
 	createFlags
@@ -27,7 +25,9 @@ func (c *create) GetName() string {
 }
 
 func (c *create) Run(args []string) (err error) {
-	fmt.Println(Root.Debug)
-	fmt.Printf("args %v\n", args)
+	if err = c.InitAPI(); err != nil {
+		return err
+	}
+
 	return
 }

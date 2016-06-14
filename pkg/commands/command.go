@@ -8,7 +8,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/QuentinPerez/c14-cli/pkg/config"
 	"github.com/docker/docker/pkg/mflag"
+	"github.com/juju/errors"
 )
 
 // Config represents the informations on the usages
@@ -47,6 +49,19 @@ func (b *Base) Init(c Config) {
 	b.Config = c
 	b.Flags.SetOutput(ioutil.Discard)
 	b.flHelp = b.Flags.Bool([]string{"h", "-help"}, false, "Print usage")
+}
+
+func (b *Base) InitAPI() (err error) {
+	var c *config.Credentials
+
+	if c, err = config.GetCredentials(); err != nil {
+		if !os.IsExist(errors.Cause(err)) {
+			err = errors.Errorf("You need to login first: c14 login")
+			return
+		}
+		_ = c
+	}
+	return
 }
 
 // Parse parses the argurments
