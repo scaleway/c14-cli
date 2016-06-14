@@ -12,9 +12,7 @@ import (
 )
 
 type Credentials struct {
-	DeviceCode   string `json:"device_code"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	Token string `json:"token"`
 }
 
 func getCredentialsFile() (path string, err error) {
