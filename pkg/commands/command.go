@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/QuentinPerez/c14-cli/pkg/config"
+	"github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
 	"github.com/docker/docker/pkg/mflag"
 )
 
@@ -51,9 +51,9 @@ func (b *Base) Init(c Config) {
 }
 
 func (b *Base) InitAPI() (err error) {
-	var c *config.Credentials
+	var c *oauth2.Credentials
 
-	if c, err = config.GetCredentials(); err != nil {
+	if c, err = oauth2.GetCredentials(); err != nil {
 		return
 	}
 	_ = c

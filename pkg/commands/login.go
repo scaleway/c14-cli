@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
-	"github.com/QuentinPerez/c14-cli/pkg/config"
 	"github.com/juju/errors"
 
 	"golang.org/x/crypto/ssh/terminal"
@@ -43,10 +42,9 @@ func (l *login) GetName() string {
 
 func (l *login) Run(args []string) (err error) {
 	var (
-		empty      string
-		auth       oauth2.Authentication
-		c          oauth2.Credentials
-		configFile config.Credentials
+		empty       string
+		auth        oauth2.Authentication
+		credentials oauth2.Credentials
 	)
 
 	if l.clientID == "" {
@@ -73,12 +71,10 @@ Please opens this link with your browser: %v
 Then copy paste the code %v (enter when is done) : `, auth.VerficationURL, auth.UserCode), &empty, true); err != nil {
 		return
 	}
-	if c, err = oauth2.GetCredentials(l.clientID, auth.DeviceCode); err != nil {
+	if credentials, err = oauth2.GenerateCredentials(l.clientID, auth.DeviceCode); err != nil {
 		return
 	}
-	configFile.ClientID = c.ClientID
-	configFile.ClientSecret = c.ClientSecret
-	err = configFile.Save()
+	err = credentials.Save()
 	return
 }
 
