@@ -2,11 +2,11 @@ package commands
 
 import (
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/QuentinPerez/c14-cli/pkg/config"
 	"github.com/docker/docker/pkg/mflag"
