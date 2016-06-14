@@ -24,17 +24,16 @@ ifneq ($(VERSION_GE_1_6),true)
 	$(error Bad go version, please install a version greater than or equal to 1.6)
 endif
 
-BUILD_LIST =		$(foreach int, $(COMMANDS), $(int)_build)
 CLEAN_LIST =		$(foreach int, $(COMMANDS) $(PACKAGES), $(int)_clean)
 INSTALL_LIST =		$(foreach int, $(COMMANDS), $(int)_install)
 TEST_LIST =		$(foreach int, $(COMMANDS) $(PACKAGES), $(int)_test)
 COVERPROFILE_LIST =	$(foreach int, $(subst $(GODIR),./,$(PACKAGES)), $(int)/profile.out)
 
 
-.PHONY: $(CLEAN_LIST) $(TEST_LIST) $(FMT_LIST) $(INSTALL_LIST) $(BUILD_LIST) $(IREF_LIST)
+.PHONY: $(CLEAN_LIST) $(TEST_LIST) $(FMT_LIST) $(INSTALL_LIST) $(IREF_LIST)
 
 all: build
-build: $(BUILD_LIST)
+build: $(NAME)
 clean: $(CLEAN_LIST)
 install: $(INSTALL_LIST)
 test: $(TEST_LIST)
@@ -43,8 +42,10 @@ fmt: $(FMT_LIST)
 .git:
 	touch $@
 
-$(BUILD_LIST): %_build: gofmt vet
-	$(GOBUILD) -ldflags $(LDFLAGS) -o $(NAME) $(subst $(GODIR),.,$*)
+$(NAME): $(SOURCES)
+	$(GOFMT) $(SOURCES)
+	$(GO) tool vet --all=true $(SOURCES)
+	$(GOBUILD) -ldflags $(LDFLAGS) -o $(NAME) ./cmd/c14
 
 $(CLEAN_LIST): %_clean:
 	$(GOCLEAN) $(subst $(GODIR),./,$*)
@@ -54,12 +55,6 @@ $(INSTALL_LIST): %_install:
 
 $(TEST_LIST): %_test:
 	$(GOTEST) -ldflags $(LDFLAGS) -v $(subst $(GODIR),.,$*)
-
-vet:
-	$(GO) tool vet --all=true $(SOURCES)
-
-gofmt:
-	$(GOFMT) $(SOURCES)
 
 
 .PHONY: golint
