@@ -12,6 +12,7 @@ import (
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
 	apiauth "github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
+	"github.com/QuentinPerez/c14-cli/pkg/version"
 	"github.com/docker/docker/pkg/mflag"
 )
 
@@ -61,7 +62,7 @@ func (b *Base) InitAPI() (err error) {
 	if c, err = apiauth.GetCredentials(); err != nil {
 		return
 	}
-	b.OnlineAPI = api.NewC14API(*oauth2.NewClient(oauth2.NoContext, c))
+	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent)
 	return
 }
 

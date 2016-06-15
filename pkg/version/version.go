@@ -5,4 +5,6 @@ var (
 	VERSION = "v1.0"
 	// GITCOMMIT is overlaoded by the Makefile
 	GITCOMMIT = "commit"
+	// UserAgent represents the user-agent used for the APU calls
+	UserAgent = "c14/" + VERSION
 )
