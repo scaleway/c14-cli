@@ -11,6 +11,8 @@ type OnlineAPI struct {
 }
 
 func NewC14API(client http.Client) (api *OnlineAPI) {
-	api.client = client
+	api = &OnlineAPI{
+		client: client,
+	}
 	return
 }

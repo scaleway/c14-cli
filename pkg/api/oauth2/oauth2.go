@@ -29,8 +29,10 @@ type Authentication struct {
 }
 
 type Credentials struct {
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientID     string `json:"client_id" url:"client_id,ifStringIsNotEmpty"`
+	ClientSecret string `json:"client_secret" url:"client_secret,ifStringIsNotEmpty"`
+	Code         string `json:"device_code" url:"code,ifStringIsNotEmpty"`
+	GrantType    string `json:"grant_type" url:"grant_type,ifStringIsNotEmpty"`
 }
 
 func getURL(url string, encode, decode interface{}) (err error) {
@@ -80,6 +82,8 @@ func GenerateCredentials(clientID, deviceCode string) (c Credentials, err error)
 	requestCredentials.ClientID = clientID
 	requestCredentials.Code = deviceCode
 	err = getURL(credentialsURL, requestCredentials, &c)
+	c.Code = deviceCode
+	c.GrantType = "http://oauth.net/grant_type/device/1.0"
 	return
 }
 
@@ -96,7 +100,8 @@ func getCredentialsPath() (path string, err error) {
 }
 
 func (c *Credentials) Token() (t *oauth2.Token, err error) {
-	err = errors.New("Not implemented yet")
+	t = &oauth2.Token{}
+	err = getURL(tokenURL, c, t)
 	return
 }
 
