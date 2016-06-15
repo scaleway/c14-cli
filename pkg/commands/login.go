@@ -56,7 +56,7 @@ You can create a new app with the following fields:
     App name:    c14
     Description: c14 cli
     Permissions:
-        (storage) Read/Write
+        (c14) Read/Write
 ---
 Then copy the client_id here : `, &l.clientID, true); err != nil {
 			return
