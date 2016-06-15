@@ -28,6 +28,7 @@ func init() {
 			Help(),
 			Create(),
 			Login(),
+			List(),
 		},
 	}
 }
