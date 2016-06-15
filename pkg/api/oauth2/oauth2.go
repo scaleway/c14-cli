@@ -17,17 +17,18 @@ import (
 
 var (
 	deviceURL      = "https://console.online.net/oauth/v2/device/code"
-	usercodeURL    = "https://console.online.net/oauth/v2/device/usercode"
 	credentialsURL = "https://console.online.net/oauth/v2/device/credentials"
 	tokenURL       = "https://console.online.net/oauth/v2/token"
 )
 
+// Authentication is used to exchange the keys with the oauth2 API
 type Authentication struct {
 	DeviceCode     string `json:"device_code"`
 	UserCode       string `json:"user_code"`
 	VerficationURL string `json:"verification_url"`
 }
 
+// Credentials represents the informations to get a token, there are saved in `~/.c14rc`
 type Credentials struct {
 	ClientID     string `json:"client_id" url:"client_id,ifStringIsNotEmpty"`
 	ClientSecret string `json:"client_secret" url:"client_secret,ifStringIsNotEmpty"`
@@ -72,6 +73,7 @@ func GetVerificationURL(clientID string) (auth Authentication, err error) {
 	return
 }
 
+// GenerateCredentials calls the oauth2 API to get the credentials
 func GenerateCredentials(clientID, deviceCode string) (c Credentials, err error) {
 	var (
 		requestCredentials struct {
@@ -99,6 +101,7 @@ func getCredentialsPath() (path string, err error) {
 	return
 }
 
+// Token oauth2.TokenSource implementation
 func (c *Credentials) Token() (t *oauth2.Token, err error) {
 	t = &oauth2.Token{}
 	err = getURL(tokenURL, c, t)

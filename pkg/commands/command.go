@@ -47,13 +47,14 @@ type Base struct {
 	flHelp *bool
 }
 
-// Init initialises the Base structure
+// Init initiates the Base structure
 func (b *Base) Init(c Config) {
 	b.Config = c
 	b.Flags.SetOutput(ioutil.Discard)
 	b.flHelp = b.Flags.Bool([]string{"h", "-help"}, false, "Print usage")
 }
 
+// InitAPI initiates the Online API with the credentials
 func (b *Base) InitAPI() (err error) {
 	var c *apiauth.Credentials
 
