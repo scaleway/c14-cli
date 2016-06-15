@@ -32,8 +32,9 @@ type Authentication struct {
 type Credentials struct {
 	ClientID     string `json:"client_id" url:"client_id,ifStringIsNotEmpty"`
 	ClientSecret string `json:"client_secret" url:"client_secret,ifStringIsNotEmpty"`
-	Code         string `json:"device_code" url:"code,ifStringIsNotEmpty"`
-	GrantType    string `json:"grant_type" url:"grant_type,ifStringIsNotEmpty"`
+	Code         string `json:"-" url:"code,ifStringIsNotEmpty"`
+	GrantType    string `json:"-" url:"grant_type,ifStringIsNotEmpty"`
+	AccessToken  string `json:"access_token" url:"-"`
 }
 
 func getURL(url string, encode, decode interface{}) (err error) {
@@ -83,9 +84,12 @@ func GenerateCredentials(clientID, deviceCode string) (c Credentials, err error)
 	)
 	requestCredentials.ClientID = clientID
 	requestCredentials.Code = deviceCode
-	err = getURL(credentialsURL, requestCredentials, &c)
+	if err = getURL(credentialsURL, requestCredentials, &c); err != nil {
+		return
+	}
 	c.Code = deviceCode
 	c.GrantType = "http://oauth.net/grant_type/device/1.0"
+	err = getURL(tokenURL, c, &c)
 	return
 }
 
@@ -103,8 +107,10 @@ func getCredentialsPath() (path string, err error) {
 
 // Token oauth2.TokenSource implementation
 func (c *Credentials) Token() (t *oauth2.Token, err error) {
-	t = &oauth2.Token{}
-	err = getURL(tokenURL, c, t)
+	t = &oauth2.Token{
+		AccessToken: c.AccessToken,
+		TokenType:   "Bearer",
+	}
 	return
 }
 

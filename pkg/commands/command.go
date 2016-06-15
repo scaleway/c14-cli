@@ -41,7 +41,6 @@ type Command interface {
 
 // Base must be embedded in the commands
 type Base struct {
-	Env
 	Config
 	Flags mflag.FlagSet
 	*api.OnlineAPI
@@ -62,7 +61,7 @@ func (b *Base) InitAPI() (err error) {
 	if c, err = apiauth.GetCredentials(); err != nil {
 		return
 	}
-	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent)
+	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent, Root.Debug)
 	return
 }
 
