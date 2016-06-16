@@ -12,17 +12,21 @@ type list struct {
 }
 
 type listFlags struct {
+	flQuiet bool
 }
 
 // List returns a new command "list"
 func List() Command {
 	ret := &list{}
 	ret.Init(Config{
-		UsageLine:   "",
+		UsageLine:   "list [OPTIONS]",
 		Description: "",
 		Help:        "",
-		Examples:    "",
+		Examples: `
+        $ c14 list
+        $ c14 list 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})
+	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Only display UUIDs")
 	return ret
 }
 
@@ -42,7 +46,11 @@ func (l *list) Run(args []string) (err error) {
 		return
 	}
 	for i := range val {
-		fmt.Println(val[i])
+		if l.flQuiet {
+			fmt.Println(val[i].UUIDRef)
+		} else {
+			fmt.Println(val[i])
+		}
 	}
 	return
 }

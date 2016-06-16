@@ -32,7 +32,7 @@ func NewC14API(client *http.Client, userAgent string, verbose bool) (api *Online
 	return
 }
 
-func (o *OnlineAPI) GetResponse(uri string) (resp *http.Response, err error) {
+func (o *OnlineAPI) getResponse(uri string) (resp *http.Response, err error) {
 	var (
 		req *http.Request
 	)
@@ -65,7 +65,7 @@ func (o *OnlineAPI) getWrapper(uri string, goodStatusCode []int, export interfac
 		body []byte
 	)
 
-	resp, err = o.GetResponse(uri)
+	resp, err = o.getResponse(uri)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
