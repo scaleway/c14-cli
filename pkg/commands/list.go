@@ -42,9 +42,24 @@ func (l *list) Run(args []string) (err error) {
 		val []api.OnlineGetSafe
 	)
 
-	if val, err = l.OnlineAPI.GetSafes(); err != nil {
-		return
+	if len(args) == 0 {
+		if val, err = l.OnlineAPI.GetSafes(); err != nil {
+			return
+		}
+	} else {
+		val = make([]api.OnlineGetSafe, len(args))
+
+		for i, len := 0, len(args); i < len; i++ {
+			if val[i], err = l.OnlineAPI.GetSafe(args[i]); err != nil {
+				return
+			}
+		}
 	}
+	l.displaySafes(val)
+	return
+}
+
+func (l *list) displaySafes(val []api.OnlineGetSafe) {
 	for i := range val {
 		if l.flQuiet {
 			fmt.Println(val[i].UUIDRef)
@@ -52,5 +67,4 @@ func (l *list) Run(args []string) (err error) {
 			fmt.Println(val[i])
 		}
 	}
-	return
 }
