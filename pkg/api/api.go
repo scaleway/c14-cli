@@ -1,7 +1,9 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
@@ -32,14 +34,14 @@ func NewC14API(client *http.Client, userAgent string, verbose bool) (api *Online
 	return
 }
 
-func (o *OnlineAPI) getResponse(uri string) (resp *http.Response, err error) {
+func (o *OnlineAPI) response(method, uri string, content io.Reader) (resp *http.Response, err error) {
 	var (
 		req *http.Request
 	)
 
-	req, err = http.NewRequest("GET", uri, nil)
+	req, err = http.NewRequest(method, uri, content)
 	if err != nil {
-		err = errors.Annotatef(err, "NewRequest Get %v", uri)
+		err = errors.Annotatef(err, "response %s %s", method, uri)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -53,31 +55,53 @@ func (o *OnlineAPI) getResponse(uri string) (resp *http.Response, err error) {
 		dump, _ := httputil.DumpRequest(req, false)
 		log.Debugf("%v", string(dump))
 	} else {
-		log.Debugf("[GET]: %v", uri)
+		log.Debugf("[%s]: %v", method, uri)
 	}
 	resp, err = o.client.Do(req)
 	return
 }
 
-func (o *OnlineAPI) getWrapper(uri string, goodStatusCode []int, export interface{}) (err error) {
+func (o *OnlineAPI) getWrapper(uri string, export interface{}) (err error) {
 	var (
 		resp *http.Response
 		body []byte
 	)
 
-	resp, err = o.getResponse(uri)
+	resp, err = o.response("GET", uri, nil)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
 	if err != nil {
-		err = errors.Annotatef(err, "Unable to get %v", uri)
+		err = errors.Annotatef(err, "Unable to get %s", uri)
 		return
 	}
 
-	if body, err = o.handleHTTPError(goodStatusCode, resp); err != nil {
+	if body, err = o.handleHTTPError([]int{200}, resp); err != nil {
 		return
 	}
 	err = json.Unmarshal(body, export)
+	return
+}
+
+func (o *OnlineAPI) postWrapper(uri string, content interface{}) (body []byte, err error) {
+	var (
+		resp    *http.Response
+		payload = new(bytes.Buffer)
+	)
+
+	encoder := json.NewEncoder(payload)
+	if err = encoder.Encode(content); err != nil {
+		return
+	}
+	resp, err = o.response("POST", uri, payload)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+	if err != nil {
+		err = errors.Annotatef(err, "Unable to post %s", uri)
+		return
+	}
+	body, err = o.handleHTTPError([]int{201}, resp)
 	return
 }
 
