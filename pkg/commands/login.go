@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
+	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
 	"github.com/juju/errors"
 
 	"golang.org/x/crypto/ssh/terminal"
@@ -42,9 +42,9 @@ func (l *login) GetName() string {
 
 func (l *login) Run(args []string) (err error) {
 	var (
-		empty       string
-		auth        oauth2.Authentication
-		credentials oauth2.Credentials
+		empty          string
+		authentication auth.Authentication
+		credentials    auth.Credentials
 	)
 
 	if l.clientID == "" {
@@ -63,15 +63,15 @@ Then copy the client_id here : `, &l.clientID, true); err != nil {
 		}
 	}
 	l.clientID = strings.Trim(l.clientID, "\r\n")
-	if auth, err = oauth2.GetVerificationURL(l.clientID); err != nil {
+	if authentication, err = auth.GetVerificationURL(l.clientID); err != nil {
 		return
 	}
 	if err = promptUser(fmt.Sprintf(`
 Please opens this link with your browser: %v
-Then copy paste the code %v (enter when is done) : `, auth.VerficationURL, auth.UserCode), &empty, true); err != nil {
+Then copy paste the code %v (enter when is done) : `, authentication.VerficationURL, authentication.UserCode), &empty, true); err != nil {
 		return
 	}
-	if credentials, err = oauth2.GenerateCredentials(l.clientID, auth.DeviceCode); err != nil {
+	if credentials, err = auth.GenerateCredentials(l.clientID, authentication.DeviceCode); err != nil {
 		return
 	}
 	err = credentials.Save()

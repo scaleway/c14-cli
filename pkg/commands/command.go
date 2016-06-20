@@ -11,7 +11,7 @@ import (
 	"golang.org/x/oauth2"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
-	apiauth "github.com/QuentinPerez/c14-cli/pkg/api/oauth2"
+	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
 	"github.com/QuentinPerez/c14-cli/pkg/version"
 	"github.com/docker/docker/pkg/mflag"
 )
@@ -56,9 +56,9 @@ func (b *Base) Init(c Config) {
 
 // InitAPI initiates the Online API with the credentials
 func (b *Base) InitAPI() (err error) {
-	var c *apiauth.Credentials
+	var c *auth.Credentials
 
-	if c, err = apiauth.GetCredentials(); err != nil {
+	if c, err = auth.GetCredentials(); err != nil {
 		return
 	}
 	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent, Root.Debug)
