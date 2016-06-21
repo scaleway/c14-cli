@@ -30,6 +30,7 @@ func init() {
 			Login(),
 			List(),
 			Test(),
+			Remove(),
 		},
 	}
 }

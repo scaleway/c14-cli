@@ -82,6 +82,6 @@ func (c *create) Run(args []string) (err error) {
 		err = errors.Annotate(err, "Run:CreateArchive")
 		return
 	}
-	fmt.Println(uuidArchive)
+	fmt.Printf("%s", uuidArchive)
 	return
 }
