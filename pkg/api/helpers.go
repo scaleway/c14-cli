@@ -40,7 +40,25 @@ func (o *OnlineAPI) GetPlatform(uuid string) (platform OnlineGetPlatform, err er
 	return
 }
 
-func (o *OnlineAPI) CreateSafe(name, desc string) (err error) {
+func (o *OnlineAPI) GetSSHKeys() (keys []OnlineGetSSHKey, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/user/key/ssh", APIUrl), &keys); err != nil {
+		err = errors.Annotate(err, "GetSSHKeys")
+	}
+	return
+}
+
+func (o *OnlineAPI) GetSSHKey(uuid string) (key OnlineGetSSHKey, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/user/key/ssh/%s", APIUrl, uuid), &key); err != nil {
+		err = errors.Annotate(err, "GetSSHKey")
+	}
+	return
+}
+
+/*
+ * Create Functions
+ */
+
+func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 	var (
 		buff []byte
 	)
