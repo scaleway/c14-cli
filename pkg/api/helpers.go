@@ -67,7 +67,38 @@ func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 		Name:        name,
 		Description: desc,
 	}); err != nil {
-		err = errors.Annotate(err, "GetPlatform")
+		err = errors.Annotate(err, "CreateSafe")
+		return
+	}
+	uuid = string(buff)
+	return
+}
+
+type ConfigCreateArchive struct {
+	UUIDSafe  string
+	Name      string
+	Desc      string
+	Parity    string
+	Protocols []string
+	SSHKeys   []string
+	Platforms []string
+	Days      int
+}
+
+func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err error) {
+	var (
+		buff []byte
+	)
+
+	if buff, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, config.UUIDSafe), OnlinePostArchive{
+		Name:        config.Name,
+		Description: config.Desc,
+		Protocols:   config.Protocols,
+		SSHKeys:     config.SSHKeys,
+		Platforms:   config.Platforms,
+		Days:        config.Days,
+	}); err != nil {
+		err = errors.Annotate(err, "CreateArchive")
 		return
 	}
 	fmt.Println(string(buff))
