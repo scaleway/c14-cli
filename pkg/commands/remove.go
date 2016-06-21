@@ -1,6 +1,10 @@
 package commands
 
-import "fmt"
+import (
+	"sync"
+
+	"github.com/apex/log"
+)
 
 type remove struct {
 	Base
@@ -10,7 +14,7 @@ type remove struct {
 type removeFlags struct {
 }
 
-// remove returns a new command "remove"
+// Remove returns a new command "remove"
 func Remove() Command {
 	ret := &remove{}
 	ret.Init(Config{
@@ -31,8 +35,29 @@ func (r *remove) Run(args []string) (err error) {
 	if err = r.InitAPI(); err != nil {
 		return
 	}
+	var wait sync.WaitGroup
+
 	for _, uuid := range args {
-		fmt.Println(uuid)
+		wait.Add(1)
+		go r.remove(&wait, uuid)
 	}
+	wait.Wait()
+	return
+}
+
+func (r *remove) remove(wait *sync.WaitGroup, uuid string) (err error) {
+	defer wait.Done()
+	wait.Add(1)
+	go func() {
+		defer wait.Done()
+		var (
+			errSafe error
+		)
+		if _, errSafe = r.OnlineAPI.GetSafe(uuid); errSafe == nil {
+			if errSafe = r.OnlineAPI.DeleteSafe(uuid); errSafe != nil {
+				log.Errorf("%s: %s", uuid, errSafe)
+			}
+		}
+	}()
 	return
 }

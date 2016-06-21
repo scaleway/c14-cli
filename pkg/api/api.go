@@ -83,6 +83,26 @@ func (o *OnlineAPI) getWrapper(uri string, export interface{}) (err error) {
 	return
 }
 
+func (o *OnlineAPI) deleteWrapper(uri string) (err error) {
+	var (
+		resp *http.Response
+	)
+
+	resp, err = o.response("DELETE", uri, nil)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+	if err != nil {
+		err = errors.Annotatef(err, "Unable to delete %s", uri)
+		return
+	}
+
+	if _, err = o.handleHTTPError([]int{204}, resp); err != nil {
+		return
+	}
+	return
+}
+
 func (o *OnlineAPI) postWrapper(uri string, content interface{}) (body []byte, err error) {
 	var (
 		resp    *http.Response

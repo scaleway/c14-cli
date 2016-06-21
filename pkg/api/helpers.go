@@ -108,3 +108,14 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 	fmt.Println(string(buff))
 	return
 }
+
+/*
+ * Delete Functions
+ */
+
+func (o *OnlineAPI) DeleteSafe(uuid string) (err error) {
+	if err = o.deleteWrapper(fmt.Sprintf("%s/storage/c14/safe/%s", APIUrl, uuid)); err != nil {
+		err = errors.Annotate(err, "DeleteSafe")
+	}
+	return
+}
