@@ -1,6 +1,13 @@
 package commands
 
-import "github.com/docker/docker/pkg/namesgenerator"
+import (
+	"fmt"
+	"time"
+
+	"github.com/QuentinPerez/c14-cli/pkg/api"
+	"github.com/docker/docker/pkg/namesgenerator"
+	"github.com/juju/errors"
+)
 
 type create struct {
 	Base
@@ -30,13 +37,51 @@ func (c *create) GetName() string {
 	return "create"
 }
 
+func (c *create) CheckFlags() (err error) {
+	if c.flName == "" {
+		c.flName = namesgenerator.GetRandomName(0)
+	}
+	if c.flDesc == "" {
+		c.flDesc = fmt.Sprintf("Archive created at %s", time.Now())
+	}
+	return
+}
+
 func (c *create) Run(args []string) (err error) {
 	if err = c.InitAPI(); err != nil {
 		return err
 	}
-	if c.flName == "" {
-		c.flName = namesgenerator.GetRandomName(0)
+	var (
+		safeName, uuidSafe, uuidArchive string
+		keys                            []api.OnlineGetSSHKey
+	)
+
+	safeName = fmt.Sprintf("%s_safe", c.flName)
+	if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
+		err = errors.Annotate(err, "Run:GetSSHKey")
+		return
 	}
-	err = c.OnlineAPI.CreateSafe(c.flName, c.flDesc)
+	if len(keys) == 0 {
+		err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
+		return
+	}
+
+	if uuidSafe, err = c.OnlineAPI.CreateSafe(safeName, ""); err != nil {
+		err = errors.Annotate(err, "Run:CreateSafe")
+		return
+	}
+	if uuidArchive, err = c.OnlineAPI.CreateArchive(api.ConfigCreateArchive{
+		UUIDSafe:  uuidSafe,
+		Name:      c.flName,
+		Desc:      c.flDesc,
+		Protocols: []string{"SSH"},
+		Platforms: []string{"1"},
+		SSHKeys:   []string{keys[0].UUIDRef},
+		Days:      7,
+	}); err != nil {
+		err = errors.Annotate(err, "Run:CreateArchive")
+		return
+	}
+	fmt.Println(uuidArchive)
 	return
 }
