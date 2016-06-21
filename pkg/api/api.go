@@ -52,7 +52,7 @@ func (o *OnlineAPI) response(method, uri string, content io.Reader) (resp *http.
 	// 	return nil, err
 	// }
 	if o.verbose {
-		dump, _ := httputil.DumpRequest(req, false)
+		dump, _ := httputil.DumpRequest(req, true)
 		log.Debugf("%v", string(dump))
 	} else {
 		log.Debugf("[%s]: %v", method, uri)
@@ -112,7 +112,7 @@ func (o *OnlineAPI) handleHTTPError(goodStatusCode []int, resp *http.Response) (
 	}
 
 	if o.verbose {
-		dump, _ := httputil.DumpResponse(resp, false)
+		dump, _ := httputil.DumpResponse(resp, true)
 		log.Debugf("%v", string(dump))
 	} else {
 		log.Debugf("[Response]: [%v] %v", resp.StatusCode, string(content))
