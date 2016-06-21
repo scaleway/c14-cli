@@ -6,6 +6,10 @@ import (
 	"github.com/juju/errors"
 )
 
+/*
+ * Get Functions
+ */
+
 // GetSafes returns a list of safe
 func (o *OnlineAPI) GetSafes() (safes []OnlineGetSafe, err error) {
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), &safes); err != nil {

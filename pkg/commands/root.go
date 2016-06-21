@@ -29,6 +29,7 @@ func init() {
 			Create(),
 			Login(),
 			List(),
+			Test(),
 		},
 	}
 }
@@ -55,6 +56,9 @@ func (r *root) Parse() (err error) {
 	for _, cmd := range r.commands {
 		if cmd.GetName() == args[0] {
 			if args, err = cmd.Parse(args[1:]); err != nil {
+				return
+			}
+			if err = cmd.CheckFlags(); err != nil {
 				return
 			}
 			err = cmd.Run(args)

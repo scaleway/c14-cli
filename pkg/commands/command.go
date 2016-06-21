@@ -36,6 +36,7 @@ type Command interface {
 	GetName() string
 	Parse(args []string) ([]string, error)
 	Run(args []string) error
+	CheckFlags() error
 	PrintUsage()
 }
 
@@ -68,7 +69,7 @@ func (b *Base) InitAPI() (err error) {
 // Parse parses the argurments
 func (b *Base) Parse(args []string) (newArgs []string, err error) {
 	if err = b.Flags.Parse(args); err != nil {
-		err = fmt.Errorf("usage: c14 %v", b.UsageLine)
+		err = fmt.Errorf("usage: c14 %s: %s", b.UsageLine, err)
 		return
 	}
 	if *b.flHelp {
@@ -76,7 +77,6 @@ func (b *Base) Parse(args []string) (newArgs []string, err error) {
 		os.Exit(1)
 		return
 	}
-	err = b.CheckFlags()
 	newArgs = b.Flags.Args()
 	return
 }
