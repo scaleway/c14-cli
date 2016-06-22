@@ -58,6 +58,27 @@ func (o *OnlineAPI) GetSSHKey(uuid string) (key OnlineGetSSHKey, err error) {
 	return
 }
 
+func (o *OnlineAPI) GetArchives(uuidSafe string) (archives []OnlineGetArchive, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, uuidSafe), &archives); err != nil {
+		err = errors.Annotate(err, "GetArchives")
+	}
+	return
+}
+
+func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchive, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive), &archive); err != nil {
+		err = errors.Annotate(err, "GetArchive")
+	}
+	return
+}
+
+func (o *OnlineAPI) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBucket, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/bucket", APIUrl, uuidSafe, uuidArchive), &bucket); err != nil {
+		err = errors.Annotate(err, "GetBucket")
+	}
+	return
+}
+
 /*
  * Create Functions
  */
@@ -116,6 +137,13 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 func (o *OnlineAPI) DeleteSafe(uuid string) (err error) {
 	if err = o.deleteWrapper(fmt.Sprintf("%s/storage/c14/safe/%s", APIUrl, uuid)); err != nil {
 		err = errors.Annotate(err, "DeleteSafe")
+	}
+	return
+}
+
+func (o *OnlineAPI) DeleteArchive(uuidSafe, uuidArchive string) (err error) {
+	if err = o.deleteWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive)); err != nil {
+		err = errors.Annotate(err, "DeleteArchive")
 	}
 	return
 }

@@ -28,6 +28,30 @@ type OnlineGetSSHKey struct {
 	UUIDRef     string `json:"uuid_ref"`
 }
 
+type OnlineGetArchive struct {
+	// _ref         string `json:"$ref"`
+	CreationDate string `json:"creation_date"`
+	Description  string `json:"description"`
+	Name         string `json:"name"`
+	Parity       string `json:"parity"`
+	Status       string `json:"status"`
+	UUIDRef      string `json:"uuid_ref"`
+}
+
+type OnlineGetBucket struct {
+	// _ref         string `json:"$ref"`
+	ArchivalDate string `json:"archival_date"`
+	Credentials  []struct {
+		Login    string            `json:"login"`
+		Password string            `json:"password"`
+		Protocol string            `json:"protocol"`
+		SSHKeys  []OnlineGetSSHKey `json:"ssh_keys"`
+		URI      string            `json:"uri"`
+	} `json:"credentials"`
+	Status  string `json:"status"`
+	UUIDRef string `json:"uuid_ref"`
+}
+
 /*
  * Post
  */
