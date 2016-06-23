@@ -49,12 +49,11 @@ func (c *create) CheckFlags() (err error) {
 
 func (c *create) Run(args []string) (err error) {
 	if err = c.InitAPI(); err != nil {
-		return err
+		return
 	}
 	var (
 		uuidArchive string
 		keys        []api.OnlineGetSSHKey
-		bucket      api.OnlineGetBucket
 	)
 
 	if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
@@ -65,20 +64,17 @@ func (c *create) Run(args []string) (err error) {
 		err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
 		return
 	}
-	if _, uuidArchive, bucket, err = c.OnlineAPI.CreateSSHBucketFromScratch(api.ConfigCreateSSHBucketFromScratch{
+	if _, uuidArchive, _, err = c.OnlineAPI.CreateSSHBucketFromScratch(api.ConfigCreateSSHBucketFromScratch{
 		SafeName:    fmt.Sprintf("%s_safe", c.flName),
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
 		UUIDSSHKeys: []string{keys[0].UUIDRef},
 		Platforms:   []string{"1"},
+		Days:        7,
 	}); err != nil {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return
 	}
-
-	fmt.Println("UUID's archive:", uuidArchive)
-	fmt.Println("Login:", bucket.Credentials[0].Login)
-	fmt.Println("Password:", bucket.Credentials[0].Password)
-	fmt.Println("Access:", bucket.Credentials[0].URI)
+	fmt.Printf("%s", uuidArchive)
 	return
 }

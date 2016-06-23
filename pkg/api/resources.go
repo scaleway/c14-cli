@@ -38,18 +38,20 @@ type OnlineGetArchive struct {
 	UUIDRef      string `json:"uuid_ref"`
 }
 
+type OnlineBucketCredentials struct {
+	Login    string            `json:"login"`
+	Password string            `json:"password"`
+	Protocol string            `json:"protocol"`
+	SSHKeys  []OnlineGetSSHKey `json:"ssh_keys"`
+	URI      string            `json:"uri"`
+}
+
 type OnlineGetBucket struct {
 	// _ref         string `json:"$ref"`
-	ArchivalDate string `json:"archival_date"`
-	Credentials  []struct {
-		Login    string            `json:"login"`
-		Password string            `json:"password"`
-		Protocol string            `json:"protocol"`
-		SSHKeys  []OnlineGetSSHKey `json:"ssh_keys"`
-		URI      string            `json:"uri"`
-	} `json:"credentials"`
-	Status  string `json:"status"`
-	UUIDRef string `json:"uuid_ref"`
+	ArchivalDate string                    `json:"archival_date"`
+	Credentials  []OnlineBucketCredentials `json:"credentials"`
+	Status       string                    `json:"status"`
+	UUIDRef      string                    `json:"uuid_ref"`
 }
 
 /*
