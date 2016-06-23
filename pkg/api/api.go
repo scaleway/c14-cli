@@ -22,6 +22,7 @@ type OnlineAPI struct {
 	client    *http.Client
 	userAgent string
 	verbose   bool
+	cache     *cache
 }
 
 // NewC14API returns a new API
@@ -30,6 +31,7 @@ func NewC14API(client *http.Client, userAgent string, verbose bool) (api *Online
 		client:    client,
 		userAgent: userAgent,
 		verbose:   verbose,
+		cache:     NewCache(),
 	}
 	return
 }

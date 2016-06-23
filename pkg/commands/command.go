@@ -62,7 +62,7 @@ func (b *Base) InitAPI() (err error) {
 	if c, err = auth.GetCredentials(); err != nil {
 		return
 	}
-	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent, Root.Debug)
+	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent, Root.Verbose)
 	return
 }
 

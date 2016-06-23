@@ -10,7 +10,8 @@ import (
 
 // Env containts the global options
 type Env struct {
-	Debug bool
+	Debug   bool
+	Verbose bool
 }
 
 type root struct {
@@ -31,19 +32,22 @@ func init() {
 			List(),
 			Test(),
 			Remove(),
+			Upload(),
 		},
 	}
 }
 
 func (r *root) Parse() (err error) {
 	var (
-		flDebug = mflag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
+		flDebug   = mflag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
+		flVerbose = mflag.Bool([]string{"V", "-verbose"}, false, "Enable verbose mode")
 	)
 
 	args := os.Args[1:]
 	if err = mflag.CommandLine.Parse(args); err != nil {
 		return
 	}
+	r.Verbose = *flVerbose || os.Getenv("C14_VERBOSE") == "1"
 	r.Debug = *flDebug || os.Getenv("C14_DEBUG") == "1"
 	if r.Debug {
 		log.SetLevel(log.DebugLevel)

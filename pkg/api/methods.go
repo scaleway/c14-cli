@@ -11,9 +11,20 @@ import (
  */
 
 // GetSafes returns a list of safe
-func (o *OnlineAPI) GetSafes() (safes []OnlineGetSafe, err error) {
-	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), &safes); err != nil {
-		err = errors.Annotate(err, "GetSafes")
+func (o *OnlineAPI) GetSafes(useCache bool) (safes []OnlineGetSafe, err error) {
+	if safes, err = o.cache.CopySafes(); err == nil {
+		return
+	}
+	if !useCache {
+		if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), &safes); err != nil {
+			err = errors.Annotate(err, "GetSafes")
+			return
+		}
+		for _, safe := range safes {
+			if _, ok := o.cache.GetSafe(safe.UUIDRef); !ok {
+				o.cache.InsertSafe(safe.UUIDRef, safe)
+			}
+		}
 	}
 	return
 }
@@ -21,9 +32,18 @@ func (o *OnlineAPI) GetSafes() (safes []OnlineGetSafe, err error) {
 // GetSafe returns a safe
 func (o *OnlineAPI) GetSafe(uuid string) (safe OnlineGetSafe, err error) {
 	// TODO: enable to use the name instead of only the UUID
+	var (
+		ok bool
+	)
+
+	if safe, ok = o.cache.GetSafe(uuid); ok {
+		return
+	}
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s", APIUrl, uuid), &safe); err != nil {
 		err = errors.Annotate(err, "GetSafe")
+		return
 	}
+	o.cache.InsertSafe(safe.UUIDRef, safe)
 	return
 }
 
@@ -58,24 +78,53 @@ func (o *OnlineAPI) GetSSHKey(uuid string) (key OnlineGetSSHKey, err error) {
 	return
 }
 
-func (o *OnlineAPI) GetArchives(uuidSafe string) (archives []OnlineGetArchive, err error) {
-	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, uuidSafe), &archives); err != nil {
-		err = errors.Annotate(err, "GetArchives")
+func (o *OnlineAPI) GetArchives(uuidSafe string, useCache bool) (archives []OnlineGetArchive, err error) {
+	if archives, err = o.cache.CopyArchives(uuidSafe); err == nil {
+		return
+	}
+	if !useCache {
+		if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, uuidSafe), &archives); err != nil {
+			err = errors.Annotate(err, "GetArchives")
+			return
+		}
+		for _, archive := range archives {
+			if _, ok := o.cache.GetArchive(uuidSafe, archive.UUIDRef); !ok {
+				o.cache.InsertArchive(uuidSafe, archive.UUIDRef, archive)
+			}
+		}
 	}
 	return
 }
 
 func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchive, err error) {
+	var (
+		ok bool
+	)
+
+	if archive, ok = o.cache.GetArchive(uuidSafe, uuidArchive); ok {
+		return
+	}
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive), &archive); err != nil {
 		err = errors.Annotate(err, "GetArchive")
+		return
 	}
+	o.cache.InsertArchive(uuidSafe, uuidArchive, archive)
 	return
 }
 
 func (o *OnlineAPI) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBucket, err error) {
+	var (
+		ok bool
+	)
+
+	if bucket, ok = o.cache.GetBucket(uuidSafe, uuidArchive); ok {
+		return
+	}
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/bucket", APIUrl, uuidSafe, uuidArchive), &bucket); err != nil {
 		err = errors.Annotate(err, "GetBucket")
+		return
 	}
+	o.cache.InsertBucket(uuidSafe, uuidArchive, bucket)
 	return
 }
 
@@ -135,6 +184,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
  */
 
 func (o *OnlineAPI) DeleteSafe(uuid string) (err error) {
+	// TODO: remove from cache
 	if err = o.deleteWrapper(fmt.Sprintf("%s/storage/c14/safe/%s", APIUrl, uuid)); err != nil {
 		err = errors.Annotate(err, "DeleteSafe")
 	}
@@ -142,6 +192,7 @@ func (o *OnlineAPI) DeleteSafe(uuid string) (err error) {
 }
 
 func (o *OnlineAPI) DeleteArchive(uuidSafe, uuidArchive string) (err error) {
+	// TODO: remove from cache
 	if err = o.deleteWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive)); err != nil {
 		err = errors.Annotate(err, "DeleteArchive")
 	}
