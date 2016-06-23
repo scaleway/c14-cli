@@ -57,6 +57,8 @@ func (r *remove) remove(wait *sync.WaitGroup, uuid string) (err error) {
 			if errSafe = r.OnlineAPI.DeleteSafe(uuid); errSafe != nil {
 				log.Errorf("%s: %s", uuid, errSafe)
 			}
+		} else {
+			log.Errorf("%s: %s", uuid, errSafe)
 		}
 	}()
 	return
