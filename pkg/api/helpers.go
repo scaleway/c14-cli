@@ -70,12 +70,13 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 			wgSafe.Add(1)
 			go func(uuidSafe string, wgSafe *sync.WaitGroup) {
 				var (
-					archives  []OnlineGetArchive
-					wgArchive sync.WaitGroup
+					archives   []OnlineGetArchive
+					wgArchive  sync.WaitGroup
+					errArchive error
 				)
 
-				archives, _ = o.GetArchives(uuidSafe, false)
-				if bucket {
+				archives, errArchive = o.GetArchives(uuidSafe, false)
+				if bucket && errArchive == nil {
 					for indexArchive := range archives {
 						wgArchive.Add(1)
 						go func(uuidSafe, uuidArchive string, wgArchive *sync.WaitGroup) {
@@ -88,7 +89,34 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 				wgSafe.Done()
 			}(safes[indexSafe].UUIDRef, &wgSafe)
 		}
+
 	}
 	wgSafe.Wait()
+	return
+}
+
+func (o *OnlineAPI) FindSafeUUIDFromArchive(uuidArchive string, useCache bool) (safe OnlineGetSafe, err error) {
+	var (
+		safes []OnlineGetSafe
+	)
+
+	if safes, err = o.GetSafes(useCache); err != nil {
+		err = errors.Annotate(err, "FindArchiveFromCache:GetSafes")
+		return
+	}
+	for indexSafe := range safes {
+		var (
+			archives []OnlineGetArchive
+		)
+		if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
+			for indexArchive := range archives {
+				if uuidArchive == archives[indexArchive].UUIDRef {
+					safe = safes[indexSafe]
+					return
+				}
+			}
+		}
+	}
+	err = errors.Errorf("Archive %s not found", uuidArchive)
 	return
 }
