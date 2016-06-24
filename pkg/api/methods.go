@@ -145,6 +145,7 @@ func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 		return
 	}
 	uuid = string(buff)
+	_, err = o.GetSafe(uuid)
 	return
 }
 
@@ -176,6 +177,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		return
 	}
 	uuid = string(buff)
+	_, err = o.GetArchive(config.UUIDSafe, uuid)
 	return
 }
 
