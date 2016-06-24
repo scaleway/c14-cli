@@ -93,13 +93,11 @@ func (c *cache) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchi
 
 	c.RLock()
 	// force panic if uuidSafe do not exist
-	found := false
 	if archiveCache, ok = c.safes[uuidSafe].archive[uuidArchive]; ok && archiveCache.archive != nil {
-		// fmt.Println("Use ARCHIVE Cache", uuidArchive)
 		archive = *archiveCache.archive
-		found = true
+	} else {
+		ok = false
 	}
-	log.Debugf("GetArchive %s => %v", uuidArchive, found)
 	c.RUnlock()
 	return
 }
@@ -128,6 +126,8 @@ func (c *cache) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBucket,
 	// force panic if uuidSafe do not exist
 	if archiveCache, ok = c.safes[uuidSafe].archive[uuidArchive]; ok && archiveCache.bucket != nil {
 		bucket = *archiveCache.bucket
+	} else {
+		ok = false
 	}
 	c.RUnlock()
 	return
@@ -140,6 +140,7 @@ func (c *cache) InsertBucket(uuidSafe, uuidArchive string, bucket OnlineGetBucke
 	c.Lock()
 	// force panic if uuidSafe do not exist
 	val := c.safes[uuidSafe].archive[uuidArchive]
+	log.Debugf("InsertBucket %s:%s", uuidSafe, uuidArchive)
 	c.safes[uuidSafe].archive[uuidArchive] = cacheArchive{
 		archive: val.archive,
 		bucket:  newBucket,
