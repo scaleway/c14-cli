@@ -76,7 +76,7 @@ func (u *upload) Run(args []string) (err error) {
 
 	archive := args[len(args)-1]
 	args = args[:len(args)-1]
-	if safe, err = u.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
+	if safe, archive, err = u.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
 		return
 	}
 	if bucket, err = u.OnlineAPI.GetBucket(safe.UUIDRef, archive); err != nil {

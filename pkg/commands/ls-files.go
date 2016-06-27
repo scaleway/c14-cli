@@ -56,7 +56,7 @@ func (l *lsFiles) Run(args []string) (err error) {
 		uuidArchive = args[0]
 	)
 
-	if safe, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchive, true); err != nil {
+	if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchive, true); err != nil {
 		return
 	}
 	if bucket, err = l.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {

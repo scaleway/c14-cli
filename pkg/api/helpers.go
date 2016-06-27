@@ -95,7 +95,7 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 	return
 }
 
-func (o *OnlineAPI) FindSafeUUIDFromArchive(uuidArchive string, useCache bool) (safe OnlineGetSafe, err error) {
+func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe OnlineGetSafe, uuidArchive string, err error) {
 	var (
 		safes []OnlineGetSafe
 	)
@@ -110,13 +110,14 @@ func (o *OnlineAPI) FindSafeUUIDFromArchive(uuidArchive string, useCache bool) (
 		)
 		if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
 			for indexArchive := range archives {
-				if uuidArchive == archives[indexArchive].UUIDRef {
+				if archive == archives[indexArchive].UUIDRef || archive == archives[indexArchive].Name {
 					safe = safes[indexSafe]
+					uuidArchive = archives[indexArchive].UUIDRef
 					return
 				}
 			}
 		}
 	}
-	err = errors.Errorf("Archive %s not found", uuidArchive)
+	err = errors.Errorf("Archive %s not found", archive)
 	return
 }
