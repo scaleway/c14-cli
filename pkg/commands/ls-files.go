@@ -79,9 +79,11 @@ func (l *lsFiles) Run(args []string) (err error) {
 			continue
 		}
 		if walker.Stat().Mode().IsDir() {
-			fmt.Fprintf(w, "%s\t\n", walker.Path())
+			if walker.Path() != "/buffer" {
+				fmt.Fprintf(w, "%s/\t\n", walker.Path()[8:])
+			}
 		} else {
-			fmt.Fprintf(w, "%s\t%s\n", walker.Path(), humanize.Bytes(uint64(walker.Stat().Size())))
+			fmt.Fprintf(w, "%s\t%s\n", walker.Path()[8:], humanize.Bytes(uint64(walker.Stat().Size())))
 		}
 	}
 	w.Flush()
