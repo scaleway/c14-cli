@@ -23,9 +23,9 @@ type lsFilesFlags struct {
 func LsFiles() Command {
 	ret := &lsFiles{}
 	ret.Init(Config{
-		UsageLine:   "ls-files [ARCHIVE]+",
-		Description: "",
-		Help:        "",
+		UsageLine:   "ls-files ARCHIVE",
+		Description: "List the archive files",
+		Help:        "List the archive files.",
 		Examples: `
         $ c14 ls-files 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})

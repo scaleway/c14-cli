@@ -24,8 +24,8 @@ func List() Command {
 	ret := &list{}
 	ret.Init(Config{
 		UsageLine:   "list [OPTIONS]",
-		Description: "",
-		Help:        "",
+		Description: "List archives",
+		Help:        "List archives. By default, only archive which are not deleted.",
 		Examples: `
         $ c14 list
         $ c14 list 83b93179-32e0-11e6-be10-10604b9b0ad9`,

@@ -26,14 +26,14 @@ var Root *root
 func init() {
 	Root = &root{
 		commands: []Command{
-			Help(),
 			Create(),
-			Login(),
+			Help(),
 			List(),
-			Test(),
-			Remove(),
-			Upload(),
+			Login(),
 			LsFiles(),
+			Remove(),
+			Test(),
+			Upload(),
 		},
 	}
 }

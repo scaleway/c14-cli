@@ -2,8 +2,8 @@ package commands
 
 import (
 	"fmt"
-	"html/template"
 	"os"
+	"text/template"
 
 	"github.com/docker/docker/pkg/mflag"
 )

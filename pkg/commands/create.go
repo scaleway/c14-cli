@@ -23,10 +23,13 @@ type createFlags struct {
 func Create() Command {
 	ret := &create{}
 	ret.Init(Config{
-		UsageLine:   "",
-		Description: "",
-		Help:        "",
-		Examples:    "",
+		UsageLine:   "create [OPTIONS]*",
+		Description: "Create a new archive",
+		Help:        "Create a new archive, By default with a random name",
+		Examples: `
+		$ c14 create
+		$ c14 create --name "MyAchive"
+`,
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
 	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
