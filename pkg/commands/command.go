@@ -36,7 +36,7 @@ type Command interface {
 	GetName() string
 	Parse(args []string) ([]string, error)
 	Run(args []string) error
-	CheckFlags() error
+	CheckFlags(args []string) error
 	PrintUsage()
 }
 
@@ -82,7 +82,7 @@ func (b *Base) Parse(args []string) (newArgs []string, err error) {
 }
 
 // CheckFlags can be overloaded by the commands to check the flags
-func (b *Base) CheckFlags() (err error) {
+func (b *Base) CheckFlags(args []string) (err error) {
 	return
 }
 

@@ -36,10 +36,6 @@ func List() Command {
 	return ret
 }
 
-func (l *list) CheckFlags() (err error) {
-	return
-}
-
 func (l *list) GetName() string {
 	return "list"
 }

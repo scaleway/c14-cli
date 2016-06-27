@@ -64,7 +64,7 @@ func (r *root) Parse() (err error) {
 			if args, err = cmd.Parse(args[1:]); err != nil {
 				return
 			}
-			if err = cmd.CheckFlags(); err != nil {
+			if err = cmd.CheckFlags(args); err != nil {
 				return
 			}
 			err = cmd.Run(args)

@@ -40,7 +40,7 @@ func (c *create) GetName() string {
 	return "create"
 }
 
-func (c *create) CheckFlags() (err error) {
+func (c *create) CheckFlags(args []string) (err error) {
 	if c.flName == "" {
 		c.flName = namesgenerator.GetRandomName(0)
 	}
