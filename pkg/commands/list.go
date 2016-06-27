@@ -97,7 +97,7 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	w = tabwriter.NewWriter(os.Stdout, 20, 1, 3, ' ', 0)
 	defer w.Flush()
 	if !l.flQuiet {
-		fmt.Fprintf(w, "NAME\tSTATUS\tUUID\nna")
+		fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
 	}
 	for i := range val {
 		archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)

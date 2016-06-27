@@ -2,7 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/QuentinPerez/c14-cli/pkg/utils/ssh"
@@ -66,14 +68,22 @@ func (l *lsFiles) Run(args []string) (err error) {
 	if sftpConn, err = sftpCred.NewSFTPClient(); err != nil {
 		return
 	}
+	defer sftpCred.Close()
 	defer sftpConn.Close()
 	walker := sftpConn.Walk("/buffer")
+	w := tabwriter.NewWriter(os.Stdout, 20, 1, 3, ' ', 0)
+	fmt.Fprintf(w, "NAME\tSIZE\n")
 	for walker.Step() {
 		if err = walker.Err(); err != nil {
 			log.Debugf("%s", err)
 			continue
 		}
-		fmt.Println(walker.Stat().Name(), humanize.Bytes(uint64(walker.Stat().Size())))
+		if walker.Stat().Mode().IsDir() {
+			fmt.Fprintf(w, "%s\t\n", walker.Path())
+		} else {
+			fmt.Fprintf(w, "%s\t%s\n", walker.Path(), humanize.Bytes(uint64(walker.Stat().Size())))
+		}
 	}
+	w.Flush()
 	return
 }
