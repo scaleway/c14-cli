@@ -30,8 +30,8 @@ func Upload() Command {
 	ret := &upload{}
 	ret.Init(Config{
 		UsageLine:   "upload [DIR|FILE]+ ARCHIVE",
-		Description: "",
-		Help:        "",
+		Description: "Upload your file or directory into an archive",
+		Help:        "Upload your file or directory into an archive.",
 		Examples: `
         $ c14 upload
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
@@ -43,8 +43,8 @@ func Upload() Command {
 
 func (u *upload) CheckFlags(args []string) (err error) {
 	if len(args) < 2 {
-		err = errors.Errorf("You must provide an archive and a directory/file, see c14 upload help")
-		return
+		u.PrintUsage()
+		os.Exit(0)
 	}
 	return
 }
@@ -170,7 +170,7 @@ func (u *upload) uploadAFile(c *sftp.Client, reader io.ReadCloser, file string, 
 	log.Debugf("Upload %s -> /buffer/%s", file, file)
 
 	var (
-		buff   = make([]byte, 1<<16)
+		buff   = make([]byte, 1<<22)
 		nr, nw int
 		w      *sftp.File
 	)
