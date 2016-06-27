@@ -75,6 +75,6 @@ func (c *create) Run(args []string) (err error) {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return
 	}
-	fmt.Printf("%s", uuidArchive)
+	fmt.Printf("%s\n", uuidArchive)
 	return
 }

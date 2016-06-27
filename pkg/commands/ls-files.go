@@ -2,8 +2,13 @@ package commands
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
+	"github.com/QuentinPerez/c14-cli/pkg/utils/ssh"
+	"github.com/apex/log"
+	"github.com/dustin/go-humanize"
+	"github.com/pkg/sftp"
 )
 
 type lsFiles struct {
@@ -44,14 +49,31 @@ func (l *lsFiles) Run(args []string) (err error) {
 	var (
 		safe        api.OnlineGetSafe
 		bucket      api.OnlineGetBucket
+		sftpCred    sshUtils.Credentials
+		sftpConn    *sftp.Client
 		uuidArchive = args[0]
 	)
+
 	if safe, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchive, true); err != nil {
 		return
 	}
 	if bucket, err = l.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {
 		return
 	}
-	fmt.Println(bucket)
+	sftpCred.Host = strings.Split(bucket.Credentials[0].URI, "@")[1]
+	sftpCred.Password = bucket.Credentials[0].Password
+	sftpCred.User = bucket.Credentials[0].Login
+	if sftpConn, err = sftpCred.NewSFTPClient(); err != nil {
+		return
+	}
+	defer sftpConn.Close()
+	walker := sftpConn.Walk("/buffer")
+	for walker.Step() {
+		if err = walker.Err(); err != nil {
+			log.Debugf("%s", err)
+			continue
+		}
+		fmt.Println(walker.Stat().Name(), humanize.Bytes(uint64(walker.Stat().Size())))
+	}
 	return
 }

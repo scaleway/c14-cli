@@ -18,7 +18,7 @@ type removeFlags struct {
 func Remove() Command {
 	ret := &remove{}
 	ret.Init(Config{
-		UsageLine:   "remove [ARGS]+",
+		UsageLine:   "remove [ARCHIVE]+",
 		Description: "",
 		Help:        "",
 		Examples: `
@@ -32,6 +32,11 @@ func (r *remove) GetName() string {
 }
 
 func (r *remove) Run(args []string) (err error) {
+	if len(args) == 0 {
+		r.PrintUsage()
+		return
+	}
+
 	if err = r.InitAPI(); err != nil {
 		return
 	}
