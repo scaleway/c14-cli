@@ -67,6 +67,9 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 	}
 	if archive {
 		for indexSafe := range safes {
+			if safes[indexSafe].Status == "deleted" {
+				continue
+			}
 			wgSafe.Add(1)
 			go func(uuidSafe string, wgSafe *sync.WaitGroup) {
 				var (
@@ -89,7 +92,6 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 				wgSafe.Done()
 			}(safes[indexSafe].UUIDRef, &wgSafe)
 		}
-
 	}
 	wgSafe.Wait()
 	return
@@ -98,6 +100,10 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe OnlineGetSafe, uuidArchive string, err error) {
 	var (
 		safes []OnlineGetSafe
+		ret   []struct {
+			safe OnlineGetSafe
+			uuid string
+		}
 	)
 
 	if safes, err = o.GetSafes(useCache); err != nil {
@@ -108,16 +114,30 @@ func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe
 		var (
 			archives []OnlineGetArchive
 		)
-		if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
-			for indexArchive := range archives {
-				if archive == archives[indexArchive].UUIDRef || archive == archives[indexArchive].Name {
-					safe = safes[indexSafe]
-					uuidArchive = archives[indexArchive].UUIDRef
-					return
+		if safes[indexSafe].Status != "deleted" {
+			if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
+				for indexArchive := range archives {
+					if archive == archives[indexArchive].UUIDRef || archive == archives[indexArchive].Name {
+						ret = append(ret, struct {
+							safe OnlineGetSafe
+							uuid string
+						}{
+							safes[indexSafe],
+							archives[indexArchive].UUIDRef,
+						})
+					}
 				}
 			}
 		}
 	}
-	err = errors.Errorf("Archive %s not found", archive)
+	switch len(ret) {
+	case 0:
+		err = errors.Errorf("Archive %s not found", archive)
+	case 1:
+		safe = ret[0].safe
+		uuidArchive = ret[0].uuid
+	default:
+		err = errors.Errorf("Multiple candidate for %s", archive)
+	}
 	return
 }
