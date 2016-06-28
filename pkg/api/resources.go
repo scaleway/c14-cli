@@ -61,6 +61,14 @@ type OnlineGetLocation struct {
 	Name    string `json:"name"`
 }
 
+type OnlineGetJob struct {
+	// _ref     string `json:"$ref"`
+	Progress int    `json:"progress"`
+	Status   string `json:"status"`
+	Type     string `json:"type"`
+	UUIDRef  string `json:"uuid_ref"`
+}
+
 /*
  * Post
  */

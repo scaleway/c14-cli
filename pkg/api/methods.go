@@ -137,6 +137,20 @@ func (o *OnlineAPI) GetLocations(uuidSafe, uuidArchive string) (loc []OnlineGetL
 	return
 }
 
+func (o *OnlineAPI) GetJobs(uuidSafe, uuidArchive string) (jobs []OnlineGetJob, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/job", APIUrl, uuidSafe, uuidArchive), &jobs); err != nil {
+		err = errors.Annotate(err, "GetJobs")
+	}
+	return
+}
+
+func (o *OnlineAPI) GetJob(uuidSafe, uuidArchive, uuidJob string) (job OnlineGetJob, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/job/%s", APIUrl, uuidSafe, uuidArchive, uuidJob), &job); err != nil {
+		err = errors.Annotate(err, "GetJobs")
+	}
+	return
+}
+
 /*
  * Create Functions
  */
