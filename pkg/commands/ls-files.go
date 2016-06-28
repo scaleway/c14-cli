@@ -34,15 +34,19 @@ func LsFiles() Command {
 	return ret
 }
 
+func (l *lsFiles) CheckFlags(args []string) (err error) {
+	if len(args) == 0 {
+		l.PrintUsage()
+		os.Exit(1)
+	}
+	return
+}
+
 func (l *lsFiles) GetName() string {
 	return "ls-files"
 }
 
 func (l *lsFiles) Run(args []string) (err error) {
-	if len(args) == 0 {
-		l.PrintUsage()
-		return
-	}
 	if err = l.InitAPI(); err != nil {
 		return
 	}

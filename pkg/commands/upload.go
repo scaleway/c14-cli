@@ -44,7 +44,7 @@ func Upload() Command {
 func (u *upload) CheckFlags(args []string) (err error) {
 	if len(args) < 2 {
 		u.PrintUsage()
-		os.Exit(0)
+		os.Exit(1)
 	}
 	return
 }

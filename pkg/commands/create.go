@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
@@ -41,6 +42,11 @@ func (c *create) GetName() string {
 }
 
 func (c *create) CheckFlags(args []string) (err error) {
+	if len(args) != 0 {
+		c.PrintUsage()
+		os.Exit(1)
+	}
+
 	if c.flName == "" {
 		c.flName = namesgenerator.GetRandomName(0)
 	}

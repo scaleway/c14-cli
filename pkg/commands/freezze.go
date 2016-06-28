@@ -39,7 +39,7 @@ func (f *freeze) GetName() string {
 func (f *freeze) CheckFlags(args []string) (err error) {
 	if len(args) == 0 {
 		f.PrintUsage()
-		os.Exit(0)
+		os.Exit(1)
 	}
 	return
 }
