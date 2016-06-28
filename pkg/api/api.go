@@ -105,15 +105,17 @@ func (o *OnlineAPI) deleteWrapper(uri string) (err error) {
 	return
 }
 
-func (o *OnlineAPI) postWrapper(uri string, content interface{}) (body []byte, err error) {
+func (o *OnlineAPI) postWrapper(uri string, content interface{}, goodStatusCode ...[]int) (body []byte, err error) {
 	var (
 		resp    *http.Response
 		payload = new(bytes.Buffer)
 	)
 
 	encoder := json.NewEncoder(payload)
-	if err = encoder.Encode(content); err != nil {
-		return
+	if content != nil {
+		if err = encoder.Encode(content); err != nil {
+			return
+		}
 	}
 	resp, err = o.response("POST", uri, payload)
 	if resp != nil {
@@ -123,7 +125,11 @@ func (o *OnlineAPI) postWrapper(uri string, content interface{}) (body []byte, e
 		err = errors.Annotatef(err, "Unable to post %s", uri)
 		return
 	}
-	body, err = o.handleHTTPError([]int{201}, resp)
+	goodStatus := []int{201}
+	if len(goodStatusCode) > 0 {
+		goodStatus = goodStatusCode[0]
+	}
+	body, err = o.handleHTTPError(goodStatus, resp)
 	return
 }
 
