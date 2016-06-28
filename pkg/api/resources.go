@@ -78,3 +78,9 @@ type OnlinePostArchive struct {
 	Platforms   []string `json:"platforms"`
 	Days        int      `json:"days"`
 }
+
+type OnlinePostUnArchive struct {
+	Protocols  []string `json:"protocols"`
+	SSHKeys    []string `json:"ssh_keys"`
+	LocationID string   `json:"location_id"`
+}

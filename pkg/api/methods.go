@@ -188,6 +188,20 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 	return
 }
 
+func (o *OnlineAPI) PostArchive(uuidSafe, uuidArchive string) (err error) {
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/archive", APIUrl, uuidSafe, uuidArchive), nil, []int{202}); err != nil {
+		err = errors.Annotate(err, "PostArchive")
+	}
+	return
+}
+
+func (o *OnlineAPI) PostUnArchive(uuidSafe, uuidArchive string, data OnlinePostUnArchive) (err error) {
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/unarchive", APIUrl, uuidSafe, uuidArchive), data, []int{202}); err != nil {
+		err = errors.Annotate(err, "PostUnArchive")
+	}
+	return
+}
+
 /*
  * Delete Functions
  */
