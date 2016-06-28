@@ -27,6 +27,7 @@ func init() {
 	Root = &root{
 		commands: []Command{
 			Create(),
+			Freeze(),
 			Help(),
 			List(),
 			Login(),
