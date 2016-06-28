@@ -57,10 +57,19 @@ func (b *Base) Init(c Config) {
 
 // InitAPI initiates the Online API with the credentials
 func (b *Base) InitAPI() (err error) {
-	var c *auth.Credentials
+	var (
+		c            *auth.Credentials
+		privateToken string
+	)
 
-	if c, err = auth.GetCredentials(); err != nil {
-		return
+	if privateToken = os.Getenv("C14_PRIVATE_TOKEN"); privateToken != "" {
+		c = &auth.Credentials{
+			AccessToken: privateToken,
+		}
+	} else {
+		if c, err = auth.GetCredentials(); err != nil {
+			return
+		}
 	}
 	b.OnlineAPI = api.NewC14API(oauth2.NewClient(oauth2.NoContext, c), version.UserAgent, Root.Verbose)
 	return
