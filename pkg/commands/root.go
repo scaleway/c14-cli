@@ -34,6 +34,7 @@ func init() {
 			LsFiles(),
 			Remove(),
 			Test(),
+			Unfreeze(),
 			Upload(),
 		},
 	}
