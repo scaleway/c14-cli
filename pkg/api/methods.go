@@ -128,6 +128,13 @@ func (o *OnlineAPI) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBuc
 	return
 }
 
+func (o *OnlineAPI) GetLocations(uuidSafe, uuidArchive string) (loc []OnlineGetLocation, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/location", APIUrl, uuidSafe, uuidArchive), &loc); err != nil {
+		err = errors.Annotate(err, "GetLocation")
+	}
+	return
+}
+
 /*
  * Create Functions
  */

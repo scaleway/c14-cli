@@ -54,6 +54,12 @@ type OnlineGetBucket struct {
 	UUIDRef      string                    `json:"uuid_ref"`
 }
 
+type OnlineGetLocation struct {
+	// _ref         string `json:"$ref"`
+	UUIDRef string `json:"uuid_ref"`
+	Name    string `json:"name"`
+}
+
 /*
  * Post
  */
