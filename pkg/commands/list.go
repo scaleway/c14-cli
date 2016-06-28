@@ -3,7 +3,9 @@ package commands
 import (
 	"fmt"
 	"os"
+	"sync"
 	"text/tabwriter"
+	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
 )
@@ -32,7 +34,7 @@ func List() Command {
 	})
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Only display UUIDs")
 	ret.Flags.BoolVar(&ret.flPlatform, []string{"p", "-platform"}, false, "Show the platforms")
-	ret.Flags.BoolVar(&ret.flAll, []string{"a", "-all"}, false, "Show all archives (default shows !deleted) ")
+	ret.Flags.BoolVar(&ret.flAll, []string{"a", "-all"}, false, "Show all information on archives")
 	return ret
 }
 
@@ -90,6 +92,7 @@ func (l *list) Run(args []string) (err error) {
 func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	var (
 		archives []api.OnlineGetArchive
+		archive  api.OnlineGetArchive
 		err      error
 		w        *tabwriter.Writer
 	)
@@ -97,7 +100,26 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	w = tabwriter.NewWriter(os.Stdout, 20, 1, 3, ' ', 0)
 	defer w.Flush()
 	if !l.flQuiet {
-		fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
+		if l.flAll {
+			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tPARITY\tCREATION DATE\tSIZE\tDESCRIPTION\n")
+			wait := sync.WaitGroup{}
+
+			for i := range val {
+				archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)
+				if err == nil {
+					for j := range archives {
+						wait.Add(1)
+						go func(uuidSafe, uuidArchive string, w *sync.WaitGroup) {
+							l.OnlineAPI.GetArchive(uuidSafe, uuidArchive, false)
+							w.Done()
+						}(val[i].UUIDRef, archives[j].UUIDRef, &wait)
+					}
+				}
+			}
+			wait.Wait()
+		} else {
+			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
+		}
 	}
 	for i := range val {
 		archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)
@@ -107,8 +129,12 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 					fmt.Fprintf(w, "%s\n", archives[j].UUIDRef)
 				} else {
 					if l.flAll {
-						fmt.Fprintf(w, "%s\t%s\t%s\n", archives[j].Name, archives[j].Status, archives[j].UUIDRef)
-					} else if archives[j].Status != "deleted" {
+						if archive, err = l.OnlineAPI.GetArchive(val[i].UUIDRef, archives[j].UUIDRef, true); err != nil {
+							return
+						}
+						t, _ := time.Parse(time.RFC3339, archive.CreationDate)
+						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, t.Format(time.Stamp), archive.Size, archive.Description)
+					} else {
 						fmt.Fprintf(w, "%s\t%s\t%s\n", archives[j].Name, archives[j].Status, archives[j].UUIDRef)
 					}
 				}

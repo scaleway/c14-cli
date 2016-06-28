@@ -36,6 +36,7 @@ type OnlineGetArchive struct {
 	Parity       string `json:"parity"`
 	Status       string `json:"status"`
 	UUIDRef      string `json:"uuid_ref"`
+	Size         string `json:"size"`
 }
 
 type OnlineBucketCredentials struct {

@@ -96,13 +96,15 @@ func (o *OnlineAPI) GetArchives(uuidSafe string, useCache bool) (archives []Onli
 	return
 }
 
-func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchive, err error) {
+func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string, useCache bool) (archive OnlineGetArchive, err error) {
 	var (
 		ok bool
 	)
 
-	if archive, ok = o.cache.GetArchive(uuidSafe, uuidArchive); ok {
-		return
+	if useCache {
+		if archive, ok = o.cache.GetArchive(uuidSafe, uuidArchive); ok {
+			return
+		}
 	}
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive), &archive); err != nil {
 		err = errors.Annotate(err, "GetArchive")
@@ -184,7 +186,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		return
 	}
 	uuid = string(buff)
-	_, err = o.GetArchive(config.UUIDSafe, uuid)
+	_, err = o.GetArchive(config.UUIDSafe, uuid, false)
 	return
 }
 
