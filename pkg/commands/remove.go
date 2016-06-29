@@ -3,6 +3,7 @@ package commands
 import (
 	"sync"
 
+	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/apex/log"
 )
 
@@ -40,6 +41,8 @@ func (r *remove) Run(args []string) (err error) {
 	if err = r.InitAPI(); err != nil {
 		return
 	}
+	r.FetchRessources(true, false)
+
 	var wait sync.WaitGroup
 
 	for _, uuid := range args {
@@ -52,19 +55,18 @@ func (r *remove) Run(args []string) (err error) {
 
 func (r *remove) remove(wait *sync.WaitGroup, uuid string) (err error) {
 	defer wait.Done()
-	wait.Add(1)
-	go func() {
-		defer wait.Done()
-		var (
-			errSafe error
-		)
-		if _, errSafe = r.OnlineAPI.GetSafe(uuid); errSafe == nil {
-			if errSafe = r.OnlineAPI.DeleteSafe(uuid); errSafe != nil {
-				log.Errorf("%s: %s", uuid, errSafe)
-			}
-		} else {
-			log.Errorf("%s: %s", uuid, errSafe)
-		}
-	}()
+
+	var (
+		safe        api.OnlineGetSafe
+		uuidArchive string
+	)
+
+	if safe, uuidArchive, err = r.OnlineAPI.FindSafeUUIDFromArchive(uuid, true); err != nil {
+		log.Warnf("%s: %s", uuid, err)
+		return
+	}
+	if err = r.OnlineAPI.DeleteArchive(safe.UUIDRef, uuidArchive); err != nil {
+		log.Warnf("%s: %s", uuidArchive, err)
+	}
 	return
 }

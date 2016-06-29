@@ -146,7 +146,7 @@ func (o *OnlineAPI) GetJobs(uuidSafe, uuidArchive string) (jobs []OnlineGetJob, 
 
 func (o *OnlineAPI) GetJob(uuidSafe, uuidArchive, uuidJob string) (job OnlineGetJob, err error) {
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/job/%s", APIUrl, uuidSafe, uuidArchive, uuidJob), &job); err != nil {
-		err = errors.Annotate(err, "GetJobs")
+		err = errors.Annotate(err, "GetJob")
 	}
 	return
 }
