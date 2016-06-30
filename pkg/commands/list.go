@@ -101,7 +101,7 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	defer w.Flush()
 	if !l.flQuiet {
 		if l.flAll {
-			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tPARITY\tCREATION DATE\tSIZE\tDESCRIPTION\n")
+			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tPARITY\tUUID SAFE\tCREATION DATE\tSIZE\tDESCRIPTION\n")
 			wait := sync.WaitGroup{}
 
 			for i := range val {
@@ -133,7 +133,7 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 							return
 						}
 						t, _ := time.Parse(time.RFC3339, archive.CreationDate)
-						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, t.Format(time.Stamp), archive.Size, archive.Description)
+						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, val[i].UUIDRef, t.Format(time.Stamp), archive.Size, archive.Description)
 					} else {
 						fmt.Fprintf(w, "%s\t%s\t%s\n", archives[j].Name, archives[j].Status, archives[j].UUIDRef)
 					}

@@ -23,9 +23,7 @@ func (o *OnlineAPI) GetSafes(useCache bool) (safes []OnlineGetSafe, err error) {
 		return
 	}
 	for _, safe := range safes {
-		if _, ok := o.cache.GetSafe(safe.UUIDRef); !ok {
-			o.cache.InsertSafe(safe.UUIDRef, safe)
-		}
+		o.cache.InsertSafe(safe.UUIDRef, safe)
 	}
 	return
 }
@@ -90,9 +88,7 @@ func (o *OnlineAPI) GetArchives(uuidSafe string, useCache bool) (archives []Onli
 		return
 	}
 	for _, archive := range archives {
-		if _, ok := o.cache.GetArchive(uuidSafe, archive.UUIDRef); !ok {
-			o.cache.InsertArchive(uuidSafe, archive.UUIDRef, archive)
-		}
+		o.cache.InsertArchive(uuidSafe, archive.UUIDRef, archive)
 	}
 	return
 }

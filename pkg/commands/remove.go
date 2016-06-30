@@ -41,7 +41,6 @@ func (r *remove) Run(args []string) (err error) {
 	if err = r.InitAPI(); err != nil {
 		return
 	}
-	r.FetchRessources(true, false)
 
 	var wait sync.WaitGroup
 
