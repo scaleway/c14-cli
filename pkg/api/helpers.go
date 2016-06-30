@@ -55,7 +55,7 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 }
 
 // FetchRessources get the ressources to fill the cache
-func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
+func (o *OnlineAPI) FetchRessources() (err error) {
 	var (
 		wgSafe sync.WaitGroup
 		safes  []OnlineGetSafe
@@ -65,33 +65,12 @@ func (o *OnlineAPI) FetchRessources(archive, bucket bool) (err error) {
 		err = errors.Annotate(err, "FetchRessources")
 		return
 	}
-	if archive {
-		for indexSafe := range safes {
-			if safes[indexSafe].Status == "deleted" {
-				continue
-			}
-			wgSafe.Add(1)
-			go func(uuidSafe string, wgSafe *sync.WaitGroup) {
-				var (
-					archives   []OnlineGetArchive
-					wgArchive  sync.WaitGroup
-					errArchive error
-				)
-
-				archives, errArchive = o.GetArchives(uuidSafe, false)
-				if bucket && errArchive == nil {
-					for indexArchive := range archives {
-						wgArchive.Add(1)
-						go func(uuidSafe, uuidArchive string, wgArchive *sync.WaitGroup) {
-							_, _ = o.GetBucket(uuidSafe, uuidArchive)
-							wgArchive.Done()
-						}(uuidSafe, archives[indexArchive].UUIDRef, &wgArchive)
-					}
-				}
-				wgArchive.Wait()
-				wgSafe.Done()
-			}(safes[indexSafe].UUIDRef, &wgSafe)
-		}
+	for indexSafe := range safes {
+		wgSafe.Add(1)
+		go func(uuidSafe string, wgSafe *sync.WaitGroup) {
+			_, _ = o.GetArchives(uuidSafe, false)
+			wgSafe.Done()
+		}(safes[indexSafe].UUIDRef, &wgSafe)
 	}
 	wgSafe.Wait()
 	return
@@ -114,18 +93,21 @@ func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe
 		var (
 			archives []OnlineGetArchive
 		)
-		if safes[indexSafe].Status != "deleted" {
-			if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
-				for indexArchive := range archives {
-					if archive == archives[indexArchive].UUIDRef || archive == archives[indexArchive].Name {
-						ret = append(ret, struct {
-							safe OnlineGetSafe
-							uuid string
-						}{
-							safes[indexSafe],
-							archives[indexArchive].UUIDRef,
-						})
-					}
+		if archives, err = o.GetArchives(safes[indexSafe].UUIDRef, useCache); err == nil {
+			for indexArchive := range archives {
+				if archive == archives[indexArchive].UUIDRef {
+					safe = safes[indexSafe]
+					uuidArchive = archives[indexArchive].UUIDRef
+					return
+				}
+				if archive == archives[indexArchive].Name {
+					ret = append(ret, struct {
+						safe OnlineGetSafe
+						uuid string
+					}{
+						safes[indexSafe],
+						archives[indexArchive].UUIDRef,
+					})
 				}
 			}
 		}

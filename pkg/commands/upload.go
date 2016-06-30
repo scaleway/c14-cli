@@ -64,22 +64,24 @@ func (u *upload) Run(args []string) (err error) {
 	if err = u.InitAPI(); err != nil {
 		return
 	}
-	u.FetchRessources(true, true)
 
 	var (
-		safe     api.OnlineGetSafe
-		bucket   api.OnlineGetBucket
-		sftpCred sshUtils.Credentials
-		sftpConn *sftp.Client
-		files    []uploadFile
+		safe        api.OnlineGetSafe
+		bucket      api.OnlineGetBucket
+		sftpCred    sshUtils.Credentials
+		sftpConn    *sftp.Client
+		files       []uploadFile
+		uuidArchive string
 	)
 
 	archive := args[len(args)-1]
 	args = args[:len(args)-1]
-	if safe, archive, err = u.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
-		return
+	if safe, uuidArchive, err = u.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
+		if safe, uuidArchive, err = u.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
+			return
+		}
 	}
-	if bucket, err = u.OnlineAPI.GetBucket(safe.UUIDRef, archive); err != nil {
+	if bucket, err = u.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {
 		return
 	}
 	sftpCred.Host = strings.Split(bucket.Credentials[0].URI, "@")[1]

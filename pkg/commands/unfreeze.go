@@ -44,7 +44,6 @@ func (f *unfreeze) Run(args []string) (err error) {
 	if err = f.InitAPI(); err != nil {
 		return
 	}
-	f.FetchRessources(true, false)
 
 	var (
 		safe        api.OnlineGetSafe
@@ -62,8 +61,11 @@ func (f *unfreeze) Run(args []string) (err error) {
 
 	for _, archive := range args {
 		if safe, uuidArchive, err = f.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
-			return
+			if safe, uuidArchive, err = f.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
+				return
+			}
 		}
+
 		var (
 			loc []api.OnlineGetLocation
 		)

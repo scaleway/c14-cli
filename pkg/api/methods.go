@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/juju/errors"
 )
@@ -12,18 +13,18 @@ import (
 
 // GetSafes returns a list of safe
 func (o *OnlineAPI) GetSafes(useCache bool) (safes []OnlineGetSafe, err error) {
-	if safes, err = o.cache.CopySafes(); err == nil {
-		return
-	}
-	if !useCache {
-		if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), &safes); err != nil {
-			err = errors.Annotate(err, "GetSafes")
+	if useCache {
+		if safes, err = o.cache.CopySafes(); err == nil {
 			return
 		}
-		for _, safe := range safes {
-			if _, ok := o.cache.GetSafe(safe.UUIDRef); !ok {
-				o.cache.InsertSafe(safe.UUIDRef, safe)
-			}
+	}
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), &safes); err != nil {
+		err = errors.Annotate(err, "GetSafes")
+		return
+	}
+	for _, safe := range safes {
+		if _, ok := o.cache.GetSafe(safe.UUIDRef); !ok {
+			o.cache.InsertSafe(safe.UUIDRef, safe)
 		}
 	}
 	return
@@ -79,18 +80,18 @@ func (o *OnlineAPI) GetSSHKey(uuid string) (key OnlineGetSSHKey, err error) {
 }
 
 func (o *OnlineAPI) GetArchives(uuidSafe string, useCache bool) (archives []OnlineGetArchive, err error) {
-	if archives, err = o.cache.CopyArchives(uuidSafe); err == nil {
-		return
-	}
-	if !useCache {
-		if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, uuidSafe), &archives); err != nil {
-			err = errors.Annotate(err, "GetArchives")
+	if useCache {
+		if archives, err = o.cache.CopyArchives(uuidSafe); err == nil {
 			return
 		}
-		for _, archive := range archives {
-			if _, ok := o.cache.GetArchive(uuidSafe, archive.UUIDRef); !ok {
-				o.cache.InsertArchive(uuidSafe, archive.UUIDRef, archive)
-			}
+	}
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, uuidSafe), &archives); err != nil {
+		err = errors.Annotate(err, "GetArchives")
+		return
+	}
+	for _, archive := range archives {
+		if _, ok := o.cache.GetArchive(uuidSafe, archive.UUIDRef); !ok {
+			o.cache.InsertArchive(uuidSafe, archive.UUIDRef, archive)
 		}
 	}
 	return
@@ -115,18 +116,9 @@ func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string, useCache bool) (arc
 }
 
 func (o *OnlineAPI) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBucket, err error) {
-	var (
-		ok bool
-	)
-
-	if bucket, ok = o.cache.GetBucket(uuidSafe, uuidArchive); ok {
-		return
-	}
 	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/bucket", APIUrl, uuidSafe, uuidArchive), &bucket); err != nil {
 		err = errors.Annotate(err, "GetBucket")
-		return
 	}
-	o.cache.InsertBucket(uuidSafe, uuidArchive, bucket)
 	return
 }
 
@@ -167,7 +159,7 @@ func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 		err = errors.Annotate(err, "CreateSafe")
 		return
 	}
-	uuid = string(buff)
+	uuid = strings.Trim(string(buff), `"`)
 	_, err = o.GetSafe(uuid)
 	return
 }
@@ -199,7 +191,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		err = errors.Annotate(err, "CreateArchive")
 		return
 	}
-	uuid = string(buff)
+	uuid = strings.Trim(string(buff), `"`)
 	_, err = o.GetArchive(config.UUIDSafe, uuid, false)
 	return
 }

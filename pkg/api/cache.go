@@ -1,21 +1,25 @@
 package api
 
 import (
-	"errors"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"os/user"
+	"runtime"
 	"sync"
 
 	"github.com/apex/log"
+	"github.com/juju/errors"
 )
 
 type cacheArchive struct {
-	archive *OnlineGetArchive
-	bucket  *OnlineGetBucket
+	Archive *OnlineGetArchive
 }
 
 type cacheSafe struct {
-	safe    OnlineGetSafe
-	archive map[string]cacheArchive
+	Safe    OnlineGetSafe
+	Archive map[string]cacheArchive
 }
 
 type cache struct {
@@ -23,11 +27,59 @@ type cache struct {
 	sync.RWMutex
 }
 
+func getCachePath() (path string, err error) {
+	var u *user.User
+
+	u, err = user.Current()
+	if err != nil {
+		err = errors.Trace(err)
+		return
+	}
+	path = fmt.Sprintf("%s/.c14-cache", u.HomeDir)
+	return
+}
+
 func NewCache() (c *cache) {
-	c = &cache{
-		safes: make(map[string]cacheSafe),
+	var (
+		path        string
+		fileContent []byte
+		err         error
+	)
+	c = &cache{safes: make(map[string]cacheSafe)}
+	if path, err = getCachePath(); err == nil {
+		// Don't check permissions on Windows
+		if runtime.GOOS != "windows" {
+			stat, errStat := os.Stat(path)
+			if errStat == nil {
+				perm := stat.Mode().Perm()
+				if perm&0066 != 0 {
+					log.Debugf("Permissions %#o for %v are too open", perm, path)
+					return
+				}
+			} else {
+				return
+			}
+		}
+		if fileContent, err = ioutil.ReadFile(path); err != nil {
+			return
+		}
+		json.Unmarshal(fileContent, &c.safes)
 	}
 	return
+}
+
+func (c *cache) Save() {
+	var (
+		path string
+		err  error
+		data []byte
+	)
+
+	if path, err = getCachePath(); err == nil {
+		if data, err = json.Marshal(c.safes); err == nil {
+			_ = ioutil.WriteFile(path, data, 0600)
+		}
+	}
 }
 
 func (c *cache) GetSafe(uuid string) (safe OnlineGetSafe, ok bool) {
@@ -37,7 +89,7 @@ func (c *cache) GetSafe(uuid string) (safe OnlineGetSafe, ok bool) {
 
 	c.RLock()
 	if safeCache, ok = c.safes[uuid]; ok {
-		safe = safeCache.safe
+		safe = safeCache.Safe
 	}
 	c.RUnlock()
 	return
@@ -51,7 +103,7 @@ func (c *cache) CopySafes() (safes []OnlineGetSafe, err error) {
 		i := 0
 		safes = make([]OnlineGetSafe, length)
 		for _, val := range c.safes {
-			safes[i] = val.safe
+			safes[i] = val.Safe
 			i++
 		}
 	}
@@ -62,14 +114,14 @@ func (c *cache) CopySafes() (safes []OnlineGetSafe, err error) {
 func (c *cache) CopyArchives(uuidSafe string) (archives []OnlineGetArchive, err error) {
 	c.RLock()
 	// force panic if uuidSafe do not exist
-	mapArchives := c.safes[uuidSafe].archive
+	mapArchives := c.safes[uuidSafe].Archive
 	if length := len(mapArchives); length == 0 {
 		err = errors.New("No cache")
 	} else {
 		i := 0
 		archives = make([]OnlineGetArchive, length)
 		for _, val := range mapArchives {
-			archives[i] = *val.archive
+			archives[i] = *val.Archive
 			i++
 		}
 	}
@@ -80,9 +132,10 @@ func (c *cache) CopyArchives(uuidSafe string) (archives []OnlineGetArchive, err 
 func (c *cache) InsertSafe(uuid string, safe OnlineGetSafe) {
 	c.Lock()
 	c.safes[uuid] = cacheSafe{
-		safe:    safe,
-		archive: make(map[string]cacheArchive),
+		Safe:    safe,
+		Archive: make(map[string]cacheArchive),
 	}
+	c.Save()
 	c.Unlock()
 }
 
@@ -93,8 +146,8 @@ func (c *cache) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchi
 
 	c.RLock()
 	// force panic if uuidSafe do not exist
-	if archiveCache, ok = c.safes[uuidSafe].archive[uuidArchive]; ok && archiveCache.archive != nil {
-		archive = *archiveCache.archive
+	if archiveCache, ok = c.safes[uuidSafe].Archive[uuidArchive]; ok && archiveCache.Archive != nil {
+		archive = *archiveCache.Archive
 	} else {
 		ok = false
 	}
@@ -108,43 +161,11 @@ func (c *cache) InsertArchive(uuidSafe, uuidArchive string, archive OnlineGetArc
 
 	c.Lock()
 	// force panic if uuidSafe do not exist
-	val := c.safes[uuidSafe].archive[uuidArchive]
 	log.Debugf("InsertArchive %s", uuidArchive)
-	c.safes[uuidSafe].archive[uuidArchive] = cacheArchive{
-		archive: newArchive,
-		bucket:  val.bucket,
+	c.safes[uuidSafe].Archive[uuidArchive] = cacheArchive{
+		Archive: newArchive,
 	}
-	c.Unlock()
-}
-
-func (c *cache) GetBucket(uuidSafe, uuidArchive string) (bucket OnlineGetBucket, ok bool) {
-	var (
-		archiveCache cacheArchive
-	)
-
-	c.RLock()
-	// force panic if uuidSafe do not exist
-	if archiveCache, ok = c.safes[uuidSafe].archive[uuidArchive]; ok && archiveCache.bucket != nil {
-		bucket = *archiveCache.bucket
-	} else {
-		ok = false
-	}
-	c.RUnlock()
-	return
-}
-
-func (c *cache) InsertBucket(uuidSafe, uuidArchive string, bucket OnlineGetBucket) {
-	newBucket := new(OnlineGetBucket)
-	*newBucket = bucket
-
-	c.Lock()
-	// force panic if uuidSafe do not exist
-	val := c.safes[uuidSafe].archive[uuidArchive]
-	log.Debugf("InsertBucket %s:%s", uuidSafe, uuidArchive)
-	c.safes[uuidSafe].archive[uuidArchive] = cacheArchive{
-		archive: val.archive,
-		bucket:  newBucket,
-	}
+	c.Save()
 	c.Unlock()
 }
 
@@ -152,8 +173,8 @@ func (c *cache) DisplayCache() {
 	c.RLock()
 	for key, val := range c.safes {
 		fmt.Println(key)
-		for key2, val2 := range val.archive {
-			fmt.Println("    ", key2, val2.archive, val2.bucket)
+		for key2, val2 := range val.Archive {
+			fmt.Println("    ", key2, val2.Archive)
 		}
 	}
 	c.RUnlock()

@@ -50,18 +50,19 @@ func (l *lsFiles) Run(args []string) (err error) {
 	if err = l.InitAPI(); err != nil {
 		return
 	}
-	l.FetchRessources(true, true)
 
 	var (
-		safe        api.OnlineGetSafe
-		bucket      api.OnlineGetBucket
-		sftpCred    sshUtils.Credentials
-		sftpConn    *sftp.Client
-		uuidArchive = args[0]
+		safe                         api.OnlineGetSafe
+		bucket                       api.OnlineGetBucket
+		sftpCred                     sshUtils.Credentials
+		sftpConn                     *sftp.Client
+		uuidArchive, uuidArchiveSave = args[0], args[0]
 	)
 
-	if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchive, true); err != nil {
-		return
+	if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchiveSave, true); err != nil {
+		if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchiveSave, false); err != nil {
+			return
+		}
 	}
 	if bucket, err = l.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {
 		return

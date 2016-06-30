@@ -27,7 +27,7 @@ func List() Command {
 	ret.Init(Config{
 		UsageLine:   "list [OPTIONS]",
 		Description: "List archives",
-		Help:        "List archives. By default, only archive which are not deleted.",
+		Help:        "List archives.",
 		Examples: `
         $ c14 list
         $ c14 list 83b93179-32e0-11e6-be10-10604b9b0ad9`,
@@ -65,7 +65,7 @@ func (l *list) Run(args []string) (err error) {
 		}
 		l.displayPlatforms(val)
 	} else {
-		l.OnlineAPI.FetchRessources(true, true)
+		l.OnlineAPI.FetchRessources()
 
 		var (
 			safes []api.OnlineGetSafe
