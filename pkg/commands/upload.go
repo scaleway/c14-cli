@@ -72,6 +72,7 @@ func (u *upload) Run(args []string) (err error) {
 		sftpConn    *sftp.Client
 		files       []uploadFile
 		uuidArchive string
+		padding     int
 	)
 
 	archive := args[len(args)-1]
@@ -100,11 +101,11 @@ func (u *upload) Run(args []string) (err error) {
 		)
 
 		if f, err = os.Open(file); err != nil {
-			log.Warnf("%s: %s", file, err)
+			log.Warnf("Open %s: %s", file, err)
 			continue
 		}
 		if info, err = f.Stat(); err != nil {
-			log.Warnf("%s: %s", file, err)
+			log.Warnf("Stat %s: %s", file, err)
 			f.Close()
 			continue
 		}
@@ -113,29 +114,50 @@ func (u *upload) Run(args []string) (err error) {
 			walker := fs.Walk(file)
 			for walker.Step() {
 				if err = walker.Err(); err != nil {
-					log.Warnf("%s: %s", walker.Path(), err)
+					log.Warnf("Walker %s: %s", walker.Path(), err)
 					f.Close()
 					continue
 				}
+				name := walker.Path()
+				for name[0] == '/' {
+					name = name[1:]
+				}
 				if walker.Stat().Mode().IsDir() {
-					if err = sftpConn.Mkdir(walker.Path()); err != nil {
+					if err = sftpConn.Mkdir("/buffer/" + name); err != nil {
+						if err.Error() == "file does not exist" { // bad :/
+							sp := strings.Split(name, "/")
+							path := sp[0]
+							for i, n := range sp {
+								if i != 0 {
+									path = path + "/" + n
+								}
+								sftpConn.Mkdir("/buffer/" + path)
+							}
+						}
 						continue
 					}
 					f.Close()
 				} else if walker.Stat().Mode().IsRegular() {
+					if len(name) > padding {
+						padding = len(name)
+					}
 					files = append(files, uploadFile{
 						FileFD: f,
 						Info:   info,
-						Name:   walker.Path(),
+						Name:   name,
 						Path:   walker.Path(),
 					})
 				}
 			}
 		case mode.IsRegular():
+			name := filepath.Base(file)
+			if len(name) > padding {
+				padding = len(name)
+			}
 			files = append(files, uploadFile{
 				FileFD: f,
 				Info:   info,
-				Name:   filepath.Base(file),
+				Name:   name,
 				Path:   file,
 			})
 		}
@@ -149,17 +171,17 @@ func (u *upload) Run(args []string) (err error) {
 		if reader, err = os.Open(file.Path); err != nil {
 			reader.Close()
 			file.FileFD.Close()
-			log.Warnf("%s: %s", file.Path, err)
+			log.Warnf("reader Open %s: %s", file.Path, err)
 			continue
 		}
 		if info, err = reader.Stat(); err != nil {
 			reader.Close()
 			file.FileFD.Close()
-			log.Warnf("%s: %s", file.Path, err)
+			log.Warnf("reader Stat %s: %s", file.Path, err)
 			continue
 		}
-		if err = u.uploadAFile(sftpConn, reader, file.Name, info.Size()); err != nil {
-			log.Warnf("%s: %s", file.Path, err)
+		if err = u.uploadAFile(sftpConn, reader, file.Name, info.Size(), padding); err != nil {
+			log.Warnf("upload %s: %s", file.Path, err)
 		}
 		file.FileFD.Close()
 		reader.Close()
@@ -168,22 +190,26 @@ func (u *upload) Run(args []string) (err error) {
 	return
 }
 
-func (u *upload) uploadAFile(c *sftp.Client, reader io.ReadCloser, file string, size int64) (err error) {
+func (u *upload) uploadAFile(c *sftp.Client, reader io.ReadCloser, file string, size int64, padding int) (err error) {
 	log.Debugf("Upload %s -> /buffer/%s", file, file)
 
 	var (
-		buff   = make([]byte, 1<<22)
+		buff   = make([]byte, 1<<23)
 		nr, nw int
 		w      *sftp.File
 	)
-
-	sf := streamformatter.NewStreamFormatter()
-	progressBarOutput := sf.NewProgressOutput(os.Stdout, true)
-	rc := progress.NewProgressReader(reader, progressBarOutput, size, "", file)
-	defer rc.Close()
 	if w, err = c.Create(fmt.Sprintf("/buffer/%s", file)); err != nil {
 		return
 	}
+	defer w.Close()
+	if size == 0 {
+		log.Warnf("upload %s is empty", file)
+		return
+	}
+	sf := streamformatter.NewStreamFormatter()
+	progressBarOutput := sf.NewProgressOutput(os.Stdout, true)
+	rc := progress.NewProgressReader(reader, progressBarOutput, size, "", fmt.Sprintf("%-*s", padding, file))
+	defer rc.Close()
 	for {
 		nr, err = rc.Read(buff)
 		if err != nil {
