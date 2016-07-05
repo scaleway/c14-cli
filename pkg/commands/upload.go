@@ -1,5 +1,7 @@
 package commands
 
+// TODO: Refactor the upload for something more generic
+
 import (
 	"fmt"
 	"io"
@@ -7,11 +9,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/crypto/ssh/terminal"
+
 	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/QuentinPerez/c14-cli/pkg/utils/ssh"
 	"github.com/apex/log"
 	"github.com/docker/docker/pkg/progress"
 	"github.com/docker/docker/pkg/streamformatter"
+	"github.com/dustin/go-humanize"
 	"github.com/kr/fs"
 	"github.com/pkg/errors"
 	"github.com/pkg/sftp"
@@ -19,30 +24,52 @@ import (
 
 type upload struct {
 	Base
+	isPiped bool
 	uploadFlags
 }
 
 type uploadFlags struct {
+	flTar  bool
+	flName string
 }
 
 // Upload returns a new command "upload"
 func Upload() Command {
 	ret := &upload{}
 	ret.Init(Config{
-		UsageLine:   "upload [DIR|FILE]+ ARCHIVE",
+		UsageLine:   "upload [DIR|FILE]* ARCHIVE",
 		Description: "Upload your file or directory into an archive",
 		Help:        "Upload your file or directory into an archive.",
 		Examples: `
         $ c14 upload
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
         $ c14 upload /upload 83b93179-32e0-11e6-be10-10604b9b0ad9
+        $ tar cvf - /upload 2> /dev/null | ./c14 upload --tar --name "file.tar.gz" fervent_austin
 `,
 	})
+	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
+	ret.Flags.BoolVar(&ret.flTar, []string{"-tar"}, false, "Read a tar form stdin")
 	return ret
 }
 
 func (u *upload) CheckFlags(args []string) (err error) {
-	if len(args) < 2 {
+	u.isPiped = !terminal.IsTerminal(int(os.Stdin.Fd()))
+	nbArgs := 1
+
+	if !u.isPiped {
+		nbArgs = 2
+	} else {
+		if u.flTar {
+			if u.flName == "" {
+				err = errors.Errorf("You need to specified a name")
+				return
+			}
+		} else {
+			err = errors.Errorf("For now you can only read a tar archive from Stdin, (--tar)")
+			return
+		}
+	}
+	if len(args) < nbArgs {
 		u.PrintUsage()
 		os.Exit(1)
 	}
@@ -94,6 +121,9 @@ func (u *upload) Run(args []string) (err error) {
 	defer sftpCred.Close()
 	defer sftpConn.Close()
 
+	if u.isPiped {
+		return u.pipedUpload(sftpConn)
+	}
 	for _, file := range args {
 		var (
 			f    *os.File
@@ -224,6 +254,41 @@ func (u *upload) uploadAFile(c *sftp.Client, reader io.ReadCloser, file string, 
 		if nw != nr {
 			err = errors.Errorf("Error during write")
 			return
+		}
+	}
+	return
+}
+
+func (u *upload) pipedUpload(c *sftp.Client) (err error) {
+	if u.flTar {
+		var (
+			buff   = make([]byte, 1<<23)
+			nr, nw int
+			total  uint64
+			w      *sftp.File
+		)
+
+		if w, err = c.Create(fmt.Sprintf("/buffer/%s", u.flName)); err != nil {
+			return
+		}
+		for {
+			nr, err = os.Stdin.Read(buff)
+			if err != nil {
+				if err == io.EOF {
+					err = nil
+				}
+				break
+			}
+			if nw, err = w.Write(buff[:nr]); err != nil {
+				return
+			}
+			if nw != nr {
+				err = errors.Errorf("Error during write")
+				return
+			}
+			total += uint64(nr)
+			fmt.Printf("\rUploading \t%s", humanize.Bytes(total))
+
 		}
 	}
 	return

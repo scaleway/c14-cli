@@ -43,7 +43,7 @@ func (f *freeze) Run(args []string) (err error) {
 	if err = f.InitAPI(); err != nil {
 		return
 	}
-	f.FetchRessources(true, false)
+	// f.FetchRessources(true, false)
 
 	var (
 		safe        api.OnlineGetSafe
