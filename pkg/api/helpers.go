@@ -123,3 +123,7 @@ func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe
 	}
 	return
 }
+
+func (o *OnlineAPI) CleanUpCache() {
+	o.cache = CleanUp()
+}

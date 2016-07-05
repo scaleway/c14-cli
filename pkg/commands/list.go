@@ -65,6 +65,7 @@ func (l *list) Run(args []string) (err error) {
 		}
 		l.displayPlatforms(val)
 	} else {
+		l.OnlineAPI.CleanUpCache()
 		l.OnlineAPI.FetchRessources()
 
 		var (

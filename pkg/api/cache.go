@@ -39,13 +39,18 @@ func getCachePath() (path string, err error) {
 	return
 }
 
+func CleanUp() (c *cache) {
+	c = &cache{safes: make(map[string]cacheSafe)}
+	return
+}
+
 func NewCache() (c *cache) {
 	var (
 		path        string
 		fileContent []byte
 		err         error
 	)
-	c = &cache{safes: make(map[string]cacheSafe)}
+	c = CleanUp()
 	if path, err = getCachePath(); err == nil {
 		// Don't check permissions on Windows
 		if runtime.GOOS != "windows" {
