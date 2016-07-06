@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	"runtime"
 	"sync"
 
@@ -28,14 +27,14 @@ type cache struct {
 }
 
 func getCachePath() (path string, err error) {
-	var u *user.User
-
-	u, err = user.Current()
-	if err != nil {
-		err = errors.Trace(err)
-		return
+	homeDir := os.Getenv("HOME") // *nix
+	if homeDir == "" {           // Windows
+		homeDir = os.Getenv("USERPROFILE")
 	}
-	path = fmt.Sprintf("%s/.c14-cache", u.HomeDir)
+	if homeDir == "" {
+		return "", errors.New("user home directory not found")
+	}
+	path = fmt.Sprintf("%s/.c14-cache", homeDir)
 	return
 }
 

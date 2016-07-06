@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/user"
 	"runtime"
 
 	"golang.org/x/oauth2"
@@ -94,14 +93,14 @@ func GenerateCredentials(clientID, deviceCode string) (c Credentials, err error)
 }
 
 func getCredentialsPath() (path string, err error) {
-	var u *user.User
-
-	u, err = user.Current()
-	if err != nil {
-		err = errors.Trace(err)
-		return
+	homeDir := os.Getenv("HOME") // *nix
+	if homeDir == "" {           // Windows
+		homeDir = os.Getenv("USERPROFILE")
 	}
-	path = fmt.Sprintf("%s/.c14rc", u.HomeDir)
+	if homeDir == "" {
+		return "", errors.New("user home directory not found")
+	}
+	path = fmt.Sprintf("%s/.c14rc", homeDir)
 	return
 }
 
