@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
 	"github.com/juju/errors"
@@ -18,7 +17,6 @@ type login struct {
 }
 
 type loginFlags struct {
-	clientID string
 }
 
 // Login returns a new command "login"
@@ -32,7 +30,6 @@ containing informations to generate a token`,
 		Examples: `
     $ c14 login`,
 	})
-	ret.Flags.StringVar(&ret.clientID, []string{"-client-id"}, "", "Online's ClientID")
 	return ret
 }
 
@@ -45,34 +42,17 @@ func (l *login) Run(args []string) (err error) {
 		empty          string
 		authentication auth.Authentication
 		credentials    auth.Credentials
+		clientID       = "38320_2wln446j992cgo0088g04coo8gswkcws0c4sww0oo0ggs8kos8"
 	)
 
-	if l.clientID == "" {
-		if err = promptUser(`! You must provide a ClientID !
-
-Please opens this link with your web browser: https://console.online.net/en/api/apps
-You can create a new app with the following fields:
----
-    App name:    c14
-    Description: c14 cli
-    Permissions:
-        (c14)  Read/Write
-        (user) Read/Write
----
-Then copy the client_id here : `, &l.clientID, true); err != nil {
-			return
-		}
-	}
-	l.clientID = strings.Trim(l.clientID, "\r\n")
-	if authentication, err = auth.GetVerificationURL(l.clientID); err != nil {
+	if authentication, err = auth.GetVerificationURL(clientID); err != nil {
 		return
 	}
-	if err = promptUser(fmt.Sprintf(`
-Please opens this link with your browser: %v
+	if err = promptUser(fmt.Sprintf(`Please opens this link with your browser: %v
 Then copy paste the code %v (enter when is done) : `, authentication.VerficationURL, authentication.UserCode), &empty, true); err != nil {
 		return
 	}
-	if credentials, err = auth.GenerateCredentials(l.clientID, authentication.DeviceCode); err != nil {
+	if credentials, err = auth.GenerateCredentials(clientID, authentication.DeviceCode); err != nil {
 		return
 	}
 	err = credentials.Save()
