@@ -13,16 +13,23 @@ type Credentials struct {
 }
 
 func (c *Credentials) NewSFTPClient() (client *sftp.Client, err error) {
+	if _, err = c.NewSSHClient(); err != nil {
+		return
+	}
+
+	client, err = sftp.NewClient(c.sshClient)
+	return
+}
+
+func (c *Credentials) NewSSHClient() (*ssh.Client, error) {
 	sshConfig := &ssh.ClientConfig{
 		User: c.User,
 		Auth: []ssh.AuthMethod{ssh.Password(c.Password)},
 	}
 
-	if c.sshClient, err = ssh.Dial("tcp", c.Host, sshConfig); err != nil {
-		return
-	}
-	client, err = sftp.NewClient(c.sshClient)
-	return
+	var err error
+	c.sshClient, err = ssh.Dial("tcp", c.Host, sshConfig)
+	return c.sshClient, err
 }
 
 func (c *Credentials) Close() (err error) {

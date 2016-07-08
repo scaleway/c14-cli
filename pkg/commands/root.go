@@ -33,6 +33,7 @@ func init() {
 			Login(),
 			LsFiles(),
 			Remove(),
+			Shell(),
 			Test(),
 			Unfreeze(),
 			Upload(),
@@ -73,7 +74,7 @@ func (r *root) Parse() (err error) {
 			return
 		}
 	}
-	err = fmt.Errorf(`c14: unknow command %v
+	err = fmt.Errorf(`c14: unknown command %v
 Run 'c14 help' for usage`, args[0])
 	return
 }

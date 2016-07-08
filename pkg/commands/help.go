@@ -42,7 +42,7 @@ func (c *help) Run(args []string) (err error) {
 				return
 			}
 		}
-		err = fmt.Errorf("help: unknow command %v", args[0])
+		err = fmt.Errorf("help: unknown command %v", args[0])
 		return
 	}
 
