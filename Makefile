@@ -10,7 +10,7 @@ GODIR ?=	github.com/c14-cli
 
 NAME =		c14
 
-SOURCES :=	$(shell find . -type f -name "*.go" -not -path "./vendor")
+SOURCES :=	$(shell find . -type f -name "*.go" | grep -vE '^./vendor')
 COMMANDS :=	$(shell go list ./... | grep -v /vendor/ | grep /cmd/)
 PACKAGES :=	$(shell go list ./... | grep -v /vendor/ | grep -v /cmd/)
 REV =		$(shell git rev-parse --short HEAD 2> /dev/null || echo "commit")
