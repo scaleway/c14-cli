@@ -1,0 +1,29 @@
+package: github.com/QuentinPerez/c14-cli
+import:
+- package: github.com/apex/log
+  subpackages:
+  - handlers/text
+- package: github.com/docker/docker
+  subpackages:
+  - pkg/mflag
+  - pkg/namesgenerator
+  - pkg/progress
+  - pkg/streamformatter
+- package: github.com/dustin/go-humanize
+- package: github.com/juju/errors
+- package: github.com/kr/fs
+- package: github.com/pkg/errors
+- package: github.com/pkg/sftp
+- package: golang.org/x/crypto
+  subpackages:
+  - ssh
+  - ssh/terminal
+- package: golang.org/x/oauth2
+- package: github.com/QuentinPerez/go-encodeUrl
+- package: github.com/docker/go-units
+- package: github.com/opencontainers/runc
+  subpackages:
+  - libcontainer/user
+- package: golang.org/x/net
+  subpackages:
+  - context

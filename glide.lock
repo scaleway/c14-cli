@@ -1,0 +1,44 @@
+hash: 572b4a2c763b96393f696c40beb24e847cc4ebeca308bd18f0a35999dec57ee1
+updated: 2016-07-08T17:36:20.280055173+02:00
+imports:
+- name: github.com/apex/log
+  version: b1e79133760230411cd375d802bec4e87db20031
+  subpackages:
+  - handlers/text
+- name: github.com/docker/docker
+  version: dd1a27ce2af1b2e7db5e11a1b82a1248cc23dea3
+  subpackages:
+  - pkg/mflag
+  - pkg/namesgenerator
+  - pkg/progress
+  - pkg/streamformatter
+- name: github.com/docker/go-units
+  version: f2d77a61e3c169b43402a0a1e84f06daf29b8190
+- name: github.com/dustin/go-humanize
+  version: fef948f2d241bd1fd0631108ecc2c9553bae60bf
+- name: github.com/juju/errors
+  version: b2c7a7da5b2995941048f60146e67702a292e468
+- name: github.com/kr/fs
+  version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
+- name: github.com/opencontainers/runc
+  version: 9d7831e41d3ef428b67685eeb27f2b4a22a92391
+  subpackages:
+  - libcontainer/user
+- name: github.com/pkg/errors
+  version: a2d6902c6d2a2f194eb3fb474981ab7867c81505
+- name: github.com/pkg/sftp
+  version: 57fcf4a640a942eb05181f929601f8f4409eda3e
+- name: github.com/QuentinPerez/go-encodeUrl
+  version: 645a9dbeee154c68e218053e604de21f1e3d91d0
+- name: golang.org/x/crypto
+  version: d81fdb778bf2c40a91b24519d60cdc5767318829
+  subpackages:
+  - ssh
+  - ssh/terminal
+- name: golang.org/x/net
+  version: f841c39de738b1d0df95b5a7187744f0e03d8112
+  subpackages:
+  - context
+- name: golang.org/x/oauth2
+  version: 7357e96168422ba1e6e7f21075713b72d58764e7
+devImports: []
