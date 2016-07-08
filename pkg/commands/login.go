@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
 	"github.com/juju/errors"
@@ -39,7 +40,6 @@ func (l *login) GetName() string {
 
 func (l *login) Run(args []string) (err error) {
 	var (
-		empty          string
 		authentication auth.Authentication
 		credentials    auth.Credentials
 		clientID       = "38320_2wln446j992cgo0088g04coo8gswkcws0c4sww0oo0ggs8kos8"
@@ -48,11 +48,17 @@ func (l *login) Run(args []string) (err error) {
 	if authentication, err = auth.GetVerificationURL(clientID); err != nil {
 		return
 	}
-	if err = promptUser(fmt.Sprintf(`Please opens this link with your browser: %v
-Then copy paste the code %v (enter when is done) : `, authentication.VerficationURL, authentication.UserCode), &empty, true); err != nil {
-		return
+	fmt.Printf(`Please opens this link with your browser: %v
+Then copy paste the code %v
+`, authentication.VerficationURL, authentication.UserCode)
+	for i := 0; i < 1500; i++ {
+		if credentials, err = auth.GenerateCredentials(clientID, authentication.DeviceCode); err == nil {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
 	}
-	if credentials, err = auth.GenerateCredentials(clientID, authentication.DeviceCode); err != nil {
+	if err != nil {
+		err = errors.Annotate(err, "Timeout")
 		return
 	}
 	err = credentials.Save()
