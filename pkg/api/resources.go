@@ -1,5 +1,7 @@
 package api
 
+import "time"
+
 /*
  * Get
  */
@@ -30,13 +32,30 @@ type OnlineGetSSHKey struct {
 
 type OnlineGetArchive struct {
 	// _ref         string `json:"$ref"`
-	CreationDate string `json:"creation_date"`
-	Description  string `json:"description"`
-	Name         string `json:"name"`
-	Parity       string `json:"parity"`
-	Status       string `json:"status"`
-	UUIDRef      string `json:"uuid_ref"`
-	Size         string `json:"size"`
+	CreationDate string         `json:"creation_date"`
+	Description  string         `json:"description"`
+	Name         string         `json:"name"`
+	Parity       string         `json:"parity"`
+	Status       string         `json:"status"`
+	UUIDRef      string         `json:"uuid_ref"`
+	Size         string         `json:"size"`
+	Jobs         []OnlineGetJob `json:"current_jobs,omitempty"`
+}
+
+type OnlineGetArchives []OnlineGetArchive
+
+func (o OnlineGetArchives) Len() int {
+	return len(o)
+}
+
+func (o OnlineGetArchives) Swap(i, j int) {
+	o[i], o[j] = o[j], o[i]
+}
+
+func (o OnlineGetArchives) Less(i, j int) bool {
+	date1, _ := time.Parse(time.RFC3339, o[i].CreationDate)
+	date2, _ := time.Parse(time.RFC3339, o[j].CreationDate)
+	return date2.After(date1)
 }
 
 type OnlineBucketCredentials struct {
