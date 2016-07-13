@@ -125,9 +125,10 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	for i := range val {
 		archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)
 		if err == nil {
+			sort.Sort(api.OnlineGetArchives(archives))
 			for j := range archives {
 				if l.flQuiet {
-					fmt.Fprintf(w, "%s\n", archives[j].UUIDRef)
+					fmt.Fprintf(w, "%s %s\n", archives[j].UUIDRef, val[i].UUIDRef)
 				} else {
 					if l.flAll {
 						if archive, err = l.OnlineAPI.GetArchive(val[i].UUIDRef, archives[j].UUIDRef, true); err != nil {
