@@ -12,13 +12,9 @@ import (
 	"github.com/juju/errors"
 )
 
-type cacheArchive struct {
-	Archive *OnlineGetArchive
-}
-
 type cacheSafe struct {
 	Safe    OnlineGetSafe
-	Archive map[string]cacheArchive
+	Archive map[string]OnlineGetArchive
 }
 
 type cache struct {
@@ -125,7 +121,7 @@ func (c *cache) CopyArchives(uuidSafe string) (archives []OnlineGetArchive, err 
 		i := 0
 		archives = make([]OnlineGetArchive, length)
 		for _, val := range mapArchives {
-			archives[i] = *val.Archive
+			archives[i] = val
 			i++
 		}
 	}
@@ -137,24 +133,16 @@ func (c *cache) InsertSafe(uuid string, safe OnlineGetSafe) {
 	c.Lock()
 	c.safes[uuid] = cacheSafe{
 		Safe:    safe,
-		Archive: make(map[string]cacheArchive),
+		Archive: make(map[string]OnlineGetArchive),
 	}
 	c.Save()
 	c.Unlock()
 }
 
 func (c *cache) GetArchive(uuidSafe, uuidArchive string) (archive OnlineGetArchive, ok bool) {
-	var (
-		archiveCache cacheArchive
-	)
-
 	c.RLock()
 	// force panic if uuidSafe do not exist
-	if archiveCache, ok = c.safes[uuidSafe].Archive[uuidArchive]; ok && archiveCache.Archive != nil {
-		archive = *archiveCache.Archive
-	} else {
-		ok = false
-	}
+	archive, ok = c.safes[uuidSafe].Archive[uuidArchive]
 	c.RUnlock()
 	return
 }
@@ -166,20 +154,7 @@ func (c *cache) InsertArchive(uuidSafe, uuidArchive string, archive OnlineGetArc
 	c.Lock()
 	// force panic if uuidSafe do not exist
 	log.Debugf("InsertArchive %s", uuidArchive)
-	c.safes[uuidSafe].Archive[uuidArchive] = cacheArchive{
-		Archive: newArchive,
-	}
+	c.safes[uuidSafe].Archive[uuidArchive] = archive
 	c.Save()
 	c.Unlock()
-}
-
-func (c *cache) DisplayCache() {
-	c.RLock()
-	for key, val := range c.safes {
-		fmt.Println(key)
-		for key2, val2 := range val.Archive {
-			fmt.Println("    ", key2, val2.Archive)
-		}
-	}
-	c.RUnlock()
 }
