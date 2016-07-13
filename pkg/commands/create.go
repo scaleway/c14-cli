@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/docker/docker/pkg/namesgenerator"
@@ -16,8 +15,9 @@ type create struct {
 }
 
 type createFlags struct {
-	flName string
-	flDesc string
+	flName  string
+	flDesc  string
+	flQuiet bool
 }
 
 // Create returns a new command "create"
@@ -34,6 +34,7 @@ func Create() Command {
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
 	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
+	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Don't display the waiting loop")
 	return ret
 }
 
@@ -51,7 +52,7 @@ func (c *create) CheckFlags(args []string) (err error) {
 		c.flName = namesgenerator.GetRandomName(0)
 	}
 	if c.flDesc == "" {
-		c.flDesc = fmt.Sprintf("Archive created at %s", time.Now())
+		c.flDesc = " "
 	}
 	return
 }
@@ -80,6 +81,7 @@ func (c *create) Run(args []string) (err error) {
 		UUIDSSHKeys: []string{keys[0].UUIDRef},
 		Platforms:   []string{"1"},
 		Days:        7,
+		Quiet:       c.flQuiet,
 	}); err != nil {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -14,6 +15,7 @@ type ConfigCreateSSHBucketFromScratch struct {
 	UUIDSSHKeys []string
 	Platforms   []string
 	Days        int
+	Quiet       bool
 }
 
 // CreateSSHBucketFromScratch creates a safe, an archive and returns the bucket available over SSH
@@ -35,21 +37,44 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:CreateArchive")
 		return
 	}
-	for i := 0; i < 60; i++ {
-		err = nil
-		if bucket, err = o.GetBucket(uuidSafe, uuidArchive); err == nil {
+	if !c.Quiet {
+		defer fmt.Printf("\r \r")
+	}
+	errChan := make(chan error)
+	go func() {
+		var errGoRoutine error
+
+		for i := 0; i < 120; i++ {
+			errGoRoutine = nil
+			if bucket, errGoRoutine = o.GetBucket(uuidSafe, uuidArchive); errGoRoutine == nil {
+				break
+			}
+			if onlineError, ok := errors.Cause(errGoRoutine).(*OnlineError); ok && onlineError.StatusCode != 404 {
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
+		errChan <- errGoRoutine
+	}()
+	loop := 0
+	for {
+		select {
+		case err = <-errChan:
+			goto OUT
+		case <-time.After(100 * time.Millisecond):
+			if !c.Quiet {
+				fmt.Printf("\r%c\r", "-\\|/"[loop%4])
+				loop++
+				if loop == 5 {
+					loop = 0
+				}
+			}
 			break
 		}
-		if onlineError, ok := errors.Cause(err).(*OnlineError); ok && onlineError.StatusCode != 404 {
-			return
-		}
-		time.Sleep(1 * time.Second)
 	}
+OUT:
 	if err != nil {
-		o.DeleteArchive(uuidSafe, uuidArchive)
-		o.DeleteSafe(uuidSafe)
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:GetBucket")
-		return
 	}
 	return
 }
