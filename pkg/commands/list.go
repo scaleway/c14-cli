@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"sort"
 	"sync"
 	"text/tabwriter"
 	"time"
