@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
+	"github.com/pkg/errors"
 )
 
 type list struct {
@@ -78,13 +79,14 @@ func (l *list) Run(args []string) (err error) {
 				return
 			}
 		} else {
-			safes = make([]api.OnlineGetSafe, len(args))
-
-			for i, len := 0, len(args); i < len; i++ {
-				if safes[i], err = l.OnlineAPI.GetSafe(args[i]); err != nil {
-					return
-				}
-			}
+			err = errors.Errorf("Not implemented yet")
+			// safes = make([]api.OnlineGetSafe, len(args))
+			//
+			// for i, len := 0, len(args); i < len; i++ {
+			// 	if safes[i], err = l.OnlineAPI.GetSafe(args[i]); err != nil {
+			// 		return
+			// 	}
+			// }
 		}
 		l.displayArchives(safes)
 	}
