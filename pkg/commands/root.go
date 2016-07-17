@@ -33,7 +33,6 @@ func init() {
 			Login(),
 			LsFiles(),
 			Remove(),
-			Test(),
 			Unfreeze(),
 			Upload(),
 		},

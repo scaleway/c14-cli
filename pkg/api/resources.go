@@ -55,7 +55,7 @@ func (o OnlineGetArchives) Swap(i, j int) {
 func (o OnlineGetArchives) Less(i, j int) bool {
 	date1, _ := time.Parse(time.RFC3339, o[i].CreationDate)
 	date2, _ := time.Parse(time.RFC3339, o[j].CreationDate)
-	return date2.After(date1)
+	return date2.Before(date1)
 }
 
 type OnlineBucketCredentials struct {
