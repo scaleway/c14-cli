@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"sync"
 	"text/tabwriter"
 	"time"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 )
 
@@ -131,14 +133,23 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 			sort.Sort(api.OnlineGetArchives(archives))
 			for j := range archives {
 				if l.flQuiet {
-					fmt.Fprintf(w, "%s %s\n", archives[j].UUIDRef, val[i].UUIDRef)
+					if l.flAll {
+						fmt.Fprintf(w, "%s %s\n", archives[j].UUIDRef, val[i].UUIDRef)
+					} else {
+						fmt.Fprintf(w, "%s\n", archives[j].UUIDRef)
+					}
 				} else {
 					if l.flAll {
 						if archive, err = l.OnlineAPI.GetArchive(val[i].UUIDRef, archives[j].UUIDRef, true); err != nil {
 							return
 						}
 						t, _ := time.Parse(time.RFC3339, archive.CreationDate)
-						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, val[i].UUIDRef, t.Format(time.Stamp), archive.Size, archive.Description)
+						humanSize := "Unavailable"
+						if archive.Size != "" {
+							size, _ := strconv.Atoi(archive.Size)
+							humanSize = humanize.Bytes(uint64(size))
+						}
+						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, val[i].UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
 					} else {
 						fmt.Fprintf(w, "%s\t%s\t%s\n", archives[j].Name, archives[j].Status, archives[j].UUIDRef)
 					}
