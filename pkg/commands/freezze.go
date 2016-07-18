@@ -86,7 +86,7 @@ func (f *freeze) Run(args []string) (err error) {
 			var bar *pb.ProgressBar
 
 			if !f.flQuiet {
-				bar = pb.StartNew(100).SetWidth(80).SetMaxWidth(80).Format("[=> ]")
+				bar = pb.New(100).SetWidth(80).SetMaxWidth(80).Format("[=> ]")
 				bar.ShowFinalTime = false
 				bar.ShowTimeLeft = false
 				bar.Start()
