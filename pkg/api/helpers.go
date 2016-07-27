@@ -69,7 +69,6 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 					loop = 0
 				}
 			}
-			break
 		}
 	}
 OUT:
@@ -144,7 +143,7 @@ func (o *OnlineAPI) FindSafeUUIDFromArchive(archive string, useCache bool) (safe
 		safe = ret[0].safe
 		uuidArchive = ret[0].uuid
 	default:
-		err = errors.Errorf("Multiple candidate for %s", archive)
+		err = errors.Errorf("Too many candidate for %s", archive)
 	}
 	return
 }

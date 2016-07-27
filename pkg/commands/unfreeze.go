@@ -10,6 +10,7 @@ import (
 
 type unfreeze struct {
 	Base
+	unfreezeFlags
 }
 
 type unfreezeFlags struct {
