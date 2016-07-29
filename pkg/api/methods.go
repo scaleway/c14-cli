@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/juju/errors"
 )
@@ -145,17 +144,17 @@ func (o *OnlineAPI) GetJob(uuidSafe, uuidArchive, uuidJob string) (job OnlineGet
 
 func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 	var (
-		buff []byte
+		result OnlineResult
 	)
 
-	if buff, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), OnlinePostSafe{
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), OnlinePostSafe{
 		Name:        name,
 		Description: desc,
-	}); err != nil {
+	}, &result); err != nil {
 		err = errors.Annotate(err, "CreateSafe")
 		return
 	}
-	uuid = strings.Trim(string(buff), `"`)
+	uuid = result.Result
 	_, err = o.GetSafe(uuid)
 	return
 }
@@ -173,21 +172,21 @@ type ConfigCreateArchive struct {
 
 func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err error) {
 	var (
-		buff []byte
+		result OnlineResult
 	)
 
-	if buff, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, config.UUIDSafe), OnlinePostArchive{
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, config.UUIDSafe), OnlinePostArchive{
 		Name:        config.Name,
 		Description: config.Desc,
 		Protocols:   config.Protocols,
 		SSHKeys:     config.SSHKeys,
 		Platforms:   config.Platforms,
 		Days:        config.Days,
-	}); err != nil {
+	}, &result); err != nil {
 		err = errors.Annotate(err, "CreateArchive")
 		return
 	}
-	uuid = strings.Trim(string(buff), `"`)
+	uuid = result.Result
 	_, err = o.GetArchive(config.UUIDSafe, uuid, false)
 	return
 }

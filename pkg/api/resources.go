@@ -112,3 +112,7 @@ type OnlinePostUnArchive struct {
 	SSHKeys    []string `json:"ssh_keys"`
 	LocationID string   `json:"location_id"`
 }
+
+type OnlineResult struct {
+	Result string `json:"result"`
+}

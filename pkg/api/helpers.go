@@ -33,7 +33,6 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 		SSHKeys:   c.UUIDSSHKeys,
 		Days:      c.Days,
 	}); err != nil {
-		o.DeleteSafe(uuidSafe)
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:CreateArchive")
 		return
 	}
