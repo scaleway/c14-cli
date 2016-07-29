@@ -46,8 +46,9 @@ func (o *OnlineAPI) response(method, uri string, content io.Reader) (resp *http.
 		err = errors.Annotatef(err, "response %s %s", method, uri)
 		return
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/vnd.online-net.api+json;version=1.1")
 	req.Header.Set("User-Agent", o.userAgent)
+	req.Header.Set("Content-Type", "application/json")
 
 	// curl, err := http2curl.GetCurlCommand(req)
 	// if err != nil {
