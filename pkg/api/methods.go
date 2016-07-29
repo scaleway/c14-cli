@@ -144,17 +144,17 @@ func (o *OnlineAPI) GetJob(uuidSafe, uuidArchive, uuidJob string) (job OnlineGet
 
 func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 	var (
-		result OnlineResult
+		result OnlinePostResult
 	)
 
 	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe", APIUrl), OnlinePostSafe{
 		Name:        name,
 		Description: desc,
-	}, &result); err != nil {
+	}, &result, nil); err != nil {
 		err = errors.Annotate(err, "CreateSafe")
 		return
 	}
-	uuid = result.Result
+	uuid = result.UUIDRef
 	_, err = o.GetSafe(uuid)
 	return
 }

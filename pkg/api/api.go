@@ -106,7 +106,7 @@ func (o *OnlineAPI) deleteWrapper(uri string) (err error) {
 	return
 }
 
-func (o *OnlineAPI) postWrapper(uri string, content interface{}, res interface{}, goodStatusCode ...[]int) (body []byte, err error) {
+func (o *OnlineAPI) postWrapper(uri string, content interface{}, res interface{}, goodStatusCode []int) (body []byte, err error) {
 	var (
 		resp    *http.Response
 		payload = new(bytes.Buffer)
@@ -127,8 +127,8 @@ func (o *OnlineAPI) postWrapper(uri string, content interface{}, res interface{}
 		return
 	}
 	goodStatus := []int{201}
-	if len(goodStatusCode) > 0 {
-		goodStatus = goodStatusCode[0]
+	if goodStatusCode != nil {
+		goodStatus = goodStatusCode
 	}
 	if body, err = o.handleHTTPError(goodStatus, resp); err != nil {
 		return
