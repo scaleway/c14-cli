@@ -2,12 +2,12 @@ package commands
 
 import (
 	"os"
-	"sort"
 	"time"
 
 	"gopkg.in/cheggaaa/pb.v1"
 
 	"github.com/QuentinPerez/c14-cli/pkg/api"
+	"github.com/QuentinPerez/c14-cli/pkg/utils/pgbar"
 	"github.com/apex/log"
 )
 
@@ -54,10 +54,9 @@ func (f *freeze) Run(args []string) (err error) {
 	}
 
 	var (
-		safe        api.OnlineGetSafe
-		archiveWait api.OnlineGetArchive
-		archives    []api.OnlineGetArchive
-		uuidArchive string
+		safe                    api.OnlineGetSafe
+		archiveWait             api.OnlineGetArchive
+		uuidArchive, newArchive string
 	)
 
 	for _, archive := range args {
@@ -66,29 +65,19 @@ func (f *freeze) Run(args []string) (err error) {
 				return
 			}
 		}
-		diff := time.Now()
-		now := time.Now()
-		if err = f.OnlineAPI.PostArchive(safe.UUIDRef, uuidArchive); err != nil {
+		if newArchive, err = f.OnlineAPI.PostArchive(safe.UUIDRef, uuidArchive); err != nil {
 			log.Warnf("%s: %s", args, err)
+			err = nil
 			continue
 		}
-		for now.Before(diff) {
-			if archives, err = f.OnlineAPI.GetArchives(safe.UUIDRef, false); err != nil {
-				log.Warnf("%s: %s", args, err)
-				continue
-			}
-			sort.Sort(api.OnlineGetArchives(archives))
-			uuidArchive = archives[0].UUIDRef
-			diff, _ = time.Parse(time.RFC3339, archives[0].CreationDate)
+		if newArchive != "" {
+			uuidArchive = newArchive
 		}
-
 		if !f.flNoWait {
 			var bar *pb.ProgressBar
 
 			if !f.flQuiet {
-				bar = pb.New(100).SetWidth(80).SetMaxWidth(80).Format("[=> ]")
-				bar.ShowFinalTime = false
-				bar.ShowTimeLeft = false
+				bar = pgbar.NewProgressBar(uuidArchive)
 				bar.Start()
 			}
 			lastLength := 6
