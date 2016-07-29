@@ -26,8 +26,8 @@ func Freeze() Command {
 	ret := &freeze{}
 	ret.Init(Config{
 		UsageLine:   "freeze [OPTIONS] [ARCHIVE]+",
-		Description: "",
-		Help:        "",
+		Description: "Lock an archive",
+		Help:        "Lock an archive",
 		Examples: `
         $ c14 freeze 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})

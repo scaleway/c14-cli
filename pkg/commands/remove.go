@@ -20,8 +20,8 @@ func Remove() Command {
 	ret := &remove{}
 	ret.Init(Config{
 		UsageLine:   "remove [ARCHIVE]+",
-		Description: "",
-		Help:        "",
+		Description: "Remove an archive",
+		Help:        "Remove an archive",
 		Examples: `
         $ c14 remove 83b93179-32e0-11e6-be10-10604b9b0ad9 2d752399-429f-447f-85cd-c6104dfed5db`,
 	})
