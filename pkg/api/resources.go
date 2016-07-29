@@ -113,6 +113,11 @@ type OnlinePostUnArchive struct {
 	LocationID string   `json:"location_id"`
 }
 
-type OnlineResult struct {
-	Result string `json:"result"`
+type OnlinePostResult struct {
+	UUIDRef string `json:"uuid_ref"`
+	Archive *struct {
+		UUIDRef string `json:"uuid_ref"`
+		Name    string `json:"name"`
+		Status  string `json:"status"`
+	} `json:"archive"`
 }

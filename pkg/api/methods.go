@@ -172,7 +172,7 @@ type ConfigCreateArchive struct {
 
 func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err error) {
 	var (
-		result OnlineResult
+		result OnlinePostResult
 	)
 
 	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, config.UUIDSafe), OnlinePostArchive{
@@ -182,24 +182,29 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		SSHKeys:     config.SSHKeys,
 		Platforms:   config.Platforms,
 		Days:        config.Days,
-	}, &result); err != nil {
+	}, &result, nil); err != nil {
 		err = errors.Annotate(err, "CreateArchive")
 		return
 	}
-	uuid = result.Result
+	uuid = result.UUIDRef
 	_, err = o.GetArchive(config.UUIDSafe, uuid, false)
 	return
 }
 
-func (o *OnlineAPI) PostArchive(uuidSafe, uuidArchive string) (err error) {
-	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/archive", APIUrl, uuidSafe, uuidArchive), nil, []int{202}); err != nil {
+func (o *OnlineAPI) PostArchive(uuidSafe, uuidArchive string) (uuid string, err error) {
+	var res OnlinePostResult
+
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/archive", APIUrl, uuidSafe, uuidArchive), nil, &res, []int{202}); err != nil {
 		err = errors.Annotate(err, "PostArchive")
+	}
+	if res.Archive != nil {
+		uuid = res.Archive.UUIDRef
 	}
 	return
 }
 
 func (o *OnlineAPI) PostUnArchive(uuidSafe, uuidArchive string, data OnlinePostUnArchive) (err error) {
-	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/unarchive", APIUrl, uuidSafe, uuidArchive), data, []int{202}); err != nil {
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/unarchive", APIUrl, uuidSafe, uuidArchive), data, nil, []int{202}); err != nil {
 		err = errors.Annotate(err, "PostUnArchive")
 	}
 	return
