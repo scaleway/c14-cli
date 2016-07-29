@@ -3,7 +3,6 @@
 title = "Inspect the service"
 description = "Inspect the application"
 keywords = ["tutorial, cluster management, swarm mode"]
-advisory = "rc"
 [menu.main]
 identifier="inspect-application"
 parent="swarm-tutorial"
@@ -33,7 +32,6 @@ about a service in an easily readable format.
     Mode:		REPLICATED
      Replicas:		1
     Placement:
-     Strategy:	SPREAD
     UpdateConfig:
      Parallelism:	1
     ContainerSpec:
@@ -93,11 +91,11 @@ about a service in an easily readable format.
     ]
     ```
 
-4. Run `docker service tasks <SERVICE-ID>` to see which nodes are running the
+4. Run `docker service ps <SERVICE-ID>` to see which nodes are running the
 service:
 
     ```
-    $ docker service tasks helloworld
+    $ docker service ps helloworld
 
     ID                         NAME          SERVICE     IMAGE   LAST STATE         DESIRED STATE  NODE
     8p1vev3fq5zm0mi8g0as41w35  helloworld.1  helloworld  alpine  Running 3 minutes  Running        worker2

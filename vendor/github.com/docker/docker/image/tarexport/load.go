@@ -170,24 +170,27 @@ func (l *tarexporter) loadLayer(filename string, rootFS image.RootFS, id string,
 	}
 	defer rawTar.Close()
 
-	var r io.Reader
+	inflatedLayerData, err := archive.DecompressStream(rawTar)
+	if err != nil {
+		return nil, err
+	}
+	defer inflatedLayerData.Close()
+
 	if progressOutput != nil {
-		fileInfo, err := rawTar.Stat()
+		fileInfo, err := os.Stat(filename)
 		if err != nil {
 			logrus.Debugf("Error statting file: %v", err)
 			return nil, err
 		}
 
-		r = progress.NewProgressReader(rawTar, progressOutput, fileInfo.Size(), stringid.TruncateID(id), "Loading layer")
-	} else {
-		r = rawTar
-	}
+		progressReader := progress.NewProgressReader(inflatedLayerData, progressOutput, fileInfo.Size(), stringid.TruncateID(id), "Loading layer")
 
-	inflatedLayerData, err := archive.DecompressStream(r)
-	if err != nil {
-		return nil, err
+		if ds, ok := l.ls.(layer.DescribableStore); ok {
+			return ds.RegisterWithDescriptor(progressReader, rootFS.ChainID(), foreignSrc)
+		}
+		return l.ls.Register(progressReader, rootFS.ChainID())
+
 	}
-	defer inflatedLayerData.Close()
 
 	if ds, ok := l.ls.(layer.DescribableStore); ok {
 		return ds.RegisterWithDescriptor(inflatedLayerData, rootFS.ChainID(), foreignSrc)

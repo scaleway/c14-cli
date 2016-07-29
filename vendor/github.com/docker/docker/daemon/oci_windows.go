@@ -176,8 +176,8 @@ func (daemon *Daemon) createSpec(c *container.Container) (*libcontainerd.Spec, e
 			Shares:  &cpuShares,
 		},
 		Memory: &windowsoci.Memory{
-			Limit: &c.HostConfig.Memory,
-			//TODO Reservation: ...,
+		//TODO Limit: ...,
+		//TODO Reservation: ...,
 		},
 		Network: &windowsoci.Network{
 		//TODO Bandwidth: ...,

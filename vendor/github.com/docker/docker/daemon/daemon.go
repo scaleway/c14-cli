@@ -117,13 +117,11 @@ func (daemon *Daemon) restore() error {
 		return err
 	}
 
-	containerCount := 0
 	for _, v := range dir {
 		id := v.Name()
 		container, err := daemon.load(id)
 		if !debug && logrus.GetLevel() == logrus.InfoLevel {
 			fmt.Print(".")
-			containerCount++
 		}
 		if err != nil {
 			logrus.Errorf("Failed to load container %v: %v", id, err)
@@ -178,7 +176,7 @@ func (daemon *Daemon) restore() error {
 			rm := c.RestartManager(false)
 			if c.IsRunning() || c.IsPaused() {
 				if err := daemon.containerd.Restore(c.ID, libcontainerd.WithRestartManager(rm)); err != nil {
-					logrus.Errorf("Failed to restore with containerd: %q", err)
+					logrus.Errorf("Failed to restore %s with containerd: %s", c.ID, err)
 					return
 				}
 				if !c.HostConfig.NetworkMode.IsContainer() && c.IsRunning() {
@@ -308,7 +306,7 @@ func (daemon *Daemon) restore() error {
 	group.Wait()
 
 	if !debug {
-		if logrus.GetLevel() == logrus.InfoLevel && containerCount > 0 {
+		if logrus.GetLevel() == logrus.InfoLevel {
 			fmt.Println()
 		}
 		logrus.Info("Loading containers: done.")
@@ -434,7 +432,11 @@ func NewDaemon(config *Config, registryService registry.Service, containerdRemot
 		}
 	}
 
-	if err = setupDaemonRoot(config, realRoot, rootUID, rootGID); err != nil {
+	if err := setupDaemonRoot(config, realRoot, rootUID, rootGID); err != nil {
+		return nil, err
+	}
+
+	if err := setupDaemonProcess(config); err != nil {
 		return nil, err
 	}
 
@@ -651,9 +653,16 @@ func (daemon *Daemon) Shutdown() error {
 	daemon.shutdown = true
 	// Keep mounts and networking running on daemon shutdown if
 	// we are to keep containers running and restore them.
-	if daemon.configStore.LiveRestore {
-		return nil
+
+	pluginShutdown()
+
+	if daemon.configStore.LiveRestore && daemon.containers != nil {
+		// check if there are any running containers, if none we should do some cleanup
+		if ls, err := daemon.Containers(&types.ContainerListOptions{}); len(ls) != 0 || err != nil {
+			return nil
+		}
 	}
+
 	if daemon.containers != nil {
 		logrus.Debug("starting clean shutdown of all containers...")
 		daemon.containers.ApplyAll(func(c *container.Container) {
@@ -720,6 +729,42 @@ func (daemon *Daemon) Unmount(container *container.Container) error {
 		return err
 	}
 	return nil
+}
+
+// V4Subnets returns the IPv4 subnets of networks that are managed by Docker.
+func (daemon *Daemon) V4Subnets() []net.IPNet {
+	var subnets []net.IPNet
+
+	managedNetworks := daemon.netController.Networks()
+
+	for _, managedNetwork := range managedNetworks {
+		v4Infos, _ := managedNetwork.Info().IpamInfo()
+		for _, v4Info := range v4Infos {
+			if v4Info.IPAMData.Pool != nil {
+				subnets = append(subnets, *v4Info.IPAMData.Pool)
+			}
+		}
+	}
+
+	return subnets
+}
+
+// V6Subnets returns the IPv6 subnets of networks that are managed by Docker.
+func (daemon *Daemon) V6Subnets() []net.IPNet {
+	var subnets []net.IPNet
+
+	managedNetworks := daemon.netController.Networks()
+
+	for _, managedNetwork := range managedNetworks {
+		_, v6Infos := managedNetwork.Info().IpamInfo()
+		for _, v6Info := range v6Infos {
+			if v6Info.IPAMData.Pool != nil {
+				subnets = append(subnets, *v6Info.IPAMData.Pool)
+			}
+		}
+	}
+
+	return subnets
 }
 
 func writeDistributionProgress(cancelFunc func(), outStream io.Writer, progressChan <-chan progress.Progress) {
@@ -999,6 +1044,7 @@ func (daemon *Daemon) networkOptions(dconfig *Config, activeSandboxes map[string
 	}
 
 	options = append(options, nwconfig.OptionDataDir(dconfig.Root))
+	options = append(options, nwconfig.OptionExecRoot(dconfig.GetExecRoot()))
 
 	dd := runconfig.DefaultDaemonNetworkMode()
 	dn := runconfig.DefaultDaemonNetworkMode().NetworkName()

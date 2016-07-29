@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"syscall"
 
 	"github.com/Sirupsen/logrus"
@@ -37,10 +38,7 @@ func loadFactory(context *cli.Context) (libcontainer.Factory, error) {
 			return nil, fmt.Errorf("systemd cgroup flag passed, but systemd support for managing cgroups is not available")
 		}
 	}
-	return libcontainer.New(abs, cgroupManager, func(l *libcontainer.LinuxFactory) error {
-		l.CriuPath = context.GlobalString("criu")
-		return nil
-	})
+	return libcontainer.New(abs, cgroupManager, libcontainer.CriuPath(context.GlobalString("criu")))
 }
 
 // getContainer returns the specified container instance by loading it from state
@@ -82,6 +80,9 @@ func newProcess(p specs.Process) (*libcontainer.Process, error) {
 		Label:           p.SelinuxLabel,
 		NoNewPrivileges: &p.NoNewPrivileges,
 		AppArmorProfile: p.ApparmorProfile,
+	}
+	for _, gid := range p.User.AdditionalGids {
+		lp.AdditionalGroups = append(lp.AdditionalGroups, strconv.FormatUint(uint64(gid), 10))
 	}
 	for _, rlimit := range p.Rlimits {
 		rl, err := createLibContainerRlimit(rlimit)

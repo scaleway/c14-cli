@@ -40,7 +40,6 @@ func (s *MemoryGroup) Apply(d *cgroupData) (err error) {
 			return err
 		}
 	}
-
 	defer func() {
 		if err != nil {
 			os.RemoveAll(path)
@@ -74,7 +73,6 @@ func (s *MemoryGroup) SetKernelMemory(path string, cgroup *configs.Cgroup) error
 		case 64:
 			kmemInitialized = kmemValue != uint64(math.MaxUint64)
 		}
-
 		if !kmemInitialized {
 			// If there's already tasks in the cgroup, we can't change the limit either
 			tasks, err := getCgroupParamString(path, "tasks")

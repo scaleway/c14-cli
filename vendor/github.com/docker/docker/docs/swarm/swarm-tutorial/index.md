@@ -3,7 +3,6 @@
 title = "Set up for the tutorial"
 description = "Getting Started tutorial for Docker Engine swarm mode"
 keywords = ["tutorial, cluster management, swarm mode"]
-advisory = "rc"
 [menu.main]
 identifier="tutorial-setup"
 parent="swarm-tutorial"
@@ -72,6 +71,9 @@ Verify that the Docker Engine daemon is running on each of the machines.
 
 The IP address must be assigned to an a network interface available to the host
 operating system. All nodes in the swarm must be able to access the manager at the IP address.
+
+Because other nodes contact the manager node on its IP address, you should use a
+fixed IP address.
 
 >**Tip**: You can run `ifconfig` on Linux or Mac OS X to see a list of the
 available network interfaces.

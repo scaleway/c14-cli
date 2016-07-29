@@ -3,7 +3,6 @@
 title = "Swarm mode overview"
 description = "Docker Engine swarm mode overview"
 keywords = ["docker, container, cluster, swarm"]
-advisory = "rc"
 [menu.main]
 identifier="swarm_overview"
 parent="engine_swarm"
@@ -88,5 +87,5 @@ roll-back a task to a previous version of the service.
     * [service ls](../reference/commandline/service_ls.md)
     * [service rm](../reference/commandline/service_rm.md)
     * [service scale](../reference/commandline/service_scale.md)
-    * [service tasks](../reference/commandline/service_tasks.md)
+    * [service ps](../reference/commandline/service_ps.md)
     * [service update](../reference/commandline/service_update.md)

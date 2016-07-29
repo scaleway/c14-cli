@@ -37,7 +37,8 @@ default.
 
 The current version of the API is v1.24 which means calling `/info` is the same
 as calling `/v1.24/info`. To call an older version of the API use
-`/v1.23/info`.
+`/v1.23/info`. If a newer daemon is installed, new properties may be returned
+even when calling older versions of the API.
 
 Use the table below to find the API version for a Docker version:
 
@@ -116,6 +117,8 @@ This section lists each version from latest to oldest.  Each listing includes a 
 
 * `POST /containers/create` now takes `StorageOpt` field.
 * `GET /info` now returns `SecurityOptions` field, showing if `apparmor`, `seccomp`, or `selinux` is supported.
+* `GET /info` no longer returns the `ExecutionDriver` property. This property was no longer used after integration
+  with ContainerD in Docker 1.11.
 * `GET /networks` now supports filtering by `label` and `driver`.
 * `GET /containers/json` now supports filtering containers by `network` name or id.
 * `POST /containers/create` now takes `MaximumIOps` and `MaximumIOBps` fields. Windows daemon only.
@@ -137,6 +140,8 @@ This section lists each version from latest to oldest.  Each listing includes a 
   no longer expects a "Container" field to be present. This property was not used
   and is no longer sent by the docker client.
 * `POST /containers/create/` now validates the hostname (should be a valid RFC 1123 hostname).
+* `POST /containers/create/` `HostConfig.PidMode` field now accepts `container:<name|id>`,
+  to have the container join the PID namespace of an existing container.
 
 ### v1.23 API changes
 

@@ -34,7 +34,7 @@ type Driver interface {
 	List() ([]Volume, error)
 	// Get retrieves the volume with the requested name
 	Get(name string) (Volume, error)
-	// Scope returns the scope of the driver (e.g. `global` or `local`).
+	// Scope returns the scope of the driver (e.g. `golbal` or `local`).
 	// Scope determines how the driver is handled at a cluster level
 	Scope() string
 }
@@ -143,12 +143,12 @@ func (m *MountPoint) Path() string {
 // Type returns the type of mount point
 func (m *MountPoint) Type() string {
 	if m.Name != "" {
-		return "VOLUME"
+		return "volume"
 	}
 	if m.Source != "" {
-		return "BIND"
+		return "bind"
 	}
-	return "EPHEMERAL"
+	return "ephemeral"
 }
 
 // ParseVolumesFrom ensures that the supplied volumes-from is valid.

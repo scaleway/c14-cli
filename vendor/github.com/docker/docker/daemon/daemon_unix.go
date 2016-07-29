@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/docker/docker/container"
@@ -38,6 +37,7 @@ import (
 	"github.com/docker/libnetwork/netutils"
 	"github.com/docker/libnetwork/options"
 	lntypes "github.com/docker/libnetwork/types"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/opencontainers/runc/libcontainer/label"
 	"github.com/opencontainers/runc/libcontainer/user"
 	"github.com/opencontainers/specs/specs-go"
@@ -579,7 +579,11 @@ func verifyDaemonSettings(config *Config) error {
 	if config.Runtimes == nil {
 		config.Runtimes = make(map[string]types.Runtime)
 	}
-	config.Runtimes[stockRuntimeName] = types.Runtime{Path: DefaultRuntimeBinary}
+	stockRuntimeOpts := []string{}
+	if UsingSystemd(config) {
+		stockRuntimeOpts = append(stockRuntimeOpts, "--systemd-cgroup=true")
+	}
+	config.Runtimes[stockRuntimeName] = types.Runtime{Path: DefaultRuntimeBinary, Args: stockRuntimeOpts}
 
 	return nil
 }
@@ -1122,7 +1126,10 @@ func (daemon *Daemon) stats(c *container.Container) (*types.StatsJSON, error) {
 			}
 		}
 	}
-	s.Read = time.Unix(int64(stats.Timestamp), 0)
+	s.Read, err = ptypes.Timestamp(stats.Timestamp)
+	if err != nil {
+		return nil, err
+	}
 	return s, nil
 }
 
@@ -1141,4 +1148,20 @@ func rootFSToAPIType(rootfs *image.RootFS) types.RootFS {
 		Type:   rootfs.Type,
 		Layers: layers,
 	}
+}
+
+// setupDaemonProcess sets various settings for the daemon's process
+func setupDaemonProcess(config *Config) error {
+	// setup the daemons oom_score_adj
+	return setupOOMScoreAdj(config.OOMScoreAdjust)
+}
+
+func setupOOMScoreAdj(score int) error {
+	f, err := os.OpenFile("/proc/self/oom_score_adj", os.O_WRONLY, 0)
+	if err != nil {
+		return err
+	}
+	_, err = f.WriteString(strconv.Itoa(score))
+	f.Close()
+	return err
 }

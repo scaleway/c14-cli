@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -229,9 +228,6 @@ func CreateLibcontainerConfig(opts *CreateOpts) (*configs.Config, error) {
 	if spec.Linux.Resources != nil && spec.Linux.Resources.OOMScoreAdj != nil {
 		config.OomScoreAdj = *spec.Linux.Resources.OOMScoreAdj
 	}
-	for _, g := range spec.Process.User.AdditionalGids {
-		config.AdditionalGroups = append(config.AdditionalGroups, strconv.FormatUint(uint64(g), 10))
-	}
 	createHooks(spec, config)
 	config.MountLabel = spec.Linux.MountLabel
 	config.Version = specs.Version
@@ -441,7 +437,7 @@ func createCgroupConfig(name string, useSystemdCgroup bool, spec *specs.Spec) (*
 	}
 	if r.Network != nil {
 		if r.Network.ClassID != nil {
-			c.Resources.NetClsClassid = string(*r.Network.ClassID)
+			c.Resources.NetClsClassid = *r.Network.ClassID
 		}
 		for _, m := range r.Network.Priorities {
 			c.Resources.NetPrioIfpriomap = append(c.Resources.NetPrioIfpriomap, &configs.IfPrioMap{

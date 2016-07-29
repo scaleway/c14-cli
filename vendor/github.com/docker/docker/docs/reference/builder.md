@@ -572,7 +572,7 @@ The cache for `RUN` instructions can be invalidated by `ADD` instructions. See
   For systems that have recent aufs version (i.e., `dirperm1` mount option can
   be set), docker will attempt to fix the issue automatically by mounting
   the layers with `dirperm1` option. More details on `dirperm1` option can be
-  found at [`aufs` man page](http://aufs.sourceforge.net/aufs3/man.html)
+  found at [`aufs` man page](https://github.com/sfjro/aufs3-linux/tree/aufs3.18/Documentation/filesystems/aufs)
 
   If your system doesn't have support for `dirperm1`, the issue describes a workaround.
 
@@ -1292,8 +1292,9 @@ subsequent line 3. The `USER` at line 4 evaluates to `what_user` as `user` is
 defined and the `what_user` value was passed on the command line. Prior to its definition by an
 `ARG` instruction, any use of a variable results in an empty string.
 
-> **Note:** It is not recommended to use build-time variables for
->  passing secrets like github keys, user credentials etc.
+> **Warning:** It is not recommended to use build-time variables for
+>  passing secrets like github keys, user credentials etc. Build-time variable
+>  values are visible to any user of the image with the `docker history` command.
 
 You can use an `ARG` or an `ENV` instruction to specify variables that are
 available to the `RUN` instruction. Environment variables defined using the
@@ -1523,10 +1524,7 @@ The possible values are:
 
 - 0: success - the container is healthy and ready for use
 - 1: unhealthy - the container is not working correctly
-- 2: starting - the container is not ready for use yet, but is working correctly
-
-If the probe returns 2 ("starting") when the container has already moved out of the
-"starting" state then it is treated as "unhealthy" instead.
+- 2: reserved - do not use this exit code
 
 For example, to check every five minutes or so that a web-server is able to
 serve the site's main page within three seconds:

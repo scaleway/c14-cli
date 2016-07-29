@@ -2503,7 +2503,7 @@ func (s *DockerDaemonSuite) TestBuildOnDisabledBridgeNetworkDaemon(c *check.C) {
 }
 
 // Test case for #21976
-func (s *DockerDaemonSuite) TestDaemonDNSInHostMode(c *check.C) {
+func (s *DockerDaemonSuite) TestDaemonDnsInHostMode(c *check.C) {
 	testRequires(c, SameHostDaemon, DaemonIsLinux)
 
 	err := s.d.StartWithBusybox("--dns", "1.2.3.4")
@@ -2515,7 +2515,7 @@ func (s *DockerDaemonSuite) TestDaemonDNSInHostMode(c *check.C) {
 }
 
 // Test case for #21976
-func (s *DockerDaemonSuite) TestDaemonDNSSearchInHostMode(c *check.C) {
+func (s *DockerDaemonSuite) TestDaemonDnsSearchInHostMode(c *check.C) {
 	testRequires(c, SameHostDaemon, DaemonIsLinux)
 
 	err := s.d.StartWithBusybox("--dns-search", "example.com")
@@ -2527,7 +2527,7 @@ func (s *DockerDaemonSuite) TestDaemonDNSSearchInHostMode(c *check.C) {
 }
 
 // Test case for #21976
-func (s *DockerDaemonSuite) TestDaemonDNSOptionsInHostMode(c *check.C) {
+func (s *DockerDaemonSuite) TestDaemonDnsOptionsInHostMode(c *check.C) {
 	testRequires(c, SameHostDaemon, DaemonIsLinux)
 
 	err := s.d.StartWithBusybox("--dns-opt", "timeout:3")

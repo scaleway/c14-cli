@@ -64,7 +64,7 @@ Options:
       --label-file value            Read in a line delimited file of labels (default [])
       --link value                  Add link to another container (default [])
       --link-local-ip value         Container IPv4/IPv6 link-local addresses (default [])
-      --log-driver string           Logging driver for container
+      --log-driver string           Logging driver for the container
       --log-opt value               Log driver options (default [])
       --mac-address string          Container MAC address (e.g. 92:d0:c6:0a:29:33)
   -m, --memory string               Memory limit
@@ -72,13 +72,13 @@ Options:
       --memory-swap string          Swap limit equal to memory plus swap: '-1' to enable unlimited swap
       --memory-swappiness int       Tune container memory swappiness (0 to 100) (default -1)
       --name string                 Assign a name to the container
-      --net string                  Connect a container to a network (default "default")
+      --network-alias value         Add network-scoped alias for the container (default [])
+      --network string              Connect a container to a network (default "default")
                                     'bridge': create a network stack on the default Docker bridge
                                     'none': no networking
                                     'container:<name|id>': reuse another container's network stack
                                     'host': use the Docker host network stack
                                     '<network-name>|<network-id>': connect to a user-defined network
-      --net-alias value             Add network-scoped alias for the container (default [])
       --no-healthcheck              Disable any container-specified HEALTHCHECK
       --oom-kill-disable            Disable OOM Killer
       --oom-score-adj int           Tune host's OOM preferences (-1000 to 1000)
@@ -97,7 +97,7 @@ Options:
                                     Unit is optional and can be `b` (bytes), `k` (kilobytes), `m` (megabytes),
                                     or `g` (gigabytes). If you omit the unit, the system uses bytes.
       --stop-signal string          Signal to stop a container, SIGTERM by default (default "SIGTERM")
-      --storage-opt value           Set storage driver options per container (default [])
+      --storage-opt value           Storage driver options for the container (default [])
       --sysctl value                Sysctl options (default map[])
       --tmpfs value                 Mount a tmpfs directory (default [])
   -t, --tty                         Allocate a pseudo-TTY

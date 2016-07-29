@@ -3,11 +3,12 @@
 title = "service inspect"
 description = "The service inspect command description and usage"
 keywords = ["service, inspect"]
-advisory = "rc"
 [menu.main]
 parent = "smn_cli"
 +++
 <![end-metadata]-->
+
+**Warning:** this command is part of the Swarm management feature introduced in Docker 1.12, and might be subject to non backward-compatible changes.
 
 # service inspect
 
@@ -19,7 +20,7 @@ Display detailed information on one or more services
 Options:
   -f, --format string   Format the output using the given go template
       --help            Print usage
-  -p, --pretty          Print the information in a human friendly format.
+      --pretty          Print the information in a human friendly format.
 ```
 
 
@@ -119,14 +120,11 @@ Labels:
 Mode:		REPLICATED
  Replicas:		5
 Placement:
- Strategy:	Spread
 UpdateConfig:
  Parallelism:	0
 ContainerSpec:
  Image:		nginx:alpine
 Resources:
-Reservations:
-Limits:
 Ports:
  Name =
  Protocol = tcp
@@ -153,5 +151,5 @@ $ docker service inspect --format='{{.Spec.Mode.Replicated.Replicas}}' redis
 * [service ls](service_ls.md)
 * [service rm](service_rm.md)
 * [service scale](service_scale.md)
-* [service tasks](service_tasks.md)
+* [service ps](service_ps.md)
 * [service update](service_update.md)

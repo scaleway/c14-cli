@@ -111,12 +111,11 @@ read the [`dockerd`](dockerd.md) reference page.
 
 | Command | Description                                                        |
 |:--------|:-------------------------------------------------------------------|
-| [node accept](node_accept.md) | Accept a node into the swarm                 |
 | [node promote](node_promote.md) | Promote a node that is pending a promotion to manager |
 | [node demote](node_demote.md) | Demotes an existing manager so that it is no longer a manager |
 | [node inspect](node_inspect.md) | Inspect a node in the swarm                |
 | [node update](node_update.md) | Update attributes for a node                 |
-| [node tasks](node_tasks.md) | List tasks running on a node                   |
+| [node ps](node_ps.md) | List tasks running on a node                   |
 | [node ls](node_ls.md) | List nodes in the swarm                              |
 | [node rm](node_rm.md) | Remove a node from the swarm                         |
 
@@ -124,10 +123,11 @@ read the [`dockerd`](dockerd.md) reference page.
 
 | Command | Description                                                        |
 |:--------|:-------------------------------------------------------------------|
-| [swarm init](swarm_init.md) | Initialize a Swarm                             |
-| [swarm join](swarm_join.md) | Join a Swarm as a manager node or worker node  |
+| [swarm init](swarm_init.md) | Initialize a swarm                             |
+| [swarm join](swarm_join.md) | Join a swarm as a manager node or worker node  |
 | [swarm leave](swarm_leave.md) | Remove the current node from the swarm       |
 | [swarm update](swarm_update.md) | Update attributes of a swarm               |
+| [swarm join-token](swarm_join_token.md) | Display or rotate join tokens      |
 
 ### Swarm service commands
 
@@ -138,5 +138,5 @@ read the [`dockerd`](dockerd.md) reference page.
 | [service ls](service_ls.md) | List services in the swarm                     |
 | [service rm](service_rm.md) | Reemove a swervice from the swarm              |
 | [service scale](service_scale.md) | Set the number of replicas for the desired state of the service |
-| [service tasks](service_tasks.md) | List the tasks of a service              |
+| [service ps](service_ps.md) | List the tasks of a service              |
 | [service update](service_update.md)  | Update the attributes of a service    |

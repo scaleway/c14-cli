@@ -2,6 +2,8 @@ package dockerfile
 
 import (
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -171,7 +173,9 @@ func executeTestCase(t *testing.T, testCase dispatchTestCase) {
 	}()
 
 	r := strings.NewReader(testCase.dockerfile)
-	n, err := parser.Parse(r)
+	d := parser.Directive{}
+	parser.SetEscapeToken(parser.DefaultEscapeToken, &d)
+	n, err := parser.Parse(r, &d)
 
 	if err != nil {
 		t.Fatalf("Error when parsing Dockerfile: %s", err)
@@ -192,4 +196,36 @@ func executeTestCase(t *testing.T, testCase dispatchTestCase) {
 		t.Fatalf("Wrong error message. Should be \"%s\". Got \"%s\"", testCase.expectedError, err.Error())
 	}
 
+}
+
+// createTestTempDir creates a temporary directory for testing.
+// It returns the created path and a cleanup function which is meant to be used as deferred call.
+// When an error occurs, it terminates the test.
+func createTestTempDir(t *testing.T, dir, prefix string) (string, func()) {
+	path, err := ioutil.TempDir(dir, prefix)
+
+	if err != nil {
+		t.Fatalf("Error when creating directory %s with prefix %s: %s", dir, prefix, err)
+	}
+
+	return path, func() {
+		err = os.RemoveAll(path)
+
+		if err != nil {
+			t.Fatalf("Error when removing directory %s: %s", path, err)
+		}
+	}
+}
+
+// createTestTempFile creates a temporary file within dir with specific contents and permissions.
+// When an error occurs, it terminates the test
+func createTestTempFile(t *testing.T, dir, filename, contents string, perm os.FileMode) string {
+	filePath := filepath.Join(dir, filename)
+	err := ioutil.WriteFile(filePath, []byte(contents), perm)
+
+	if err != nil {
+		t.Fatalf("Error when creating %s file: %s", filename, err)
+	}
+
+	return filePath
 }

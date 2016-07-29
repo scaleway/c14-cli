@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/docker/docker/daemon/exec"
 	"github.com/docker/docker/libcontainerd"
 	"github.com/docker/docker/runconfig"
 )
@@ -104,15 +103,10 @@ func (daemon *Daemon) StateChanged(id string, e libcontainerd.StateInfo) error {
 
 // AttachStreams is called by libcontainerd to connect the stdio.
 func (daemon *Daemon) AttachStreams(id string, iop libcontainerd.IOPipe) error {
-	var (
-		s  *runconfig.StreamConfig
-		ec *exec.Config
-	)
-
+	var s *runconfig.StreamConfig
 	c := daemon.containers.Get(id)
 	if c == nil {
-		var err error
-		ec, err = daemon.getExecConfig(id)
+		ec, err := daemon.getExecConfig(id)
 		if err != nil {
 			return fmt.Errorf("no such exec/container: %s", id)
 		}
@@ -122,25 +116,6 @@ func (daemon *Daemon) AttachStreams(id string, iop libcontainerd.IOPipe) error {
 		if err := daemon.StartLogging(c); err != nil {
 			c.Reset(false)
 			return err
-		}
-	}
-
-	if stdin := s.Stdin(); stdin != nil {
-		if iop.Stdin != nil {
-			go func() {
-				io.Copy(iop.Stdin, stdin)
-				iop.Stdin.Close()
-			}()
-		}
-	} else {
-		//TODO(swernli): On Windows, not closing stdin when no tty is requested by the exec Config
-		// results in a hang. We should re-evaluate generalizing this fix for all OSes if
-		// we can determine that is the right thing to do more generally.
-		if (c != nil && !c.Config.Tty) || (ec != nil && !ec.Tty && runtime.GOOS == "windows") {
-			// tty is enabled, so dont close containerd's iopipe stdin.
-			if iop.Stdin != nil {
-				iop.Stdin.Close()
-			}
 		}
 	}
 
@@ -159,6 +134,22 @@ func (daemon *Daemon) AttachStreams(id string, iop libcontainerd.IOPipe) error {
 	}
 	if iop.Stderr != nil {
 		copyFunc(s.Stderr(), iop.Stderr)
+	}
+
+	if stdin := s.Stdin(); stdin != nil {
+		if iop.Stdin != nil {
+			go func() {
+				io.Copy(iop.Stdin, stdin)
+				iop.Stdin.Close()
+			}()
+		}
+	} else {
+		if c != nil && !c.Config.Tty {
+			// tty is enabled, so dont close containerd's iopipe stdin.
+			if iop.Stdin != nil {
+				iop.Stdin.Close()
+			}
+		}
 	}
 
 	return nil

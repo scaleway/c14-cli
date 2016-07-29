@@ -61,7 +61,7 @@ func (s *DockerSuite) TestRunLeakyFileDescriptors(c *check.C) {
 
 // it should be possible to lookup Google DNS
 // this will fail when Internet access is unavailable
-func (s *DockerSuite) TestRunLookupGoogleDNS(c *check.C) {
+func (s *DockerSuite) TestRunLookupGoogleDns(c *check.C) {
 	testRequires(c, Network, NotArm)
 	image := DefaultImage
 	if daemonPlatform == "windows" {
@@ -501,26 +501,20 @@ func (s *DockerSuite) TestRunVolumesFromInReadWriteMode(c *check.C) {
 }
 
 func (s *DockerSuite) TestVolumesFromGetsProperMode(c *check.C) {
-	testRequires(c, SameHostDaemon)
 	prefix, slash := getPrefixAndSlashFromDaemonPlatform()
-	hostpath := randomTmpDirPath("test", daemonPlatform)
-	if err := os.MkdirAll(hostpath, 0755); err != nil {
-		c.Fatalf("Failed to create %s: %q", hostpath, err)
-	}
-	defer os.RemoveAll(hostpath)
 
 	// TODO Windows: Temporary check - remove once TP5 support is dropped
 	if daemonPlatform == "windows" && windowsDaemonKV < 14350 {
 		c.Skip("Needs later Windows build for RO volumes")
 	}
-	dockerCmd(c, "run", "--name", "parent", "-v", hostpath+":"+prefix+slash+"test:ro", "busybox", "true")
+	dockerCmd(c, "run", "--name", "parent", "-v", prefix+slash+"test:"+prefix+slash+"test:ro", "busybox", "true")
 
 	// Expect this "rw" mode to be be ignored since the inherited volume is "ro"
 	if _, _, err := dockerCmdWithError("run", "--volumes-from", "parent:rw", "busybox", "touch", prefix+slash+"test"+slash+"file"); err == nil {
 		c.Fatal("Expected volumes-from to inherit read-only volume even when passing in `rw`")
 	}
 
-	dockerCmd(c, "run", "--name", "parent2", "-v", hostpath+":"+prefix+slash+"test:ro", "busybox", "true")
+	dockerCmd(c, "run", "--name", "parent2", "-v", prefix+slash+"test:"+prefix+slash+"test:ro", "busybox", "true")
 
 	// Expect this to be read-only since both are "ro"
 	if _, _, err := dockerCmdWithError("run", "--volumes-from", "parent2:ro", "busybox", "touch", prefix+slash+"test"+slash+"file"); err == nil {
@@ -1261,7 +1255,7 @@ func (s *DockerSuite) TestRunDisallowBindMountingRootToRoot(c *check.C) {
 }
 
 // Verify that a container gets default DNS when only localhost resolvers exist
-func (s *DockerSuite) TestRunDNSDefaultOptions(c *check.C) {
+func (s *DockerSuite) TestRunDnsDefaultOptions(c *check.C) {
 	// Not applicable on Windows as this is testing Unix specific functionality
 	testRequires(c, SameHostDaemon, DaemonIsLinux)
 
@@ -1295,7 +1289,7 @@ func (s *DockerSuite) TestRunDNSDefaultOptions(c *check.C) {
 	}
 }
 
-func (s *DockerSuite) TestRunDNSOptions(c *check.C) {
+func (s *DockerSuite) TestRunDnsOptions(c *check.C) {
 	// Not applicable on Windows as Windows does not support --dns*, or
 	// the Unix-specific functionality of resolv.conf.
 	testRequires(c, DaemonIsLinux)
@@ -1319,7 +1313,7 @@ func (s *DockerSuite) TestRunDNSOptions(c *check.C) {
 	}
 }
 
-func (s *DockerSuite) TestRunDNSRepeatOptions(c *check.C) {
+func (s *DockerSuite) TestRunDnsRepeatOptions(c *check.C) {
 	testRequires(c, DaemonIsLinux)
 	out, _, _ := dockerCmdWithStdoutStderr(c, "run", "--dns=1.1.1.1", "--dns=2.2.2.2", "--dns-search=mydomain", "--dns-search=mydomain2", "--dns-opt=ndots:9", "--dns-opt=timeout:3", "busybox", "cat", "/etc/resolv.conf")
 
@@ -1329,7 +1323,7 @@ func (s *DockerSuite) TestRunDNSRepeatOptions(c *check.C) {
 	}
 }
 
-func (s *DockerSuite) TestRunDNSOptionsBasedOnHostResolvConf(c *check.C) {
+func (s *DockerSuite) TestRunDnsOptionsBasedOnHostResolvConf(c *check.C) {
 	// Not applicable on Windows as testing Unix specific functionality
 	testRequires(c, SameHostDaemon, DaemonIsLinux)
 
@@ -2927,7 +2921,7 @@ func (s *DockerSuite) TestRunContainerWithReadonlyEtcHostsAndLinkedContainer(c *
 	}
 }
 
-func (s *DockerSuite) TestRunContainerWithReadonlyRootfsWithDNSFlag(c *check.C) {
+func (s *DockerSuite) TestRunContainerWithReadonlyRootfsWithDnsFlag(c *check.C) {
 	// Not applicable on Windows which does not support either --read-only or --dns.
 	// --read-only + userns has remount issues
 	testRequires(c, DaemonIsLinux, NotUserNamespace)
@@ -3739,7 +3733,7 @@ func (s *DockerSuite) TestRunContainerNetworkModeToSelf(c *check.C) {
 	}
 }
 
-func (s *DockerSuite) TestRunContainerNetModeWithDNSMacHosts(c *check.C) {
+func (s *DockerSuite) TestRunContainerNetModeWithDnsMacHosts(c *check.C) {
 	// Not applicable on Windows which does not support --net=container
 	testRequires(c, DaemonIsLinux)
 	out, _, err := dockerCmdWithError("run", "-d", "--name", "parent", "busybox", "top")
@@ -4089,7 +4083,7 @@ func (s *DockerSuite) TestRunNonExistingCmd(c *check.C) {
 
 // TestCmdCannotBeInvoked checks that 'docker run busybox /etc' exits with 126, or
 // 127 on Windows. The difference is that in Windows, the container must be started
-// as that's when the check is made (and yes, by it's design...)
+// as that's when the check is made (and yes, by its design...)
 func (s *DockerSuite) TestCmdCannotBeInvoked(c *check.C) {
 	expected := 126
 	if daemonPlatform == "windows" {
@@ -4453,7 +4447,7 @@ func (s *DockerSuite) TestRunTooLongHostname(c *check.C) {
 }
 
 // Test case for #21976
-func (s *DockerSuite) TestRunDNSInHostMode(c *check.C) {
+func (s *DockerSuite) TestRunDnsInHostMode(c *check.C) {
 	testRequires(c, DaemonIsLinux, NotUserNamespace)
 
 	expectedOutput := "nameserver 127.0.0.1"
