@@ -5,7 +5,7 @@ GOBUILD ?=	$(GO) build
 GOCLEAN ?=	$(GO) clean
 GOINSTALL ?=	$(GO) install
 GOTEST ?=	$(GO) test
-GOFMT ?=	gofmt -w
+GOFMT ?=	gofmt -w -s
 GODIR ?=	github.com/c14-cli
 
 NAME =		c14
