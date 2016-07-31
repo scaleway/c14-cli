@@ -1,0 +1,39 @@
+package commands
+
+type rename struct {
+	Base
+	renameFlags
+}
+
+type renameFlags struct {
+}
+
+// Rename returns a new command "rename"
+func Rename() Command {
+	ret := &rename{}
+	ret.Init(Config{
+		UsageLine:   "rename ARCHIVE new_name",
+		Description: "Rename an archive",
+		Help:        "Rename an archive",
+		Examples: `
+        $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 courses
+        $ c14 rename courses coursesJan`,
+	})
+	return ret
+}
+
+func (r *rename) GetName() string {
+	return "rename"
+}
+
+func (r *rename) Run(args []string) (err error) {
+	if len(args) != 2 {
+		r.PrintUsage()
+		return
+	}
+
+	if err = r.InitAPI(); err != nil {
+		return
+	}
+	return
+}

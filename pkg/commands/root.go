@@ -32,6 +32,7 @@ func init() {
 			List(),
 			Login(),
 			LsFiles(),
+			Rename(),
 			Remove(),
 			Unfreeze(),
 			Upload(),
