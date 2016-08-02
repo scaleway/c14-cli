@@ -199,6 +199,7 @@ func (o *OnlineAPI) PostArchive(uuidSafe, uuidArchive string) (uuid string, err 
 	}
 	if res.Archive != nil {
 		uuid = res.Archive.UUIDRef
+		_, err = o.GetArchive(uuidSafe, uuid, false)
 	}
 	return
 }
