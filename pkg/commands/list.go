@@ -80,6 +80,7 @@ func (l *list) Run(args []string) (err error) {
 			if safes, err = l.OnlineAPI.GetSafes(true); err != nil {
 				return
 			}
+			l.displayArchives(safes)
 		} else {
 			err = errors.Errorf("Not implemented yet")
 			// safes = make([]api.OnlineGetSafe, len(args))
@@ -90,7 +91,6 @@ func (l *list) Run(args []string) (err error) {
 			// 	}
 			// }
 		}
-		l.displayArchives(safes)
 	}
 	return
 }

@@ -1,5 +1,7 @@
 package commands
 
+import "github.com/QuentinPerez/c14-cli/pkg/api"
+
 type rename struct {
 	Base
 	renameFlags
@@ -35,5 +37,19 @@ func (r *rename) Run(args []string) (err error) {
 	if err = r.InitAPI(); err != nil {
 		return
 	}
+	var (
+		safe        api.OnlineGetSafe
+		uuidArchive string
+	)
+
+	archive := args[0]
+	if safe, uuidArchive, err = r.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
+		if safe, uuidArchive, err = r.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
+			return
+		}
+	}
+	err = r.OnlineAPI.PatchArchive(safe.UUIDRef, uuidArchive, api.OnlinePatchArchive{
+		Name: args[1],
+	})
 	return
 }

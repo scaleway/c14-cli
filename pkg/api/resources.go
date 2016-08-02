@@ -121,3 +121,12 @@ type OnlinePostResult struct {
 		Status  string `json:"status"`
 	} `json:"archive"`
 }
+
+/*
+ * Patch
+ */
+
+type OnlinePatchArchive struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}

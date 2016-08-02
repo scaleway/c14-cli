@@ -137,6 +137,30 @@ func (o *OnlineAPI) postWrapper(uri string, content interface{}, res interface{}
 	return
 }
 
+func (o *OnlineAPI) patchWrapper(uri string, content interface{}) (body []byte, err error) {
+	var (
+		resp    *http.Response
+		payload = new(bytes.Buffer)
+	)
+
+	encoder := json.NewEncoder(payload)
+	if content != nil {
+		if err = encoder.Encode(content); err != nil {
+			return
+		}
+	}
+	resp, err = o.response("PATCH", uri, payload)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+	if err != nil {
+		err = errors.Annotatef(err, "Unable to patch %s", uri)
+		return
+	}
+	body, err = o.handleHTTPError([]int{204}, resp)
+	return
+}
+
 func (o *OnlineAPI) handleHTTPError(goodStatusCode []int, resp *http.Response) (content []byte, err error) {
 	content, err = ioutil.ReadAll(resp.Body)
 	if err != nil {

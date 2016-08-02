@@ -229,3 +229,15 @@ func (o *OnlineAPI) DeleteArchive(uuidSafe, uuidArchive string) (err error) {
 	}
 	return
 }
+
+/*
+ * Patch Functions
+ */
+
+func (o *OnlineAPI) PatchArchive(uuidSafe, uuidArchive string, data OnlinePatchArchive) (err error) {
+	// TODO: update cache field
+	if _, err = o.patchWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s", APIUrl, uuidSafe, uuidArchive), data); err != nil {
+		err = errors.Annotate(err, "PatchArchive")
+	}
+	return
+}
