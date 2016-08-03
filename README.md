@@ -153,8 +153,8 @@ Examples:
 ```console
 Usage: c14 login
 
-Generates a credentials file in $HOME/.c14rc
-containing informations to generate a token
+Generates a credentials file in $CONFIG/c14-cli/c14rc.json
+containing informations to generate a token.
 
 Options:
   -h, --help=false      Print usage

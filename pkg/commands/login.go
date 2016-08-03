@@ -22,7 +22,7 @@ func Login() Command {
 	ret.Init(Config{
 		UsageLine:   "login",
 		Description: "Log in to Online API",
-		Help: `Generates a credentials file in $HOME/.c14rc
+		Help: `Generates a credentials file in $CONFIG/c14-cli/c14rc.json
 containing informations to generate a token.`,
 		Examples: `
     $ c14 login`,

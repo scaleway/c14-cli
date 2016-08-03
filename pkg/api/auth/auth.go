@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"runtime"
 
 	"golang.org/x/oauth2"
 
+	"github.com/QuentinPerez/c14-cli/pkg/utils/configstore"
 	"github.com/QuentinPerez/go-encodeUrl"
 	"github.com/juju/errors"
 )
@@ -27,7 +26,7 @@ type Authentication struct {
 	VerficationURL string `json:"verification_url"`
 }
 
-// Credentials represents the informations to get a token, there are saved in `~/.c14rc`
+// Credentials represents the informations to get a token, there are saved in `~/$CONFIG/c14-cli/c14rc.json`
 type Credentials struct {
 	ClientID     string `json:"client_id" url:"client_id,ifStringIsNotEmpty"`
 	ClientSecret string `json:"client_secret" url:"client_secret,ifStringIsNotEmpty"`
@@ -92,18 +91,6 @@ func GenerateCredentials(clientID, deviceCode string) (c Credentials, err error)
 	return
 }
 
-func getCredentialsPath() (path string, err error) {
-	homeDir := os.Getenv("HOME") // *nix
-	if homeDir == "" {           // Windows
-		homeDir = os.Getenv("USERPROFILE")
-	}
-	if homeDir == "" {
-		return "", errors.New("user home directory not found")
-	}
-	path = fmt.Sprintf("%s/.c14rc", homeDir)
-	return
-}
-
 // Token oauth2.TokenSource implementation
 func (c *Credentials) Token() (t *oauth2.Token, err error) {
 	t = &oauth2.Token{
@@ -115,63 +102,18 @@ func (c *Credentials) Token() (t *oauth2.Token, err error) {
 
 // Save writes the credentials file
 func (c *Credentials) Save() (err error) {
-	var (
-		path  string
-		c14rc *os.File
-	)
-
-	path, err = getCredentialsPath()
-	if err != nil {
-		err = errors.Annotate(err, "Unable to get credentials file")
-		return
-	}
-	c14rc, err = os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0600)
-	if err != nil {
-		err = errors.Annotatef(err, "Unable to create %v config file", path)
-		return
-	}
-	defer c14rc.Close()
-	encoder := json.NewEncoder(c14rc)
-	err = encoder.Encode(c)
-	if err != nil {
-		err = errors.Annotatef(err, "Unable to encode %v", path)
-		return
-	}
+	err = configStore.SaveRC(c)
 	return
 }
 
 // GetCredentials returns the C14 credentials file
 func GetCredentials() (c *Credentials, err error) {
-	var (
-		path        string
-		fileContent []byte
-	)
-
-	path, err = getCredentialsPath()
-	if err != nil {
-		err = errors.Annotate(err, "Unable to get credentials file")
-		return
-	}
-	// Don't check permissions on Windows
-	if runtime.GOOS != "windows" {
-		stat, errStat := os.Stat(path)
-		if errStat == nil {
-			perm := stat.Mode().Perm()
-			if perm&0066 != 0 {
-				err = errors.Errorf("Permissions %#o for %v are too open", perm, path)
-				return
-			}
-		} else {
-			err = errors.Errorf("You need to login first: c14 login")
-			return
-		}
-	}
-	fileContent, err = ioutil.ReadFile(path)
-	if err != nil {
-		err = errors.Annotatef(err, "Unable to read %v", path)
-		return
-	}
 	c = &Credentials{}
-	err = json.Unmarshal(fileContent, c)
+	if err = configStore.GetRC(c); err != nil {
+		return
+	}
+	if c.ClientSecret == "" || c.ClientID == "" || c.AccessToken == "" {
+		err = errors.Errorf("You need to login first: c14 login")
+	}
 	return
 }

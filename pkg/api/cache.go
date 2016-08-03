@@ -1,15 +1,11 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"os"
-	"runtime"
+	"errors"
 	"sync"
 
+	"github.com/QuentinPerez/c14-cli/pkg/utils/configstore"
 	"github.com/apex/log"
-	"github.com/juju/errors"
 )
 
 type cacheSafe struct {
@@ -22,64 +18,19 @@ type cache struct {
 	sync.RWMutex
 }
 
-func getCachePath() (path string, err error) {
-	homeDir := os.Getenv("HOME") // *nix
-	if homeDir == "" {           // Windows
-		homeDir = os.Getenv("USERPROFILE")
-	}
-	if homeDir == "" {
-		return "", errors.New("user home directory not found")
-	}
-	path = fmt.Sprintf("%s/.c14-cache", homeDir)
-	return
-}
-
 func CleanUp() (c *cache) {
 	c = &cache{safes: make(map[string]cacheSafe)}
 	return
 }
 
 func NewCache() (c *cache) {
-	var (
-		path        string
-		fileContent []byte
-		err         error
-	)
 	c = CleanUp()
-	if path, err = getCachePath(); err == nil {
-		// Don't check permissions on Windows
-		if runtime.GOOS != "windows" {
-			stat, errStat := os.Stat(path)
-			if errStat == nil {
-				perm := stat.Mode().Perm()
-				if perm&0066 != 0 {
-					log.Debugf("Permissions %#o for %v are too open", perm, path)
-					return
-				}
-			} else {
-				return
-			}
-		}
-		if fileContent, err = ioutil.ReadFile(path); err != nil {
-			return
-		}
-		json.Unmarshal(fileContent, &c.safes)
-	}
+	_ = configStore.GetCache(&c.safes)
 	return
 }
 
 func (c *cache) Save() {
-	var (
-		path string
-		err  error
-		data []byte
-	)
-
-	if path, err = getCachePath(); err == nil {
-		if data, err = json.Marshal(c.safes); err == nil {
-			_ = ioutil.WriteFile(path, data, 0600)
-		}
-	}
+	_ = configStore.SaveCache(c.safes)
 }
 
 func (c *cache) GetSafe(uuid string) (safe OnlineGetSafe, ok bool) {
