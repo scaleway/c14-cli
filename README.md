@@ -1,6 +1,6 @@
 # C14 CLI
 
-Interact with Online C14 API from the command line.
+Interact with [Online C14](https://www.online.net/en/c14) API from the command line.
 
 ![Online C14 logo](https://raw.githubusercontent.com/QuentinPerez/c14-cli/master/assets/logo.png)
 
