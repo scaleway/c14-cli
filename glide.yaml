@@ -24,3 +24,5 @@ import:
 - package: golang.org/x/oauth2
 - package: gopkg.in/cheggaaa/pb.v1
   version: v1.0.5
+- package: github.com/tucnak/store
+  version: ^1.0.0
