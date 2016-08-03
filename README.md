@@ -2,6 +2,8 @@
 
 Interact with Online C14 API from the command line.
 
+![Online C14 logo](https://raw.githubusercontent.com/QuentinPerez/c14-cli/master/assets/logo.png)
+
 #### Table of Contents
 
 1. [Overview](#overview)
