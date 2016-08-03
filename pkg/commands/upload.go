@@ -29,7 +29,6 @@ type upload struct {
 }
 
 type uploadFlags struct {
-	flTar  bool
 	flName string
 }
 
@@ -44,11 +43,10 @@ func Upload() Command {
         $ c14 upload
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
         $ c14 upload /upload 83b93179-32e0-11e6-be10-10604b9b0ad9
-        $ tar cvf - /upload 2> /dev/null | ./c14 upload --tar --name "file.tar.gz" fervent_austin
+        $ tar cvf - /upload 2> /dev/null | ./c14 upload --name "file.tar.gz" fervent_austin
 `,
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
-	ret.Flags.BoolVar(&ret.flTar, []string{"-tar"}, false, "Read a tar form stdin")
 	return ret
 }
 
@@ -59,13 +57,8 @@ func (u *upload) CheckFlags(args []string) (err error) {
 	if !u.isPiped {
 		nbArgs = 2
 	} else {
-		if u.flTar {
-			if u.flName == "" {
-				err = errors.Errorf("You need to specified a name")
-				return
-			}
-		} else {
-			err = errors.Errorf("For now you can only read a tar archive from Stdin, (--tar)")
+		if u.flName == "" {
+			err = errors.Errorf("You need to specified a name")
 			return
 		}
 	}
@@ -260,36 +253,34 @@ func (u *upload) uploadAFile(c *sftp.Client, reader io.ReadCloser, file string, 
 }
 
 func (u *upload) pipedUpload(c *sftp.Client) (err error) {
-	if u.flTar {
-		var (
-			buff   = make([]byte, 1<<23)
-			nr, nw int
-			total  uint64
-			w      *sftp.File
-		)
+	var (
+		buff   = make([]byte, 1<<23)
+		nr, nw int
+		total  uint64
+		w      *sftp.File
+	)
 
-		if w, err = c.Create(fmt.Sprintf("/buffer/%s", u.flName)); err != nil {
+	if w, err = c.Create(fmt.Sprintf("/buffer/%s", u.flName)); err != nil {
+		return
+	}
+	for {
+		nr, err = os.Stdin.Read(buff)
+		if err != nil {
+			if err == io.EOF {
+				err = nil
+			}
+			break
+		}
+		if nw, err = w.Write(buff[:nr]); err != nil {
 			return
 		}
-		for {
-			nr, err = os.Stdin.Read(buff)
-			if err != nil {
-				if err == io.EOF {
-					err = nil
-				}
-				break
-			}
-			if nw, err = w.Write(buff[:nr]); err != nil {
-				return
-			}
-			if nw != nr {
-				err = errors.Errorf("Error during write")
-				return
-			}
-			total += uint64(nr)
-			fmt.Printf("\rUploading \t%s", humanize.Bytes(total))
-
+		if nw != nr {
+			err = errors.Errorf("Error during write")
+			return
 		}
+		total += uint64(nr)
+		fmt.Printf("\rUploading \t%s", humanize.Bytes(total))
+
 	}
 	return
 }

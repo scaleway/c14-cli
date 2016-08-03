@@ -29,7 +29,7 @@ type lsFlags struct {
 func Ls() Command {
 	ret := &ls{}
 	ret.Init(Config{
-		UsageLine:   "ls [OPTIONS]",
+		UsageLine:   "ls [OPTIONS] [ARCHIVE]*",
 		Description: "list the archives",
 		Help:        "list the archives.",
 		Examples: `

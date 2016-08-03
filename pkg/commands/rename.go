@@ -18,8 +18,8 @@ func Rename() Command {
 		Description: "Rename an archive",
 		Help:        "Rename an archive.",
 		Examples: `
-        $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 courses
-        $ c14 rename courses coursesJan`,
+        $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 new_name
+        $ c14 rename old_name new_name`,
 	})
 	return ret
 }

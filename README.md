@@ -114,9 +114,9 @@ Examples:
 #### `c14 ls`
 
 ```console
-Usage: c14 ls [OPTIONS]
+Usage: c14 ls [OPTIONS] [ARCHIVE]*
 
-ls archives.
+list the archives.
 
 Options:
   -a, --all=false       Show all information on archives
@@ -184,14 +184,14 @@ Examples:
 ```console
 Usage: c14 rename ARCHIVE new_name
 
-Rename an archive
+Rename an archive.
 
 Options:
   -h, --help=false      Print usage
 
 Examples:
-        $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 courses
-        $ c14 rename courses coursesJan
+        $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 new_name
+        $ c14 rename old_name new_name
 ```
 
 
@@ -237,13 +237,12 @@ Upload your file or directory into an archive.
 Options:
   -h, --help=false      Print usage
   -n, --name=""         Assigns a name (only with tar method)
-  --tar=false           Read a tar form stdin
 
 Examples:
         $ c14 upload
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
         $ c14 upload /upload 83b93179-32e0-11e6-be10-10604b9b0ad9
-        $ tar cvf - /upload 2> /dev/null | ./c14 upload --tar --name "file.tar.gz" fervent_austin
+        $ tar cvf - /upload 2> /dev/null | ./c14 upload --name "file.tar.gz" fervent_austin
 ```
 
 
