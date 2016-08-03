@@ -27,11 +27,11 @@ func init() {
 	Root = &root{
 		commands: []Command{
 			Create(),
+			Files(),
 			Freeze(),
 			Help(),
-			List(),
 			Login(),
-			LsFiles(),
+			Ls(),
 			Rename(),
 			Remove(),
 			Unfreeze(),

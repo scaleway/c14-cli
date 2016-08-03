@@ -14,9 +14,9 @@ Interact with Online C14 API from the command line.
     * [`create`](#c14-create)
     * [`freeze`](#c14-freeze)
     * [`help`](#c14-help)
-    * [`list`](#c14-list)
+    * [`ls`](#c14-ls)
     * [`login`](#c14-login)
-    * [`ls-files`](#c14-ls-files)
+    * [`files`](#c14-files)
     * [`rename`](#c14-rename)
     * [`remove`](#c14-remove)
     * [`unfreeze`](#c14-unfreeze)
@@ -51,11 +51,11 @@ Options:
 
 Commands:
     create    Create a new archive
+    files     List the files of an archive
     freeze    Lock an archive
     help      Help of the c14 command line
-    list      List archives
     login     Log in to Online API
-    ls-files  List the archive files
+    ls        List the archives
     rename    Rename an archive
     remove    Remove an archive
     unfreeze  Unlock an archive
@@ -111,6 +111,24 @@ Examples:
 ```
 
 
+#### `c14 ls`
+
+```console
+Usage: c14 ls [OPTIONS]
+
+ls archives.
+
+Options:
+  -a, --all=false       Show all information on archives
+  -h, --help=false      Print usage
+  -p, --platform=false  Show the platforms
+  -q, --quiet=false     Only display UUIDs
+
+Examples:
+        $ c14 ls
+        $ c14 ls 83b93179-32e0-11e6-be10-10604b9b0ad9
+```
+
 #### `c14 help`
 
 ```console
@@ -146,10 +164,10 @@ Examples:
 ```
 
 
-#### `c14 list`
+#### `c14 files`
 
 ```console
-Usage: c14 ls-files ARCHIVE
+Usage: c14 files ARCHIVE
 
 List the archive files.
 
@@ -157,7 +175,7 @@ Options:
   -h, --help=false      Print usage
 
 Examples:
-        $ c14 ls-files 83b93179-32e0-11e6-be10-10604b9b0ad9
+        $ c14 files 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
 
 
@@ -243,9 +261,9 @@ Soon
  * Support of `create` command
  * Support of `freeze` command
  * Support of `help` command
- * Support of `list` command
+ * Support of `ls` command
  * Support of `login` command
- * Support of `ls-files` command
+ * Support of `files` command
  * Support of `rename` command
  * Support of `remove` command
  * Support of `unfreeze` command

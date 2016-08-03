@@ -13,28 +13,28 @@ import (
 	"github.com/pkg/sftp"
 )
 
-type lsFiles struct {
+type files struct {
 	Base
-	lsFilesFlags
+	filesFlags
 }
 
-type lsFilesFlags struct {
+type filesFlags struct {
 }
 
-// LsFiles returns a new command "lsFiles"
-func LsFiles() Command {
-	ret := &lsFiles{}
+// Files returns a new command "files"
+func Files() Command {
+	ret := &files{}
 	ret.Init(Config{
-		UsageLine:   "ls-files ARCHIVE",
-		Description: "List the archive files",
-		Help:        "List the archive files.",
+		UsageLine:   "files ARCHIVE",
+		Description: "List the files of an archive",
+		Help:        "List the files of an archive.",
 		Examples: `
-        $ c14 ls-files 83b93179-32e0-11e6-be10-10604b9b0ad9`,
+        $ c14 files 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})
 	return ret
 }
 
-func (l *lsFiles) CheckFlags(args []string) (err error) {
+func (l *files) CheckFlags(args []string) (err error) {
 	if len(args) == 0 {
 		l.PrintUsage()
 		os.Exit(1)
@@ -42,11 +42,11 @@ func (l *lsFiles) CheckFlags(args []string) (err error) {
 	return
 }
 
-func (l *lsFiles) GetName() string {
-	return "ls-files"
+func (l *files) GetName() string {
+	return "files"
 }
 
-func (l *lsFiles) Run(args []string) (err error) {
+func (l *files) Run(args []string) (err error) {
 	if err = l.InitAPI(); err != nil {
 		return
 	}

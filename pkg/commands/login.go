@@ -23,7 +23,7 @@ func Login() Command {
 		UsageLine:   "login",
 		Description: "Log in to Online API",
 		Help: `Generates a credentials file in $HOME/.c14rc
-containing informations to generate a token`,
+containing informations to generate a token.`,
 		Examples: `
     $ c14 login`,
 	})

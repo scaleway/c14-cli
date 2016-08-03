@@ -16,7 +16,7 @@ func Rename() Command {
 	ret.Init(Config{
 		UsageLine:   "rename ARCHIVE new_name",
 		Description: "Rename an archive",
-		Help:        "Rename an archive",
+		Help:        "Rename an archive.",
 		Examples: `
         $ c14 rename 83b93179-32e0-11e6-be10-10604b9b0ad9 courses
         $ c14 rename courses coursesJan`,

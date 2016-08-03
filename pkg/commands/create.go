@@ -26,7 +26,7 @@ func Create() Command {
 	ret.Init(Config{
 		UsageLine:   "create [OPTIONS]",
 		Description: "Create a new archive",
-		Help:        "Create a new archive, By default with a random name",
+		Help:        "Create a new archive, By default with a random name.",
 		Examples: `
 		$ c14 create
 		$ c14 create --name "MyAchive"

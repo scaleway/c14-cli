@@ -14,27 +14,27 @@ import (
 	"github.com/pkg/errors"
 )
 
-type list struct {
+type ls struct {
 	Base
-	listFlags
+	lsFlags
 }
 
-type listFlags struct {
+type lsFlags struct {
 	flQuiet    bool
 	flPlatform bool
 	flAll      bool
 }
 
-// List returns a new command "list"
-func List() Command {
-	ret := &list{}
+// Ls returns a new command "ls"
+func Ls() Command {
+	ret := &ls{}
 	ret.Init(Config{
-		UsageLine:   "list [OPTIONS]",
-		Description: "List archives",
-		Help:        "List archives.",
+		UsageLine:   "ls [OPTIONS]",
+		Description: "list the archives",
+		Help:        "list the archives.",
 		Examples: `
-        $ c14 list
-        $ c14 list 83b93179-32e0-11e6-be10-10604b9b0ad9`,
+        $ c14 ls
+        $ c14 ls 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Only display UUIDs")
 	ret.Flags.BoolVar(&ret.flPlatform, []string{"p", "-platform"}, false, "Show the platforms")
@@ -42,11 +42,11 @@ func List() Command {
 	return ret
 }
 
-func (l *list) GetName() string {
-	return "list"
+func (l *ls) GetName() string {
+	return "ls"
 }
 
-func (l *list) Run(args []string) (err error) {
+func (l *ls) Run(args []string) (err error) {
 	if err = l.InitAPI(); err != nil {
 		return
 	}
@@ -95,7 +95,7 @@ func (l *list) Run(args []string) (err error) {
 	return
 }
 
-func (l *list) displayArchives(val []api.OnlineGetSafe) {
+func (l *ls) displayArchives(val []api.OnlineGetSafe) {
 	var (
 		archives []api.OnlineGetArchive
 		archive  api.OnlineGetArchive
@@ -159,7 +159,7 @@ func (l *list) displayArchives(val []api.OnlineGetSafe) {
 	}
 }
 
-func (l *list) displayPlatforms(val []api.OnlineGetPlatform) {
+func (l *ls) displayPlatforms(val []api.OnlineGetPlatform) {
 	for i := range val {
 		if l.flQuiet {
 			fmt.Println(val[i].ID)
