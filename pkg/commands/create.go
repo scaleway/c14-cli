@@ -24,7 +24,7 @@ type createFlags struct {
 func Create() Command {
 	ret := &create{}
 	ret.Init(Config{
-		UsageLine:   "create [OPTIONS]*",
+		UsageLine:   "create [OPTIONS]",
 		Description: "Create a new archive",
 		Help:        "Create a new archive, By default with a random name",
 		Examples: `

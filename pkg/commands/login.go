@@ -45,8 +45,7 @@ func (l *login) Run(args []string) (err error) {
 		return
 	}
 	fmt.Printf(`Please opens this link with your browser: %v
-Then copy paste the code %v
-`, authentication.VerficationURL, authentication.UserCode)
+Then copy paste the code %v`, authentication.VerficationURL, authentication.UserCode)
 	for i := 0; i < 1500; i++ {
 		if credentials, err = auth.GenerateCredentials(clientID, authentication.DeviceCode); err == nil {
 			break
