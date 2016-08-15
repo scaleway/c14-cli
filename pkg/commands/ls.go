@@ -9,8 +9,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/dustin/go-humanize"
+	"github.com/online-net/c14-cli/pkg/api"
 	"github.com/pkg/errors"
 )
 

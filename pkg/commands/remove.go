@@ -3,8 +3,8 @@ package commands
 import (
 	"sync"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api"
 	"github.com/apex/log"
+	"github.com/online-net/c14-cli/pkg/api"
 )
 
 type remove struct {

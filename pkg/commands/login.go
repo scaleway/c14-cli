@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
 	"github.com/juju/errors"
+	"github.com/online-net/c14-cli/pkg/api/auth"
 )
 
 type login struct {

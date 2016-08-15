@@ -6,9 +6,9 @@ import (
 
 	"gopkg.in/cheggaaa/pb.v1"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api"
-	"github.com/QuentinPerez/c14-cli/pkg/utils/pgbar"
 	"github.com/apex/log"
+	"github.com/online-net/c14-cli/pkg/api"
+	"github.com/online-net/c14-cli/pkg/utils/pgbar"
 )
 
 type freeze struct {
