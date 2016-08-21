@@ -7,7 +7,7 @@ A package to encode your structures in URL
 :warning: Make sure that Go is installed on your computer.
 
 ```shell
-$ go get github.com/online-net/go-encodeUrl
+$ go get github.com/QuentinPerez/go-encodeUrl
 ```
 
 Now, the package is ready to use.
@@ -16,7 +16,7 @@ Now, the package is ready to use.
 ## Examples
 
 ```go
-import "github.com/online-net/go-encodeUrl"
+import "github.com/QuentinPerez/go-encodeUrl"
 
 
 type ID struct {
@@ -54,4 +54,4 @@ Feel free to contribute :smiley::beers:
 
 ## License
 
-[MIT](https://github.com/online-net/go-encodeUrl/blob/master/LICENSE)
+[MIT](https://github.com/QuentinPerez/go-encodeUrl/blob/master/LICENSE)

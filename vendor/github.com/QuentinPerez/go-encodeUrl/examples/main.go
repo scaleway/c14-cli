@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/online-net/go-encodeUrl"
+	"github.com/QuentinPerez/go-encodeUrl"
 	"github.com/Sirupsen/logrus"
 )
 

@@ -34,14 +34,15 @@ A command-line tool to manage your C14 storage easily
 ## Setup
 
 ```shell
-go install github.com/online-net/c14-cli/cmd/c14
+go get -u github.com/online-net/c14-cli/cmd/c14
 ```
 
 ## Usage
 
 
 ```console
-$ Usage: c14 [OPTIONS] COMMAND [arg...]
+$ c14
+Usage: c14 [OPTIONS] COMMAND [arg...]
 
 Interact with C14 from the command line.
 
