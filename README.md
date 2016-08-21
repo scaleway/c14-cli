@@ -2,7 +2,7 @@
 
 Interact with [Online C14](https://www.online.net/en/c14) API from the command line.
 
-![Online C14 logo](https://raw.githubusercontent.com/QuentinPerez/c14-cli/master/assets/logo.png)
+![Online C14 logo](https://raw.githubusercontent.com/online-net/c14-cli/master/assets/logo.png)
 
 #### Table of Contents
 
@@ -34,7 +34,7 @@ A command-line tool to manage your C14 storage easily
 ## Setup
 
 ```shell
-go install github.com/QuentinPerez/c14-cli/cmd/c14
+go install github.com/online-net/c14-cli/cmd/c14
 ```
 
 ## Usage
@@ -281,12 +281,12 @@ Feel free to contribute :smiley::beers:
 2. Ensure you have `$GOPATH` and `$PATH` well configured, something like:
   * `export GOPATH=$HOME/go`
   * `export PATH=$PATH:$GOPATH/bin`
-3. Fetch the project: `go get -u github.com/QuentinPerez/c14-cli`
-4. Go to c14-cli directory: `cd $GOPATH/src/github.com/QuentinPerez/c14-cli`
+3. Fetch the project: `go get -u github.com/online-net/c14-cli`
+4. Go to c14-cli directory: `cd $GOPATH/src/github.com/online-net/c14-cli`
 5. Hack: `vim`
 6. Build: `make`
 7. Run: `./c14`
 
 ## License
 
-[MIT](https://github.com/QuentinPerez/c14-cli/blob/master/LICENSE.md)
+[MIT](https://github.com/online-net/c14-cli/blob/master/LICENSE.md)

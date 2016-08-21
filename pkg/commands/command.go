@@ -10,10 +10,10 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/QuentinPerez/c14-cli/pkg/api"
-	"github.com/QuentinPerez/c14-cli/pkg/api/auth"
-	"github.com/QuentinPerez/c14-cli/pkg/version"
 	"github.com/docker/docker/pkg/mflag"
+	"github.com/online-net/c14-cli/pkg/api"
+	"github.com/online-net/c14-cli/pkg/api/auth"
+	"github.com/online-net/c14-cli/pkg/version"
 )
 
 // Config represents the informations on the usages
