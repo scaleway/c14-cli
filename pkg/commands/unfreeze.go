@@ -28,7 +28,7 @@ func Unfreeze() Command {
 	ret.Init(Config{
 		UsageLine:   "unfreeze [OPTIONS] [ARCHIVE]+",
 		Description: "Unlock an archive",
-		Help:        "Unlock an archive.",
+		Help:        "Unlock an archive, extraction of the archive's data (0.01€/GB).",
 		Examples: `
         $ c14 unfreeze 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})

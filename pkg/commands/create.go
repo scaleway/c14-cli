@@ -26,10 +26,10 @@ func Create() Command {
 	ret.Init(Config{
 		UsageLine:   "create [OPTIONS]",
 		Description: "Create a new archive",
-		Help:        "Create a new archive, By default with a random name.",
+		Help:        "Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.",
 		Examples: `
-		$ c14 create
-		$ c14 create --name "MyAchive"
+        $ c14 create
+        $ c14 create --name "MyBooks" --description "hardware books"
 `,
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")

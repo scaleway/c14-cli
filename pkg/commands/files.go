@@ -27,7 +27,7 @@ func Files() Command {
 	ret.Init(Config{
 		UsageLine:   "files ARCHIVE",
 		Description: "List the files of an archive",
-		Help:        "List the files of an archive.",
+		Help:        "List the files of an archive, displays the name and size of files",
 		Examples: `
         $ c14 files 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})

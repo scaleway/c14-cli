@@ -23,8 +23,8 @@ By default, help lists available commands.
 When invoked with a command name, it prints the usage and the help of
 the command.`,
 		Examples: `
-    $ c14 help
-    $ c14 help create
+        $ c14 help
+        $ c14 help create
 `,
 	})
 	return ret

@@ -81,7 +81,7 @@ $
 ```console
 Usage: c14 create [OPTIONS]
 
-Create a new archive, By default with a random name
+Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.
 
 Options:
   -d, --description=""  Assigns a description
@@ -90,8 +90,8 @@ Options:
   -q, --quiet=false     Don't display the waiting loop
 
 Examples:
-		$ c14 create
-		$ c14 create --name "MyAchive"
+        $ c14 create
+        $ c14 create --name "MyBooks" --description "hardware books"
 ```
 
 
@@ -100,7 +100,7 @@ Examples:
 ```console
 Usage: c14 freeze [OPTIONS] [ARCHIVE]+
 
-Lock an archive
+Lock an archive, your archive will be stored in highly secure Online data centers and will stay available On Demand (0.01€/GB).
 
 Options:
   -h, --help=false      Print usage
@@ -117,17 +117,17 @@ Examples:
 ```console
 Usage: c14 ls [OPTIONS] [ARCHIVE]*
 
-list the archives.
+Displays the archives, by default only the NAME, STATUS, UUID.
 
 Options:
-  -a, --all=false       Show all information on archives
+  -a, --all=false       Show all information on archives (size,parity,creationDate,description)
   -h, --help=false      Print usage
   -p, --platform=false  Show the platforms
   -q, --quiet=false     Only display UUIDs
 
 Examples:
         $ c14 ls
-        $ c14 ls 83b93179-32e0-11e6-be10-10604b9b0ad9
+        $ c14 ls -a
 ```
 
 #### `c14 help`
@@ -144,8 +144,8 @@ Options:
   -h, --help=false      Print usage
 
 Examples:
-    $ c14 help
-    $ c14 help create
+        $ c14 help
+        $ c14 help create
 ```
 
 
@@ -170,7 +170,7 @@ Examples:
 ```console
 Usage: c14 files ARCHIVE
 
-List the archive files.
+List the files of an archive, displays the name and size of files
 
 Options:
   -h, --help=false      Print usage
@@ -216,7 +216,7 @@ Examples:
 ```console
 Usage: c14 unfreeze [OPTIONS] [ARCHIVE]+
 
-Unlock an archive
+Unlock an archive, extraction of the archive's data (0.01€/GB).
 
 Options:
   -h, --help=false      Print usage
@@ -233,7 +233,7 @@ Examples:
 ```console
 Usage: c14 upload [DIR|FILE]* ARCHIVE
 
-Upload your file or directory into an archive.
+Upload your file or directory into an archive, use SFTP protocol.
 
 Options:
   -h, --help=false      Print usage

@@ -38,7 +38,7 @@ func Upload() Command {
 	ret.Init(Config{
 		UsageLine:   "upload [DIR|FILE]* ARCHIVE",
 		Description: "Upload your file or directory into an archive",
-		Help:        "Upload your file or directory into an archive.",
+		Help:        "Upload your file or directory into an archive, use SFTP protocol.",
 		Examples: `
         $ c14 upload
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
