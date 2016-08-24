@@ -52,15 +52,15 @@ func (l *files) Run(args []string) (err error) {
 	}
 
 	var (
-		safe                         api.OnlineGetSafe
-		bucket                       api.OnlineGetBucket
-		sftpCred                     sshUtils.Credentials
-		sftpConn                     *sftp.Client
-		uuidArchive, uuidArchiveSave = args[0], args[0]
+		safe                 api.OnlineGetSafe
+		bucket               api.OnlineGetBucket
+		sftpCred             sshUtils.Credentials
+		sftpConn             *sftp.Client
+		uuidArchive, archive = args[0], args[0]
 	)
 
-	if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchiveSave, true); err != nil {
-		if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(uuidArchiveSave, false); err != nil {
+	if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
+		if safe, uuidArchive, err = l.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
 			return
 		}
 	}

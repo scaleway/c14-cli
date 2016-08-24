@@ -66,7 +66,7 @@ func (f *freeze) Run(args []string) (err error) {
 			}
 		}
 		if newArchive, err = f.OnlineAPI.PostArchive(safe.UUIDRef, uuidArchive); err != nil {
-			log.Warnf("%s: %s", args, err)
+			log.Warnf("%s: %s", archive, err)
 			err = nil
 			continue
 		}
