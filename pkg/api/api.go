@@ -168,6 +168,7 @@ func (o *OnlineAPI) handleHTTPError(goodStatusCode []int, resp *http.Response) (
 	}
 
 	if o.verbose {
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(content))
 		dump, _ := httputil.DumpResponse(resp, true)
 		log.Debugf("%v", string(dump))
 	} else {
