@@ -33,6 +33,8 @@ A command-line tool to manage your C14 storage easily
 
 ## Setup
 
+⚠️ Ensure you have a go version >= 1.6
+
 ```shell
 go get -u github.com/online-net/c14-cli/cmd/c14
 ```
