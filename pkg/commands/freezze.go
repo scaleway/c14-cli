@@ -85,7 +85,7 @@ func (f *freeze) Run(args []string) (err error) {
 				if archiveWait, err = f.OnlineAPI.GetArchive(safe.UUIDRef, uuidArchive, false); err != nil {
 					log.Warnf("%s: %s", args, err)
 					err = nil
-					break
+					continue
 				}
 				if lastLength != len(archiveWait.Jobs) {
 					lastLength = len(archiveWait.Jobs)

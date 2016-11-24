@@ -211,6 +211,13 @@ func (o *OnlineAPI) PostUnArchive(uuidSafe, uuidArchive string, data OnlinePostU
 	return
 }
 
+func (o *OnlineAPI) PostVerify(uuidSafe, uuidArchive, uuidLocation string) (err error) {
+	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive/%s/location/%s/verify", APIUrl, uuidSafe, uuidArchive, uuidLocation), nil, nil, []int{202}); err != nil {
+		err = errors.Annotate(err, "PostVerify")
+	}
+	return
+}
+
 /*
  * Delete Functions
  */

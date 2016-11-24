@@ -36,6 +36,7 @@ func init() {
 			Remove(),
 			Unfreeze(),
 			Upload(),
+			Verify(),
 		},
 	}
 }
