@@ -260,6 +260,7 @@ Soon
 
 ### master (unreleased)
 
+ * Support of `verify` command
  * Support of `create` command
  * Support of `freeze` command
  * Support of `help` command
