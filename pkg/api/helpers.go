@@ -28,6 +28,7 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 
 	if safes, err = o.GetSafes(true); err != nil {
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:GetSafes")
+		return
 	}
 
 	for idxSafe := range safes {

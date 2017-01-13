@@ -78,10 +78,10 @@ func (c *create) Run(args []string) (err error) {
 		return
 	}
 
-	if c.flSafe == "" {
+	safeName = c.flSafe
+
+	if safeName == "" {
 		safeName = fmt.Sprintf("%s_safe", c.flName)
-	} else {
-		safeName = c.flSafe
 	}
 
 	if _, uuidArchive, _, err = c.OnlineAPI.CreateSSHBucketFromScratch(api.ConfigCreateSSHBucketFromScratch{
