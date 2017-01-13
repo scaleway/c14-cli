@@ -148,7 +148,7 @@ func (u *upload) Run(args []string) (err error) {
 				if walker.Stat().Mode().IsDir() {
 					if err = sftpConn.Mkdir("/buffer/" + name); err != nil {
 						if err.Error() == "file does not exist" { // bad :/
-							sp := strings.Split(name, "/")
+							sp := strings.Split(name, string(os.PathSeparator))
 							path := sp[0]
 							for i, n := range sp {
 								if i != 0 {
