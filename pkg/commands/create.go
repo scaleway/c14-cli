@@ -17,6 +17,7 @@ type create struct {
 type createFlags struct {
 	flName  string
 	flDesc  string
+	flSafe  string
 	flQuiet bool
 }
 
@@ -35,6 +36,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
 	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Don't display the waiting loop")
+	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
 	return ret
 }
 
@@ -63,6 +65,7 @@ func (c *create) Run(args []string) (err error) {
 	}
 	var (
 		uuidArchive string
+		safeName    string
 		keys        []api.OnlineGetSSHKey
 	)
 
@@ -74,8 +77,15 @@ func (c *create) Run(args []string) (err error) {
 		err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
 		return
 	}
+
+	safeName = c.flSafe
+
+	if safeName == "" {
+		safeName = fmt.Sprintf("%s_safe", c.flName)
+	}
+
 	if _, uuidArchive, _, err = c.OnlineAPI.CreateSSHBucketFromScratch(api.ConfigCreateSSHBucketFromScratch{
-		SafeName:    fmt.Sprintf("%s_safe", c.flName),
+		SafeName:    safeName,
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
 		UUIDSSHKeys: []string{keys[0].UUIDRef},

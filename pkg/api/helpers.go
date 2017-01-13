@@ -20,10 +20,30 @@ type ConfigCreateSSHBucketFromScratch struct {
 
 // CreateSSHBucketFromScratch creates a safe, an archive and returns the bucket available over SSH
 func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratch) (uuidSafe, uuidArchive string, bucket OnlineGetBucket, err error) {
-	if uuidSafe, err = o.CreateSafe(c.SafeName, ""); err != nil {
-		err = errors.Annotate(err, "CreateSSHBucketFromScratch:CreateSafe")
+
+	var (
+		safes []OnlineGetSafe
+		found = false
+	)
+
+	if safes, err = o.GetSafes(true); err != nil {
+		err = errors.Annotate(err, "CreateSSHBucketFromScratch:GetSafes")
 		return
 	}
+
+	for idxSafe := range safes {
+		if safes[idxSafe].Name == c.SafeName {
+			uuidSafe = safes[idxSafe].UUIDRef
+			found = true
+		}
+	}
+	if !found {
+		if uuidSafe, err = o.CreateSafe(c.SafeName, ""); err != nil {
+			err = errors.Annotate(err, "CreateSSHBucketFromScratch:CreateSafe")
+			return
+		}
+	}
+
 	if uuidArchive, err = o.CreateArchive(ConfigCreateArchive{
 		UUIDSafe:  uuidSafe,
 		Name:      c.ArchiveName,
