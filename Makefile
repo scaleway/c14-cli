@@ -29,12 +29,25 @@ INSTALL_LIST =		$(foreach int, $(COMMANDS), $(int)_install)
 TEST_LIST =		$(foreach int, $(COMMANDS) $(PACKAGES), $(int)_test)
 COVERPROFILE_LIST =	$(foreach int, $(subst $(GODIR),./,$(PACKAGES)), $(int)/profile.out)
 
+PLATFORMS = darwin freebsd linux windows
+default_archs = 386 amd64 arm
+darwin_archs = 386 amd64
+freebsd_archs = $(default_archs)
+linux_archs = $(default_archs)
+windows_archs = 386 amd64
+
+define make-arch-target
+  crosscompile_$1_$2:
+	GOOS=$1 GOARCH=$2 $(GOBUILD) -ldflags $(LDFLAGS) -o bin/$1/$2/$(NAME) ./cmd/c14
+  crosscompile:: crosscompile_$1_$2
+endef
 
 .PHONY: $(CLEAN_LIST) $(TEST_LIST) $(FMT_LIST) $(INSTALL_LIST) $(IREF_LIST)
 
 all: build
 build: $(NAME)
 clean: $(CLEAN_LIST)
+	rm -rf bin
 install: $(INSTALL_LIST)
 test: $(TEST_LIST)
 fmt: $(FMT_LIST)
@@ -98,3 +111,5 @@ profile.out:: $(COVERPROFILE_LIST)
 .PHONY: show_version
 show_version:
 	./c14 version
+
+$(foreach platform,$(PLATFORMS),$(foreach arch,$($(platform)_archs),$(eval $(call make-arch-target,$(platform),$(arch)))))

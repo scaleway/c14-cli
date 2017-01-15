@@ -26,3 +26,4 @@ _testmain.go
 # c14
 /c14
 /.vscode
+bin/**
