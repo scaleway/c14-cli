@@ -14,7 +14,7 @@
 		"rmbin",
 		"publish-github"
 	],
-	"BuildConstraints": "darwin linux windows freebsd netbsd",
+	"BuildConstraints": "darwin linux windows freebsd",
 	"ResourcesExclude": "*.go .goxc-temp",
 	"MainDirsExclude": "vendor,Godeps,testdata",
 	"PackageVersion": "0.0.1",

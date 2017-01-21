@@ -110,9 +110,6 @@ goxc:
 	-mv dist/latest/linux_386/c14          dist/latest/c14-Linux-i386
 	-mv dist/latest/linux_amd64/c14        dist/latest/c14-Linux-x86_64
 	-mv dist/latest/linux_arm/c14          dist/latest/c14-Linux-arm
-	-mv dist/latest/netbsd_386/c14         dist/latest/c14-Netbsd-i386
-	-mv dist/latest/netbsd_amd64/c14       dist/latest/c14-Netbsd-x86_64
-	-mv dist/latest/netbsd_arm/c14         dist/latest/c14-Netbsd-arm
 	-mv dist/latest/windows_386/c14.exe    dist/latest/c14-Windows-i386.exe
 	-mv dist/latest/windows_amd64/c14.exe  dist/latest/c14-Windows-x86_64.exe
 
