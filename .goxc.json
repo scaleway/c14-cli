@@ -20,9 +20,9 @@
 	"PackageVersion": "0.0.1",
 	"TaskSettings": {
 		"publish-github": {
-			"owner": "scaleway",
+			"owner": "online-net",
 			"prerelease": false,
-			"repository": "scaleway-cli"
+			"repository": "c14-cli"
 		},
 		"xc": {
 			"GOARM": "5"
