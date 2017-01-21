@@ -29,19 +29,6 @@ INSTALL_LIST =		$(foreach int, $(COMMANDS), $(int)_install)
 TEST_LIST =		$(foreach int, $(COMMANDS) $(PACKAGES), $(int)_test)
 COVERPROFILE_LIST =	$(foreach int, $(subst $(GODIR),./,$(PACKAGES)), $(int)/profile.out)
 
-PLATFORMS = darwin freebsd linux windows
-default_archs = 386 amd64 arm
-darwin_archs = 386 amd64
-freebsd_archs = $(default_archs)
-linux_archs = $(default_archs)
-windows_archs = 386 amd64
-
-define make-arch-target
-  crosscompile_$1_$2:
-	GOOS=$1 GOARCH=$2 $(GOBUILD) -ldflags $(LDFLAGS) -o bin/$1/$2/$(NAME) ./cmd/c14
-  crosscompile:: crosscompile_$1_$2
-endef
-
 .PHONY: $(CLEAN_LIST) $(TEST_LIST) $(FMT_LIST) $(INSTALL_LIST) $(IREF_LIST)
 
 all: build
@@ -58,7 +45,7 @@ fmt: $(FMT_LIST)
 $(NAME): $(SOURCES)
 	$(GOFMT) $(SOURCES)
 	$(GO) tool vet --all=true $(SOURCES)
-	$(GOBUILD) -ldflags $(LDFLAGS) -o $(NAME) ./cmd/c14
+	$(GOBUILD) -ldflags $(LDFLAGS) ./cmd/c14
 
 $(CLEAN_LIST): %_clean:
 	$(GOCLEAN) $(subst $(GODIR),./,$*)
@@ -107,9 +94,34 @@ profile.out:: $(COVERPROFILE_LIST)
 	echo "mode: set" > $@
 	cat ./pkg/*/profile.out | grep -v mode: | sort -r | awk '{if($$1 != last) {print $$0;last=$$1}}' >> $@
 
+goxc:
+	rm -rf dist/$(shell cat .goxc.json| jq -r .PackageVersion)
+	rm -f dist/latest
+	mkdir -p dist/$(shell cat .goxc.json| jq -r .PackageVersion)
+	ln -s -f $(shell cat .goxc.json| jq -r .PackageVersion) dist/latest
+
+	$(GOENV) goxc -build-ldflags $(LDFLAGS)
+
+	-mv dist/latest/darwin_386/c14         dist/latest/c14-Darwin-i386
+	-mv dist/latest/darwin_amd64/c14       dist/latest/c14-Darwin-amd64
+	-mv dist/latest/freebsd_386/c14        dist/latest/c14-Freebsd-i386
+	-mv dist/latest/freebsd_amd64/c14      dist/latest/c14-Freebsd-x86_64
+	-mv dist/latest/freebsd_arm/c14        dist/latest/c14-Freebsd-arm
+	-mv dist/latest/linux_386/c14          dist/latest/c14-Linux-i386
+	-mv dist/latest/linux_amd64/c14        dist/latest/c14-Linux-x86_64
+	-mv dist/latest/linux_arm/c14          dist/latest/c14-Linux-arm
+	-mv dist/latest/netbsd_386/c14         dist/latest/c14-Netbsd-i386
+	-mv dist/latest/netbsd_amd64/c14       dist/latest/c14-Netbsd-x86_64
+	-mv dist/latest/netbsd_arm/c14         dist/latest/c14-Netbsd-arm
+	-mv dist/latest/windows_386/c14.exe    dist/latest/c14-Windows-i386.exe
+	-mv dist/latest/windows_amd64/c14.exe  dist/latest/c14-Windows-x86_64.exe
+
+	-cp dist/latest/c14-Linux-arm dist/latest/c14-Linux-armv7l
+
+	@rmdir dist/latest/* || true
+
+	@echo "Now you can run 'goxc publish-github'"
 
 .PHONY: show_version
 show_version:
 	./c14 version
-
-$(foreach platform,$(PLATFORMS),$(foreach arch,$($(platform)_archs),$(eval $(call make-arch-target,$(platform),$(arch)))))

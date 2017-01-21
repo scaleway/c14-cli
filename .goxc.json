@@ -1,0 +1,32 @@
+{
+	"AppName": "c14",
+	"ArtifactsDest": "dist",
+	"OutPath": "{{.Dest}}{{.PS}}{{.Version}}{{.PS}}{{.Os}}_{{.Arch}}{{.PS}}{{.ExeName}}{{.Ext}}",
+	"Tasks": [
+		"default",
+		"deb-source",
+		"downloads-page"
+	],
+	"TasksExclude": [
+		"go-test",
+		"bintray",
+		"go-vet",
+		"rmbin",
+		"publish-github"
+	],
+	"BuildConstraints": "darwin linux windows freebsd netbsd",
+	"ResourcesExclude": "*.go .goxc-temp",
+	"MainDirsExclude": "vendor,Godeps,testdata",
+	"PackageVersion": "0.0.1",
+	"TaskSettings": {
+		"publish-github": {
+			"owner": "scaleway",
+			"prerelease": false,
+			"repository": "scaleway-cli"
+		},
+		"xc": {
+			"GOARM": "5"
+		}
+	},
+	"ConfigVersion": "0.9"
+}
