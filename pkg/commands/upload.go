@@ -57,7 +57,7 @@ func (u *upload) CheckFlags(args []string) (err error) {
 	if !u.isPiped {
 		nbArgs = 2
 	} else {
-		if u.flName == "" {
+		if u.flName == "" && len(args) == 1 {
 			err = errors.Errorf("You need to specified a name")
 			return
 		}
@@ -114,7 +114,7 @@ func (u *upload) Run(args []string) (err error) {
 	defer sftpCred.Close()
 	defer sftpConn.Close()
 
-	if u.isPiped {
+	if u.isPiped && u.flName != "" {
 		return u.pipedUpload(sftpConn)
 	}
 	for _, file := range args {
