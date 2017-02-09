@@ -90,10 +90,12 @@ Options:
   -h, --help=false      Print usage
   -n, --name=""         Assigns a name
   -q, --quiet=false     Don't display the waiting loop
+  -s, --safe=""         Name of the safe to use. If it doesn't exists it will be created.
 
 Examples:
         $ c14 create
         $ c14 create --name "MyBooks" --description "hardware books"
+        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
 ```
 
 
