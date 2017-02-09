@@ -31,6 +31,7 @@ func Create() Command {
 		Examples: `
         $ c14 create
         $ c14 create --name "MyBooks" --description "hardware books"
+        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
 `,
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
