@@ -12,6 +12,7 @@ type ConfigCreateSSHBucketFromScratch struct {
 	SafeName    string
 	ArchiveName string
 	Desc        string
+	Parity      string
 	UUIDSSHKeys []string
 	Platforms   []string
 	Days        int
@@ -48,6 +49,7 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 		UUIDSafe:  uuidSafe,
 		Name:      c.ArchiveName,
 		Desc:      c.Desc,
+		Parity:    c.Parity,
 		Protocols: []string{"SSH"},
 		Platforms: c.Platforms,
 		SSHKeys:   c.UUIDSSHKeys,
