@@ -15,10 +15,11 @@ type create struct {
 }
 
 type createFlags struct {
-	flName  string
-	flDesc  string
-	flSafe  string
-	flQuiet bool
+	flName         string
+	flDesc         string
+	flSafe         string
+	flServiceLevel string
+	flQuiet        bool
 }
 
 // Create returns a new command "create"
@@ -38,6 +39,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Don't display the waiting loop")
 	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
+	ret.Flags.StringVar(&ret.flServiceLevel, []string{"sl", "-service-level"}, "standard", "Service level for the archive. (standard, intensive or enterprise; default: standard)")
 	return ret
 }
 
@@ -89,6 +91,7 @@ func (c *create) Run(args []string) (err error) {
 		SafeName:    safeName,
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
+		Parity:      c.flServiceLevel,
 		UUIDSSHKeys: []string{keys[0].UUIDRef},
 		Platforms:   []string{"1"},
 		Days:        7,

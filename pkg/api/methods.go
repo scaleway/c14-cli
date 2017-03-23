@@ -178,6 +178,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 	if _, err = o.postWrapper(fmt.Sprintf("%s/storage/c14/safe/%s/archive", APIUrl, config.UUIDSafe), OnlinePostArchive{
 		Name:        config.Name,
 		Description: config.Desc,
+		Parity:      config.Parity,
 		Protocols:   config.Protocols,
 		SSHKeys:     config.SSHKeys,
 		Platforms:   config.Platforms,
