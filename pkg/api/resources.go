@@ -40,6 +40,7 @@ type OnlineGetArchive struct {
 	UUIDRef      string         `json:"uuid_ref"`
 	Size         string         `json:"size"`
 	Jobs         []OnlineGetJob `json:"current_jobs,omitempty"`
+	Safe         OnlineGetSafe `json:"safe"`
 }
 
 type OnlineGetArchives []OnlineGetArchive
@@ -105,6 +106,7 @@ type OnlinePostArchive struct {
 	SSHKeys     []string `json:"ssh_keys"`
 	Platforms   []string `json:"platforms"`
 	Days        int      `json:"days"`
+	LargeBucket bool
 }
 
 type OnlinePostUnArchive struct {

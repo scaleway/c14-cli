@@ -15,10 +15,12 @@ type create struct {
 }
 
 type createFlags struct {
-	flName  string
-	flDesc  string
-	flSafe  string
-	flQuiet bool
+       flName   string
+       flDesc   string
+       flSafe   string
+       flQuiet  bool
+       flParity string
+       flLarge  bool
 }
 
 // Create returns a new command "create"
@@ -38,6 +40,8 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Don't display the waiting loop")
 	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
+	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
+	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	return ret
 }
 
@@ -93,6 +97,8 @@ func (c *create) Run(args []string) (err error) {
 		Platforms:   []string{"1"},
 		Days:        7,
 		Quiet:       c.flQuiet,
+		Parity:      c.flParity,
+		LargeBucket: c.flLarge,
 	}); err != nil {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return

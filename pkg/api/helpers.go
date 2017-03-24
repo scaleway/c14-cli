@@ -16,6 +16,8 @@ type ConfigCreateSSHBucketFromScratch struct {
 	Platforms   []string
 	Days        int
 	Quiet       bool
+	Parity      string
+	LargeBucket bool
 }
 
 // CreateSSHBucketFromScratch creates a safe, an archive and returns the bucket available over SSH
@@ -45,13 +47,15 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 	}
 
 	if uuidArchive, err = o.CreateArchive(ConfigCreateArchive{
-		UUIDSafe:  uuidSafe,
-		Name:      c.ArchiveName,
-		Desc:      c.Desc,
-		Protocols: []string{"SSH"},
-		Platforms: c.Platforms,
-		SSHKeys:   c.UUIDSSHKeys,
-		Days:      c.Days,
+		UUIDSafe:    uuidSafe,
+		Name:        c.ArchiveName,
+		Desc:        c.Desc,
+		Protocols:   []string{"SSH"},
+		Platforms:   c.Platforms,
+		SSHKeys:     c.UUIDSSHKeys,
+		Days:        c.Days,
+		Parity:      c.Parity,
+		LargeBucket: c.LargeBucket,
 	}); err != nil {
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:CreateArchive")
 		return
