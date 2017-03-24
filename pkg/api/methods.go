@@ -92,6 +92,14 @@ func (o *OnlineAPI) GetArchives(uuidSafe string, useCache bool) (archives []Onli
 	return
 }
 
+func (o *OnlineAPI) GetAllArchives() (archives []OnlineGetArchive, err error) {
+	if err = o.getWrapper(fmt.Sprintf("%s/storage/c14/archive", APIUrl), &archives); err != nil {
+		err = errors.Annotate(err, "GetArchives")
+		return
+	}
+	return
+}
+
 func (o *OnlineAPI) GetArchive(uuidSafe, uuidArchive string, useCache bool) (archive OnlineGetArchive, err error) {
 	var (
 		ok bool
@@ -160,14 +168,15 @@ func (o *OnlineAPI) CreateSafe(name, desc string) (uuid string, err error) {
 }
 
 type ConfigCreateArchive struct {
-	UUIDSafe  string
-	Name      string
-	Desc      string
-	Parity    string
-	Protocols []string
-	SSHKeys   []string
-	Platforms []string
-	Days      int
+	UUIDSafe    string
+	Name        string
+	Desc        string
+	Parity      string
+	Protocols   []string
+	SSHKeys     []string
+	Platforms   []string
+	Days        int
+	LargeBucket bool
 }
 
 func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err error) {
@@ -182,6 +191,8 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		SSHKeys:     config.SSHKeys,
 		Platforms:   config.Platforms,
 		Days:        config.Days,
+		Parity:      config.Parity,
+		LargeBucket: config.LargeBucket,
 	}, &result, nil); err != nil {
 		err = errors.Annotate(err, "CreateArchive")
 		return

@@ -5,7 +5,6 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"sync"
 	"text/tabwriter"
 	"time"
 
@@ -69,18 +68,15 @@ func (l *ls) Run(args []string) (err error) {
 		}
 		l.displayPlatforms(val)
 	} else {
-		l.OnlineAPI.CleanUpCache()
-		l.OnlineAPI.FetchRessources()
-
 		var (
-			safes []api.OnlineGetSafe
+			archives api.OnlineGetArchives
 		)
 
 		if len(args) == 0 {
-			if safes, err = l.OnlineAPI.GetSafes(true); err != nil {
+			if archives, err = l.OnlineAPI.GetAllArchives(); err != nil {
 				return
 			}
-			l.displayArchives(safes)
+			l.displayArchives(archives)
 		} else {
 			err = errors.Errorf("Not implemented yet")
 			// safes = make([]api.OnlineGetSafe, len(args))
@@ -95,10 +91,8 @@ func (l *ls) Run(args []string) (err error) {
 	return
 }
 
-func (l *ls) displayArchives(val []api.OnlineGetSafe) {
+func (l *ls) displayArchives(archives []api.OnlineGetArchive) {
 	var (
-		archives []api.OnlineGetArchive
-		archive  api.OnlineGetArchive
 		err      error
 		w        *tabwriter.Writer
 	)
@@ -108,51 +102,31 @@ func (l *ls) displayArchives(val []api.OnlineGetSafe) {
 	if !l.flQuiet {
 		if l.flAll {
 			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tPARITY\tUUID SAFE\tCREATION DATE\tSIZE\tDESCRIPTION\n")
-			wait := sync.WaitGroup{}
-
-			for i := range val {
-				archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)
-				if err == nil {
-					for j := range archives {
-						wait.Add(1)
-						go func(uuidSafe, uuidArchive string, w *sync.WaitGroup) {
-							l.OnlineAPI.GetArchive(uuidSafe, uuidArchive, false)
-							w.Done()
-						}(val[i].UUIDRef, archives[j].UUIDRef, &wait)
-					}
-				}
-			}
-			wait.Wait()
 		} else {
 			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
 		}
 	}
-	for i := range val {
-		archives, err = l.OnlineAPI.GetArchives(val[i].UUIDRef, true)
-		if err == nil {
-			sort.Sort(api.OnlineGetArchives(archives))
-			for j := range archives {
-				if l.flQuiet {
-					if l.flAll {
-						fmt.Fprintf(w, "%s %s\n", archives[j].UUIDRef, val[i].UUIDRef)
-					} else {
-						fmt.Fprintf(w, "%s\n", archives[j].UUIDRef)
-					}
+	if err == nil {
+		sort.Sort(api.OnlineGetArchives(archives))
+		for j := range archives {
+			archive := archives[j]
+			if l.flQuiet {
+				if l.flAll {
+					fmt.Fprintf(w, "%s %s\n", archive.UUIDRef, archive.Safe.UUIDRef)
 				} else {
-					if l.flAll {
-						if archive, err = l.OnlineAPI.GetArchive(val[i].UUIDRef, archives[j].UUIDRef, true); err != nil {
-							return
-						}
-						t, _ := time.Parse(time.RFC3339, archive.CreationDate)
-						humanSize := "Unavailable"
-						if archive.Size != "" {
-							size, _ := strconv.Atoi(archive.Size)
-							humanSize = humanize.Bytes(uint64(size))
-						}
-						fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, val[i].UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
-					} else {
-						fmt.Fprintf(w, "%s\t%s\t%s\n", archives[j].Name, archives[j].Status, archives[j].UUIDRef)
+					fmt.Fprintf(w, "%s\n", archive.UUIDRef)
+				}
+			} else {
+				if l.flAll {
+					t, _ := time.Parse(time.RFC3339, archive.CreationDate)
+					humanSize := "Unavailable"
+					if archive.Size != "" {
+						size, _ := strconv.Atoi(archive.Size)
+						humanSize = humanize.Bytes(uint64(size))
 					}
+					fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, archive.Safe.UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
+				} else {
+					fmt.Fprintf(w, "%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef)
 				}
 			}
 		}
