@@ -86,11 +86,13 @@ Usage: c14 create [OPTIONS]
 Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.
 
 Options:
-  -d, --description=""  Assigns a description
-  -h, --help=false      Print usage
-  -n, --name=""         Assigns a name
-  -q, --quiet=false     Don't display the waiting loop
-  -s, --safe=""         Name of the safe to use. If it doesn't exists it will be created.
+  -d, --description=""      Assigns a description
+  -h, --help=false          Print usage
+  -n, --name=""             Assigns a name
+  -q, --quiet=false         Don't display the waiting loop
+  -s, --safe=""             Name of the safe to use. If it doesn't exists it will be created.
+  -p, --parity="standard"   Specify a parity to use
+  -l, --large=false         Ask for a large bucket
 
 Examples:
         $ c14 create

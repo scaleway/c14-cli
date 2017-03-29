@@ -15,12 +15,12 @@ type create struct {
 }
 
 type createFlags struct {
-       flName   string
-       flDesc   string
-       flSafe   string
-       flQuiet  bool
-       flParity string
-       flLarge  bool
+	flName   string
+	flDesc   string
+	flSafe   string
+	flQuiet  bool
+	flParity string
+	flLarge  bool
 }
 
 // Create returns a new command "create"

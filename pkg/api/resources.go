@@ -40,7 +40,7 @@ type OnlineGetArchive struct {
 	UUIDRef      string         `json:"uuid_ref"`
 	Size         string         `json:"size"`
 	Jobs         []OnlineGetJob `json:"current_jobs,omitempty"`
-	Safe         OnlineGetSafe `json:"safe"`
+	Safe         OnlineGetSafe  `json:"safe"`
 }
 
 type OnlineGetArchives []OnlineGetArchive

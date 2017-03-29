@@ -93,8 +93,7 @@ func (l *ls) Run(args []string) (err error) {
 
 func (l *ls) displayArchives(archives []api.OnlineGetArchive) {
 	var (
-		err      error
-		w        *tabwriter.Writer
+		w *tabwriter.Writer
 	)
 
 	w = tabwriter.NewWriter(os.Stdout, 20, 1, 3, ' ', 0)
@@ -106,28 +105,25 @@ func (l *ls) displayArchives(archives []api.OnlineGetArchive) {
 			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
 		}
 	}
-	if err == nil {
-		sort.Sort(api.OnlineGetArchives(archives))
-		for j := range archives {
-			archive := archives[j]
-			if l.flQuiet {
-				if l.flAll {
-					fmt.Fprintf(w, "%s %s\n", archive.UUIDRef, archive.Safe.UUIDRef)
-				} else {
-					fmt.Fprintf(w, "%s\n", archive.UUIDRef)
-				}
+	sort.Sort(api.OnlineGetArchives(archives))
+	for _, archive := range archives {
+		if l.flQuiet {
+			if l.flAll {
+				fmt.Fprintf(w, "%s %s\n", archive.UUIDRef, archive.Safe.UUIDRef)
 			} else {
-				if l.flAll {
-					t, _ := time.Parse(time.RFC3339, archive.CreationDate)
-					humanSize := "Unavailable"
-					if archive.Size != "" {
-						size, _ := strconv.Atoi(archive.Size)
-						humanSize = humanize.Bytes(uint64(size))
-					}
-					fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, archive.Safe.UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
-				} else {
-					fmt.Fprintf(w, "%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef)
+				fmt.Fprintf(w, "%s\n", archive.UUIDRef)
+			}
+		} else {
+			if l.flAll {
+				t, _ := time.Parse(time.RFC3339, archive.CreationDate)
+				humanSize := "Unavailable"
+				if archive.Size != "" {
+					size, _ := strconv.Atoi(archive.Size)
+					humanSize = humanize.Bytes(uint64(size))
 				}
+				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, archive.Safe.UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
+			} else {
+				fmt.Fprintf(w, "%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef)
 			}
 		}
 	}
