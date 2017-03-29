@@ -97,6 +97,10 @@ func (o *OnlineAPI) GetAllArchives() (archives []OnlineGetArchive, err error) {
 		err = errors.Annotate(err, "GetArchives")
 		return
 	}
+	for _, archive := range archives {
+		o.cache.InsertSafe(archive.Safe.UUIDRef, archive.Safe)
+		o.cache.InsertArchive(archive.Safe.UUIDRef, archive.UUIDRef, archive)
+	}
 	return
 }
 
