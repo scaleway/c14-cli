@@ -181,6 +181,7 @@ type ConfigCreateArchive struct {
 	Platforms   []string
 	Days        int
 	LargeBucket bool
+	Crypto      string
 }
 
 func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err error) {
@@ -197,6 +198,7 @@ func (o *OnlineAPI) CreateArchive(config ConfigCreateArchive) (uuid string, err 
 		Days:        config.Days,
 		Parity:      config.Parity,
 		LargeBucket: config.LargeBucket,
+		Crypto:      config.Crypto,
 	}, &result, nil); err != nil {
 		err = errors.Annotate(err, "CreateArchive")
 		return

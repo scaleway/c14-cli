@@ -21,6 +21,7 @@ type createFlags struct {
 	flQuiet  bool
 	flParity string
 	flLarge  bool
+	flCrypto string
 }
 
 // Create returns a new command "create"
@@ -42,6 +43,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
 	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
+	ret.Flags.StringVar(&ret.flCrypto, []string{"c", "-crypto"}, "aes-256-cbc", "Which cryptography to use: aes-256-cbc or none")
 	return ret
 }
 
@@ -99,6 +101,7 @@ func (c *create) Run(args []string) (err error) {
 		Quiet:       c.flQuiet,
 		Parity:      c.flParity,
 		LargeBucket: c.flLarge,
+		Crypto:      c.flCrypto,
 	}); err != nil {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return
