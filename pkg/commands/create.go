@@ -21,7 +21,7 @@ type createFlags struct {
 	flQuiet  bool
 	flParity string
 	flLarge  bool
-	flCrypto string
+	flCrypto bool
 }
 
 // Create returns a new command "create"
@@ -43,7 +43,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
 	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
-	ret.Flags.StringVar(&ret.flCrypto, []string{"c", "-crypto"}, "aes-256-cbc", "Which cryptography to use: aes-256-cbc or none")
+	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
 	return ret
 }
 
@@ -74,6 +74,7 @@ func (c *create) Run(args []string) (err error) {
 		uuidArchive string
 		safeName    string
 		keys        []api.OnlineGetSSHKey
+		crypto      string
 	)
 
 	if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
@@ -91,6 +92,12 @@ func (c *create) Run(args []string) (err error) {
 		safeName = fmt.Sprintf("%s_safe", c.flName)
 	}
 
+	if c.flCrypto == false {
+		crypto = "none"
+	} else {
+		crypto = "aes-256-cbc"
+	}
+
 	if _, uuidArchive, _, err = c.OnlineAPI.CreateSSHBucketFromScratch(api.ConfigCreateSSHBucketFromScratch{
 		SafeName:    safeName,
 		ArchiveName: c.flName,
@@ -101,7 +108,7 @@ func (c *create) Run(args []string) (err error) {
 		Quiet:       c.flQuiet,
 		Parity:      c.flParity,
 		LargeBucket: c.flLarge,
-		Crypto:      c.flCrypto,
+		Crypto:      crypto,
 	}); err != nil {
 		err = errors.Annotate(err, "Run:CreateSSHBucketFromScratch")
 		return
