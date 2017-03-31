@@ -86,6 +86,7 @@ Usage: c14 create [OPTIONS]
 Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.
 
 Options:
+  -c, --crypto=aes-256-cbc  Which cryptography to use: aes-256-cbc or none
   -d, --description=""      Assigns a description
   -h, --help=false          Print usage
   -n, --name=""             Assigns a name
