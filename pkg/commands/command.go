@@ -10,10 +10,10 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/docker/docker/pkg/mflag"
 	"github.com/online-net/c14-cli/pkg/api"
 	"github.com/online-net/c14-cli/pkg/api/auth"
 	"github.com/online-net/c14-cli/pkg/version"
+	"github.com/spf13/pflag"
 )
 
 // Config represents the informations on the usages
@@ -43,7 +43,7 @@ type Command interface {
 // Base must be embedded in the commands
 type Base struct {
 	Config
-	Flags mflag.FlagSet
+	Flags pflag.FlagSet
 	*api.OnlineAPI
 	flHelp *bool
 }
@@ -52,7 +52,7 @@ type Base struct {
 func (b *Base) Init(c Config) {
 	b.Config = c
 	b.Flags.SetOutput(ioutil.Discard)
-	b.flHelp = b.Flags.Bool([]string{"h", "-help"}, false, "Print usage")
+	b.flHelp = b.Flags.BoolP("help", "h", false, "Print usage")
 }
 
 // InitAPI initiates the Online API with the credentials
@@ -114,10 +114,10 @@ func (b *Base) PrintUsage() {
 func (b *Base) Options() string {
 	var options string
 
-	visitor := func(flag *mflag.Flag) {
+	visitor := func(flag *pflag.Flag) {
 		var optionUsage string
 
-		name := strings.Join(flag.Names, ", -")
+		name := flag.Name
 		if flag.DefValue == "" {
 			optionUsage = fmt.Sprintf("%s=\"\"", name)
 		} else {

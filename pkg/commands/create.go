@@ -37,13 +37,13 @@ func Create() Command {
         $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
 `,
 	})
-	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
-	ret.Flags.StringVar(&ret.flDesc, []string{"d", "-description"}, "", "Assigns a description")
-	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Don't display the waiting loop")
-	ret.Flags.StringVar(&ret.flSafe, []string{"s", "-safe"}, "", "Name of the safe to use. If it doesn't exists it will be created.")
-	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
-	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
-	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
+	ret.Flags.StringVarP(&ret.flName, "name", "n", "", "Assigns a name")
+	ret.Flags.StringVarP(&ret.flDesc, "description", "d", "", "Assigns a description")
+	ret.Flags.BoolVarP(&ret.flQuiet, "quiet", "q", false, "Don't display the waiting loop")
+	ret.Flags.StringVarP(&ret.flSafe, "save", "s", "", "Name of the safe to use. If it doesn't exists it will be created.")
+	ret.Flags.StringVarP(&ret.flParity, "parity", "p", "standard", "Specify a parity to use")
+	ret.Flags.BoolVarP(&ret.flLarge, "large", "l", false, "Ask for a large bucket")
+	ret.Flags.BoolVarP(&ret.flCrypto, "crypto", "c", true, "Enable aes-256-bc cryptography, enabled by default.")
 	return ret
 }
 

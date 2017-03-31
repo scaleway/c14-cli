@@ -1,83 +1,84 @@
-hash: 60ca50697a1e510da76bed00e0e0c600659968632eeb0c650c96a80cd183965f
-updated: 2016-08-03T17:45:36.796167863+02:00
+hash: e6a56b1835e5288c63700cf4a140bee91df63eaa3224a74c258cff54104edffa
+updated: 2017-03-31T13:01:48.982460886+02:00
 imports:
 - name: github.com/apex/log
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: a97903d8456938a31ce3cb7d58ad3f378f951f24
   subpackages:
   - handlers/text
 - name: github.com/Azure/go-ansiterm
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: fa152c58bc15761d0200cb75fe958b89a9d4888e
   subpackages:
   - winterm
 - name: github.com/BurntSushi/toml
-  version: 99064174e013895bbd9b025c31100bd1d9b590ca
+  version: b26d9c308763d68093482582cea63d69be07a0f0
 - name: github.com/docker/docker
-  version: ""
+  version: 8eab29edd820017901796eb60d4bea28d760f16f
   subpackages:
+  - pkg/jsonlog
+  - pkg/jsonmessage
   - pkg/mflag
   - pkg/namesgenerator
   - pkg/progress
-  - pkg/streamformatter
-  - pkg/homedir
   - pkg/random
-  - pkg/jsonmessage
-  - pkg/jsonlog
+  - pkg/streamformatter
   - pkg/term
   - pkg/term/windows
 - name: github.com/docker/go-units
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 0dadbb0345b35ec7ef35e228dabb8de89a65bf52
 - name: github.com/dustin/go-humanize
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 259d2a102b871d17f30e3cd9881a642961a1e486
 - name: github.com/go-yaml/yaml
-  version: e4d366fc3c7938e2958e662b4258c7a89e1f0e3e
+  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
 - name: github.com/golang/protobuf
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 2bba0603135d7d7f5cb73b2125beeda19c09f4ef
   subpackages:
   - proto
 - name: github.com/juju/errors
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 6f54ff6318409d31ff16261533ce2c8381a4fd5d
 - name: github.com/kr/fs
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
-- name: github.com/opencontainers/runc
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
-  subpackages:
-  - libcontainer/user
+  version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 - name: github.com/pkg/errors
-  version: ""
+  version: 01fa4104b9c248c8945d14d9f128454d5b28d595
 - name: github.com/pkg/sftp
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: f581f816668ae3c9aecee151cdaa1afa814a40de
 - name: github.com/QuentinPerez/go-encodeUrl
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 645a9dbeee154c68e218053e604de21f1e3d91d0
 - name: github.com/Sirupsen/logrus
-  version: ""
+  version: 10f801ebc38b33738c9d17d50860f484a0988ff5
+- name: github.com/spf13/pflag
+  version: d16db1e50e33dff1b6cdf37596cef36742128670
 - name: github.com/tucnak/store
   version: 84b795be94a4e02b5d92d7ef7490c4ebdb347ddf
 - name: golang.org/x/crypto
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 3cb07270c9455e8ad27956a70891c962d121a228
   subpackages:
-  - ssh
-  - ssh/terminal
   - curve25519
   - ed25519
   - ed25519/internal/edwards25519
+  - ssh
+  - ssh/terminal
 - name: golang.org/x/net
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d
   subpackages:
   - context
 - name: golang.org/x/oauth2
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 7fdf09982454086d5570c7db3e11f360194830ca
   subpackages:
   - internal
+- name: golang.org/x/sys
+  version: 9a7256cb28ed514b4e1e5f68959914c4c28a92e0
+  subpackages:
+  - unix
 - name: google.golang.org/appengine
-  version: 36e14b4bb02493d2d709715247cca7a2ae09e8e1
+  version: 56d253d1dd14aa01937e12c73a0971bcfd797ff2
   subpackages:
-  - urlfetch
   - internal
-  - internal/urlfetch
   - internal/base
   - internal/datastore
   - internal/log
   - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
 - name: gopkg.in/cheggaaa/pb.v1
-  version: ""
+  version: 9453b2db37f4d8bc63751daca63bbe7049eb5e74
 testImports: []

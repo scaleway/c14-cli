@@ -46,7 +46,7 @@ func Upload() Command {
         $ tar cvf - /upload 2> /dev/null | ./c14 upload --name "file.tar.gz" fervent_austin
 `,
 	})
-	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
+	ret.Flags.StringVarP(&ret.flName, "name", "n", "", "Assigns a name (only with tar method)")
 	return ret
 }
 

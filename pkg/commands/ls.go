@@ -35,9 +35,9 @@ func Ls() Command {
         $ c14 ls
         $ c14 ls -a`,
 	})
-	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Only display UUIDs")
-	ret.Flags.BoolVar(&ret.flPlatform, []string{"p", "-platform"}, false, "Show the platforms")
-	ret.Flags.BoolVar(&ret.flAll, []string{"a", "-all"}, false, "Show all information on archives (size,parity,creationDate,description)")
+	ret.Flags.BoolVarP(&ret.flQuiet, "quiet", "q", false, "Only display UUIDs")
+	ret.Flags.BoolVarP(&ret.flPlatform, "platform", "p", false, "Show the platforms")
+	ret.Flags.BoolVarP(&ret.flAll, "all", "a", false, "Show all information on archives (size,parity,creationDate,description)")
 	return ret
 }
 

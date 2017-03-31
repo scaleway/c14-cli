@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/docker/docker/pkg/mflag"
+	"github.com/spf13/pflag"
 )
 
 // Env containts the global options
@@ -43,12 +43,12 @@ func init() {
 
 func (r *root) Parse() (err error) {
 	var (
-		flDebug   = mflag.Bool([]string{"D", "-debug"}, false, "Enable debug mode")
-		flVerbose = mflag.Bool([]string{"V", "-verbose"}, false, "Enable verbose mode")
+		flDebug   = pflag.BoolP("debug", "D", false, "Enable debug mode")
+		flVerbose = pflag.BoolP("verbose", "V", false, "Enable verbose mode")
 	)
 
 	args := os.Args[1:]
-	if err = mflag.CommandLine.Parse(args); err != nil {
+	if err = pflag.CommandLine.Parse(args); err != nil {
 		return
 	}
 	r.Verbose = *flVerbose || os.Getenv("C14_VERBOSE") == "1"
@@ -57,7 +57,7 @@ func (r *root) Parse() (err error) {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	args = mflag.Args()
+	args = pflag.Args()
 	if len(args) < 1 {
 		r.printUsage(args)
 		return
