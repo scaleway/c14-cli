@@ -28,6 +28,8 @@ func New(w io.Writer) *Handler {
 
 // HandleLog implements log.Handler.
 func (h *Handler) HandleLog(e *log.Entry) error {
+	names := e.Fields.Names()
+
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -35,8 +37,8 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 	h.enc.EncodeKeyval("level", e.Level.String())
 	h.enc.EncodeKeyval("message", e.Message)
 
-	for k, v := range e.Fields {
-		h.enc.EncodeKeyval(k, v)
+	for _, name := range names {
+		h.enc.EncodeKeyval(name, e.Fields.Get(name))
 	}
 
 	h.enc.EndRecord()
