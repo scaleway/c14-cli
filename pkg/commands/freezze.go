@@ -31,8 +31,8 @@ func Freeze() Command {
 		Examples: `
         $ c14 freeze 83b93179-32e0-11e6-be10-10604b9b0ad9`,
 	})
-	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "")
-	ret.Flags.BoolVar(&ret.flNoWait, []string{"-nowait"}, false, "")
+	ret.Flags.BoolVarP(&ret.flQuiet, "quiet", "q", false, "")
+	ret.Flags.BoolVar(&ret.flNoWait, "nowait", false, "")
 	return ret
 }
 

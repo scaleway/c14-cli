@@ -2,10 +2,9 @@ package commands
 
 import (
 	"fmt"
+	"github.com/spf13/pflag"
 	"os"
 	"text/template"
-
-	"github.com/docker/docker/pkg/mflag"
 )
 
 type help struct {
@@ -58,7 +57,7 @@ Run 'c14 COMMAND --help' for more information on a command.
 `
 
 	fmt.Printf("%v", header)
-	mflag.PrintDefaults()
+	pflag.PrintDefaults()
 	t := template.New("helper")
 	template.Must(t.Parse(end))
 	err = t.Execute(os.Stdout, Root.commands)
