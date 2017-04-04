@@ -2,13 +2,8 @@
 
 load helpers
 
-CGROUP_MEMORY=""
 TEST_CGROUP_NAME="runc-cgroups-integration-test"
-
-function init_cgroup_path() {
-	base_path=$(grep "cgroup"  /proc/self/mountinfo | gawk 'toupper($NF) ~ /\<MEMORY\>/ { print $5; exit }')
-	CGROUP_MEMORY="${base_path}/${TEST_CGROUP_NAME}"
-}
+CGROUP_MEMORY="${CGROUP_MEMORY_BASE_PATH}/${TEST_CGROUP_NAME}"
 
 function teardown() {
     rm -f $BATS_TMPDIR/runc-update-integration-test.json
@@ -19,7 +14,6 @@ function teardown() {
 function setup() {
     teardown
     setup_busybox
-    init_cgroup_path
 }
 
 function check_cgroup_value() {
@@ -34,8 +28,11 @@ function check_cgroup_value() {
 }
 
 @test "runc update --kernel-memory (initialized)" {
+	# XXX: currently cgroups require root containers.
+    requires cgroups_kmem root
+
     # Add cgroup path
-    sed -i 's/\("linux": {\)/\1\n    "cgroupsPath": "runc-cgroups-integration-test",/'  ${BUSYBOX_BUNDLE}/config.json
+    sed -i 's/\("linux": {\)/\1\n    "cgroupsPath": "\/runc-cgroups-integration-test",/'  ${BUSYBOX_BUNDLE}/config.json
 
     # Set some initial known values
     DATA=$(cat <<-EOF
@@ -48,7 +45,7 @@ EOF
     sed -i "s/\(\"resources\": {\)/\1\n${DATA}/" ${BUSYBOX_BUNDLE}/config.json
 
     # run a detached busybox to work with
-    runc run -d --console /dev/pts/ptmx test_cgroups_kmem
+    runc run -d --console-socket $CONSOLE_SOCKET test_cgroups_kmem
     [ "$status" -eq 0 ]
     wait_for_container 15 1 test_cgroups_kmem
 
@@ -61,11 +58,14 @@ EOF
 }
 
 @test "runc update --kernel-memory (uninitialized)" {
+	# XXX: currently cgroups require root containers.
+    requires cgroups_kmem root
+
     # Add cgroup path
-    sed -i 's/\("linux": {\)/\1\n    "cgroupsPath": "runc-cgroups-integration-test",/'  ${BUSYBOX_BUNDLE}/config.json
+    sed -i 's/\("linux": {\)/\1\n    "cgroupsPath": "\/runc-cgroups-integration-test",/'  ${BUSYBOX_BUNDLE}/config.json
 
     # run a detached busybox to work with
-    runc run -d --console /dev/pts/ptmx test_cgroups_kmem
+    runc run -d --console-socket $CONSOLE_SOCKET test_cgroups_kmem
     [ "$status" -eq 0 ]
     wait_for_container 15 1 test_cgroups_kmem
 

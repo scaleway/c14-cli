@@ -10,4 +10,4 @@
 The default format is table.  The following will output the processes of a container
 in json format:
 
-    # runc ps -f json
+    # runc ps -f json <container-id>

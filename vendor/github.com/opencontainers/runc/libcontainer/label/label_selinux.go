@@ -55,6 +55,10 @@ func InitLabels(options []string) (string, string, error) {
 	return processLabel, mountLabel, nil
 }
 
+func GetROMountLabel() string {
+	return selinux.GetROFileLabel()
+}
+
 // DEPRECATED: The GenLabels function is only to be used during the transition to the official API.
 func GenLabels(options string) (string, string, error) {
 	return InitLabels(strings.Fields(options))
@@ -129,7 +133,7 @@ func Relabel(path string, fileLabel string, shared bool) error {
 
 	exclude_paths := map[string]bool{"/": true, "/usr": true, "/etc": true}
 	if exclude_paths[path] {
-		return fmt.Errorf("Relabeling of %s is not allowed", path)
+		return fmt.Errorf("SELinux relabeling of %s is not allowed", path)
 	}
 
 	if shared {
@@ -137,7 +141,10 @@ func Relabel(path string, fileLabel string, shared bool) error {
 		c["level"] = "s0"
 		fileLabel = c.Get()
 	}
-	return selinux.Chcon(path, fileLabel, true)
+	if err := selinux.Chcon(path, fileLabel, true); err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetPidLabel will return the label of the process running with the specified pid
@@ -166,7 +173,7 @@ func UnreserveLabel(label string) error {
 	return nil
 }
 
-// DupSecOpt takes an process label and returns security options that
+// DupSecOpt takes a process label and returns security options that
 // can be used to set duplicate labels on future container processes
 func DupSecOpt(src string) []string {
 	return selinux.DupSecOpt(src)
