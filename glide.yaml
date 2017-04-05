@@ -7,7 +7,6 @@ import:
 - package: github.com/docker/docker
   version: v1.12.0
   subpackages:
-  - pkg/mflag
   - pkg/namesgenerator
   - pkg/progress
   - pkg/streamformatter
@@ -26,3 +25,4 @@ import:
   version: v1.0.5
 - package: github.com/tucnak/store
   version: ^1.0.0
+- package: github.com/cocooma/mflag

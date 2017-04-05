@@ -75,8 +75,8 @@ type BaseContainer interface {
 	// Returns the current status of the container.
 	//
 	// errors:
-	// ContainerDestroyed - Container no longer exists,
-	// SystemError - System error.
+	// ContainerNotExists - Container no longer exists,
+	// Systemerror - System error.
 	Status() (Status, error)
 
 	// State returns the current container's state information.
@@ -91,8 +91,8 @@ type BaseContainer interface {
 	// Returns the PIDs inside this container. The PIDs are in the namespace of the calling process.
 	//
 	// errors:
-	// ContainerDestroyed - Container no longer exists,
-	// SystemError - System error.
+	// ContainerNotExists - Container no longer exists,
+	// Systemerror - System error.
 	//
 	// Some of the returned PIDs may no longer refer to processes in the Container, unless
 	// the Container state is PAUSED in which case every PID in the slice is valid.
@@ -101,8 +101,8 @@ type BaseContainer interface {
 	// Returns statistics for the container.
 	//
 	// errors:
-	// ContainerDestroyed - Container no longer exists,
-	// SystemError - System error.
+	// ContainerNotExists - Container no longer exists,
+	// Systemerror - System error.
 	Stats() (*Stats, error)
 
 	// Set resources of container as configured
@@ -117,37 +117,46 @@ type BaseContainer interface {
 	// start. You can track process lifecycle with passed Process structure.
 	//
 	// errors:
-	// ContainerDestroyed - Container no longer exists,
+	// ContainerNotExists - Container no longer exists,
 	// ConfigInvalid - config is invalid,
 	// ContainerPaused - Container is paused,
 	// SystemError - System error.
 	Start(process *Process) (err error)
 
-	// Run immediatly starts the process inside the conatiner.  Returns error if process
+	// Run immediately starts the process inside the container.  Returns error if process
 	// fails to start.  It does not block waiting for the exec fifo  after start returns but
 	// opens the fifo after start returns.
 	//
 	// errors:
-	// ContainerDestroyed - Container no longer exists,
+	// ContainerNotExists - Container no longer exists,
 	// ConfigInvalid - config is invalid,
 	// ContainerPaused - Container is paused,
 	// SystemError - System error.
 	Run(process *Process) (err error)
 
-	// Destroys the container after killing all running processes.
+	// Destroys the container, if its in a valid state, after killing any
+	// remaining running processes.
 	//
 	// Any event registrations are removed before the container is destroyed.
 	// No error is returned if the container is already destroyed.
 	//
+	// Running containers must first be stopped using Signal(..).
+	// Paused containers must first be resumed using Resume(..).
+	//
 	// errors:
+	// ContainerNotStopped - Container is still running,
+	// ContainerPaused - Container is paused,
 	// SystemError - System error.
 	Destroy() error
 
 	// Signal sends the provided signal code to the container's initial process.
 	//
+	// If all is specified the signal is sent to all processes in the container
+	// including the initial process.
+	//
 	// errors:
 	// SystemError - System error.
-	Signal(s os.Signal) error
+	Signal(s os.Signal, all bool) error
 
 	// Exec signals the container to exec the users process at the end of the init.
 	//
