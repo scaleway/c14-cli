@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/juju/errors"
+	"sync"
 )
 
 /*
@@ -97,10 +98,16 @@ func (o *OnlineAPI) GetAllArchives() (archives []OnlineGetArchive, err error) {
 		err = errors.Annotate(err, "GetArchives")
 		return
 	}
+	var wgSafe sync.WaitGroup
 	for _, archive := range archives {
-		o.cache.InsertSafe(archive.Safe.UUIDRef, archive.Safe)
-		o.cache.InsertArchive(archive.Safe.UUIDRef, archive.UUIDRef, archive)
+		wgSafe.Add(1)
+		go func(archive OnlineGetArchive, wgSafe *sync.WaitGroup) {
+			o.cache.InsertSafe(archive.Safe.UUIDRef, archive.Safe)
+			o.cache.InsertArchive(archive.Safe.UUIDRef, archive.UUIDRef, archive)
+			wgSafe.Done()
+		}(archive, &wgSafe)
 	}
+	wgSafe.Wait()
 	return
 }
 

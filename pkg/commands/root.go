@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/docker/docker/pkg/mflag"
+	"github.com/cocooma/mflag"
 )
 
 // Env containts the global options
@@ -37,6 +37,7 @@ func init() {
 			Unfreeze(),
 			Upload(),
 			Verify(),
+			Bucket(),
 		},
 	}
 }
