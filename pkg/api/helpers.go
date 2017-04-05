@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/juju/errors"
@@ -105,23 +104,10 @@ OUT:
 
 // FetchRessources get the ressources to fill the cache
 func (o *OnlineAPI) FetchRessources() (err error) {
-	var (
-		wgSafe sync.WaitGroup
-		safes  []OnlineGetSafe
-	)
-
-	if safes, err = o.GetSafes(false); err != nil {
+	if _, err = o.GetAllArchives(); err != nil {
 		err = errors.Annotate(err, "FetchRessources")
 		return
 	}
-	for indexSafe := range safes {
-		wgSafe.Add(1)
-		go func(uuidSafe string, wgSafe *sync.WaitGroup) {
-			_, _ = o.GetArchives(uuidSafe, false)
-			wgSafe.Done()
-		}(safes[indexSafe].UUIDRef, &wgSafe)
-	}
-	wgSafe.Wait()
 	return
 }
 

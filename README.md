@@ -63,6 +63,7 @@ Commands:
     remove    Remove an archive
     unfreeze  Unlock an archive
     upload    Upload your file or directory into an archive
+    bucket    Displays all information of bucket
 
 Run 'c14 COMMAND --help' for more information on a command.
 ```
@@ -251,6 +252,23 @@ Examples:
         $ c14 upload test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
         $ c14 upload /upload 83b93179-32e0-11e6-be10-10604b9b0ad9
         $ tar cvf - /upload 2> /dev/null | ./c14 upload --name "file.tar.gz" fervent_austin
+```
+
+#### `c14 bucket`
+
+```console
+Usage: c14 bucket [OPTIONS] [ARCHIVE]*
+
+Displays (JSON or tab output) all information of bucket.
+
+Options:
+  -h, --help=false      Print usage
+  -p, --pretty=""       Show all information in tab (default json output)
+
+Examples:
+        $ c14 bucket
+        $ c14 bucket 83b93179-32e0-11e6-be10-10604b9b0ad9
+        $ c14 bucket -p 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
 
 

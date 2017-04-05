@@ -5,7 +5,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/docker/docker/pkg/mflag"
+	"github.com/cocooma/mflag"
 )
 
 type help struct {
