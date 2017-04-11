@@ -106,7 +106,7 @@ type OnlinePostArchive struct {
 	SSHKeys     []string `json:"ssh_keys"`
 	Platforms   []string `json:"platforms"`
 	Days        int      `json:"days"`
-	LargeBucket bool
+	LargeBucket bool     `json:"large_bucket"`
 	Crypto      string `json:"crypto"`
 }
 
