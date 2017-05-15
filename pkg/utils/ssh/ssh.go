@@ -16,6 +16,7 @@ func (c *Credentials) NewSFTPClient() (client *sftp.Client, err error) {
 	sshConfig := &ssh.ClientConfig{
 		User: c.User,
 		Auth: []ssh.AuthMethod{ssh.Password(c.Password)},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
 	if c.sshClient, err = ssh.Dial("tcp", c.Host, sshConfig); err != nil {
