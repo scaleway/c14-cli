@@ -14,8 +14,8 @@ type Credentials struct {
 
 func (c *Credentials) NewSFTPClient() (client *sftp.Client, err error) {
 	sshConfig := &ssh.ClientConfig{
-		User: c.User,
-		Auth: []ssh.AuthMethod{ssh.Password(c.Password)},
+		User:            c.User,
+		Auth:            []ssh.AuthMethod{ssh.Password(c.Password)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 

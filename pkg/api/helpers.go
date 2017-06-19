@@ -28,7 +28,7 @@ func (o *OnlineAPI) CreateSSHBucketFromScratch(c ConfigCreateSSHBucketFromScratc
 		found = false
 	)
 
-	if safes, err = o.GetSafes(true); err != nil {
+	if safes, err = o.GetSafes(false); err != nil {
 		err = errors.Annotate(err, "CreateSSHBucketFromScratch:GetSafes")
 		return
 	}

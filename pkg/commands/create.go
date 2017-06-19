@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/pkg/namesgenerator"
 	"github.com/juju/errors"
 	"github.com/online-net/c14-cli/pkg/api"
+	"strings"
 )
 
 type create struct {
@@ -15,13 +16,14 @@ type create struct {
 }
 
 type createFlags struct {
-	flName   string
-	flDesc   string
-	flSafe   string
-	flQuiet  bool
-	flParity string
-	flLarge  bool
-	flCrypto bool
+	flName    string
+	flDesc    string
+	flSafe    string
+	flQuiet   bool
+	flParity  string
+	flLarge   bool
+	flCrypto  bool
+	flSshKeys string
 }
 
 // Create returns a new command "create"
@@ -35,6 +37,7 @@ func Create() Command {
         $ c14 create
         $ c14 create --name "MyBooks" --description "hardware books"
         $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
+        $ c14 create --sshkey "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 `,
 	})
 	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name")
@@ -44,6 +47,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
+	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "UUID of ssh keys use for ssh connections (separate by comma).")
 	return ret
 }
 
@@ -75,15 +79,28 @@ func (c *create) Run(args []string) (err error) {
 		safeName    string
 		keys        []api.OnlineGetSSHKey
 		crypto      string
+		UuidSshKeys []string
 	)
 
-	if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
-		err = errors.Annotate(err, "Run:GetSSHKey")
-		return
-	}
-	if len(keys) == 0 {
-		err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
-		return
+	if len(c.flSshKeys) == 0 {
+		if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
+			err = errors.Annotate(err, "Run:GetSSHKey")
+			return
+		}
+		if len(keys) == 0 {
+			err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
+			return
+		}
+		UuidSshKeys = append(UuidSshKeys, keys[0].UUIDRef)
+	} else {
+		UuidSshKeys = strings.Split(c.flSshKeys, ",")
+		for _, keyArg := range UuidSshKeys {
+			_, checkErr := c.OnlineAPI.GetSSHKey(keyArg)
+			if checkErr != nil {
+				err = errors.New(fmt.Sprintf("%s : %s", checkErr.Error(), keyArg))
+				return
+			}
+		}
 	}
 
 	safeName = c.flSafe
@@ -102,7 +119,7 @@ func (c *create) Run(args []string) (err error) {
 		SafeName:    safeName,
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
-		UUIDSSHKeys: []string{keys[0].UUIDRef},
+		UUIDSSHKeys: UuidSshKeys,
 		Platforms:   []string{"1"},
 		Days:        7,
 		Quiet:       c.flQuiet,

@@ -95,6 +95,7 @@ Options:
   -s, --safe=""             Name of the safe to use. If it doesn't exists it will be created.
   -p, --parity="standard"   Specify a parity to use
   -l, --large=false         Ask for a large bucket
+  -k, --sshkey              UUID of ssh keys use for ssh connections (separate by comma)
 
 Examples:
         $ c14 create
