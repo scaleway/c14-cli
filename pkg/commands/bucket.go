@@ -1,13 +1,13 @@
 package commands
 
 import (
-	"os"
-	"github.com/online-net/c14-cli/pkg/api"
-	"text/tabwriter"
-	"fmt"
-	"strings"
 	"encoding/json"
+	"fmt"
 	"github.com/juju/errors"
+	"github.com/online-net/c14-cli/pkg/api"
+	"os"
+	"strings"
+	"text/tabwriter"
 )
 
 type bucket struct {

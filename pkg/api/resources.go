@@ -107,7 +107,7 @@ type OnlinePostArchive struct {
 	Platforms   []string `json:"platforms"`
 	Days        int      `json:"days"`
 	LargeBucket bool     `json:"large_bucket"`
-	Crypto      string `json:"crypto"`
+	Crypto      string   `json:"crypto"`
 }
 
 type OnlinePostUnArchive struct {
