@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	"strings"
+
 	"github.com/docker/docker/pkg/namesgenerator"
 	"github.com/juju/errors"
 	"github.com/online-net/c14-cli/pkg/api"
-	"strings"
 )
 
 type create struct {
@@ -47,7 +48,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
-	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "UUID of ssh keys use for ssh connections (separate by comma).")
+	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
 	return ret
 }
 
@@ -88,7 +89,7 @@ func (c *create) Run(args []string) (err error) {
 			return
 		}
 		if len(keys) == 0 {
-			err = errors.New("Please add an SSH Key here: https://console.online.net/en/account/ssh-keys")
+			err = errors.New("Please add your SSH key here: https://console.online.net/en/account/ssh-keys")
 			return
 		}
 		UuidSshKeys = append(UuidSshKeys, keys[0].UUIDRef)
