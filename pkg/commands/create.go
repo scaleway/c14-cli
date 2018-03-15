@@ -50,7 +50,7 @@ func Create() Command {
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
 	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
-	ret.Flags.StringVar(&ret.flZone, []string{"z", "-zone"}, "2", "Show the zone (platforms) ")
+	ret.Flags.StringVar(&ret.flZone, []string{"z", "-zone"}, "2", "Choose the zone (platform)")
 	return ret
 }
 
