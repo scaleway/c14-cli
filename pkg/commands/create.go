@@ -17,14 +17,14 @@ type create struct {
 }
 
 type createFlags struct {
-	flName    string
-	flDesc    string
-	flSafe    string
-	flQuiet   bool
-	flParity  string
-	flLarge   bool
-	flCrypto  bool
-	flSshKeys string
+	flName     string
+	flDesc     string
+	flSafe     string
+	flQuiet    bool
+	flParity   string
+	flLarge    bool
+	flCrypto   bool
+	flSshKeys  string
 	flPlatform string
 }
 
