@@ -25,6 +25,7 @@ type createFlags struct {
 	flLarge   bool
 	flCrypto  bool
 	flSshKeys string
+	flPlatform string
 }
 
 // Create returns a new command "create"
@@ -49,6 +50,7 @@ func Create() Command {
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
 	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
+	ret.Flags.StringVar(&ret.flPlatform, []string{"z", "-zone"}, "2", "Show the zone (platforms) ")
 	return ret
 }
 
@@ -121,7 +123,7 @@ func (c *create) Run(args []string) (err error) {
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
 		UUIDSSHKeys: UuidSshKeys,
-		Platforms:   []string{"1"},
+		Platforms:   []string{c.flPlatform},
 		Days:        7,
 		Quiet:       c.flQuiet,
 		Parity:      c.flParity,
