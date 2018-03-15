@@ -84,25 +84,27 @@ $
 ```console
 Usage: c14 create [OPTIONS]
 
-Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.
+Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored in the choosen platform (by default at DC4).
 
 Options:
-  -c, --crypto=aes-256-cbc  Which cryptography to use: aes-256-cbc or none
-  -d, --description=""      Assigns a description
-  -h, --help=false          Print usage
-  -n, --name=""             Assigns a name
-  -q, --quiet=false         Don't display the waiting loop
-  -s, --safe=""             Name of the safe to use. If it doesn't exists it will be created.
-  -p, --parity="standard"   Specify a parity to use
-  -l, --large=false         Ask for a large bucket
-  -k, --sshkey              A list of SSH Key UUIDs separated by a comma that will be used for the connection.
+  -c, --crypto=true     Enable aes-256-bc cryptography, enabled by default.
+  -d, --description=""  Assigns a description
+  -h, --help=false      Print usage
+  -k, --sshkey=""       A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.
+  -l, --large=false     Ask for a large bucket
+  -n, --name=""         Assigns a name
+  -P, --platform=2      Select the platform (by default at DC4)
+  -p, --parity=standard Specify a parity to use
+  -q, --quiet=false     Don't display the waiting loop
+  -s, --safe=""         Name of the safe to use. If it doesn't exists it will be created.
 
 Examples:
         $ c14 create
-        $ c14 create --name "MyBooks" --description "hardware books"
-        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
-```
+        $ c14 create --name "MyBooks" --description "hardware books" -P 1
+        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf" --platform 2
+        $ c14 create --sshkey "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
+```
 
 #### `c14 freeze`
 
