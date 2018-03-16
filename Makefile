@@ -17,11 +17,11 @@ REV =		$(shell git rev-parse --short HEAD 2> /dev/null || echo "commit")
 LDFLAGS = "-X `go list ./pkg/version`.GITCOMMIT=$(REV) -s"
 
 # Check go version
-GOVERSIONMAJOR = $(shell go version | grep -o '[1-9].[0-9]' | cut -d '.' -f1)
-GOVERSIONMINOR = $(shell go version | grep -o '[1-9].[0-9]' | cut -d '.' -f2)
+GOVERSIONMAJOR = $(shell go version | grep -o '[1-9].[0-9].' | cut -d '.' -f1)
+GOVERSIONMINOR = $(shell go version | grep -o '[1-9].[0-9].' | cut -d '.' -f2)
 VERSION_GE_1_6 = $(shell [ $(GOVERSIONMAJOR) -gt 1 -o $(GOVERSIONMINOR) -ge 6 ] && echo true)
 ifneq ($(VERSION_GE_1_6),true)
-	$(error Bad go version, please install a version greater than or equal to 1.6)
+ $(error Bad go version, please install a version greater than or equal to 1.6)
 endif
 
 CLEAN_LIST =		$(foreach int, $(COMMANDS) $(PACKAGES), $(int)_clean)
