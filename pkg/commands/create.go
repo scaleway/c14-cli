@@ -34,7 +34,7 @@ func Create() Command {
 	ret.Init(Config{
 		UsageLine:   "create [OPTIONS]",
 		Description: "Create a new archive",
-		Help:        "Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.",
+		Help:        "Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored in the zone you choose (by default at DC4).",
 		Examples: `
         $ c14 create
         $ c14 create --name "MyBooks" --description "hardware books"
