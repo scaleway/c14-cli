@@ -17,14 +17,15 @@ type create struct {
 }
 
 type createFlags struct {
-	flName    string
-	flDesc    string
-	flSafe    string
-	flQuiet   bool
-	flParity  string
-	flLarge   bool
-	flCrypto  bool
-	flSshKeys string
+	flName     string
+	flDesc     string
+	flSafe     string
+	flQuiet    bool
+	flParity   string
+	flLarge    bool
+	flCrypto   bool
+	flSshKeys  string
+	flPlatform string
 }
 
 // Create returns a new command "create"
@@ -33,11 +34,11 @@ func Create() Command {
 	ret.Init(Config{
 		UsageLine:   "create [OPTIONS]",
 		Description: "Create a new archive",
-		Help:        "Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored at DC2.",
+		Help:        "Create a new archive, by default with a random name, standard storage (0.0002€/GB/month), automatic locked in 7 days and your datas will be stored in the choosen platform (by default at DC4).",
 		Examples: `
         $ c14 create
-        $ c14 create --name "MyBooks" --description "hardware books"
-        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf"
+        $ c14 create --name "MyBooks" --description "hardware books" -P 1
+        $ c14 create --name "MyBooks" --description "hardware books" --safe "Bookshelf" --platform 2
         $ c14 create --sshkey "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 `,
 	})
@@ -49,6 +50,7 @@ func Create() Command {
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-bc cryptography, enabled by default.")
 	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
+	ret.Flags.StringVar(&ret.flPlatform, []string{"P", "-platform"}, "2", "Select the platform (by default at DC4)")
 	return ret
 }
 
@@ -121,7 +123,7 @@ func (c *create) Run(args []string) (err error) {
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
 		UUIDSSHKeys: UuidSshKeys,
-		Platforms:   []string{"1"},
+		Platforms:   []string{c.flPlatform},
 		Days:        7,
 		Quiet:       c.flQuiet,
 		Parity:      c.flParity,
