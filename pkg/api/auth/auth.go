@@ -44,7 +44,10 @@ func getURL(url string, encode, decode interface{}) (err error) {
 		return
 	}
 	resp, err = http.DefaultClient.Get(fmt.Sprintf("%v?%v", url, values.Encode()))
-	if resp != nil {
+	if resp == nil {
+		err = errors.Errorf("Cannot connect to Api")
+		return
+	} else {
 		defer resp.Body.Close()
 	}
 	if resp.StatusCode != 200 {
