@@ -82,9 +82,11 @@ func (c *cache) CopyArchives(uuidSafe string) (archives []OnlineGetArchive, err 
 
 func (c *cache) InsertSafe(uuid string, safe OnlineGetSafe) {
 	c.Lock()
-	c.safes[uuid] = cacheSafe{
-		Safe:    safe,
-		Archive: make(map[string]OnlineGetArchive),
+	if _, ok := c.safes[uuid]; !ok {
+		c.safes[uuid] = cacheSafe{
+			Safe:    safe,
+			Archive: make(map[string]OnlineGetArchive),
+		}
 	}
 	c.Save()
 	c.Unlock()
