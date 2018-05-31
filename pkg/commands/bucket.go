@@ -56,7 +56,9 @@ func (l *bucket) Run(args []string) (err error) {
 	}
 	l.OnlineAPI.FetchRessources()
 	if safe, _, err = l.FindSafeUUIDFromArchive(args[0], true); err != nil {
-		return
+		if safe, _, err = l.FindSafeUUIDFromArchive(args[0], false); err != nil {
+			return
+		}
 	}
 	if bucket, err = l.OnlineAPI.GetBucket(safe.UUIDRef, args[0]); err != nil {
 		return
