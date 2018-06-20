@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/api"
+	"github.com/scaleway/c14-cli/pkg/api"
 	"os"
 	"strings"
 	"text/tabwriter"

@@ -8,7 +8,7 @@ import (
 
 	"github.com/docker/docker/pkg/namesgenerator"
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/api"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type create struct {

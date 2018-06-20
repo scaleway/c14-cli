@@ -1,4 +1,4 @@
-package: github.com/online-net/c14-cli
+package: github.com/scaleway/c14-cli
 import:
 - package: github.com/QuentinPerez/go-encodeUrl
 - package: github.com/apex/log
