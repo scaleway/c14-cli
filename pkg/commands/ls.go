@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/online-net/c14-cli/pkg/api"
 	"github.com/pkg/errors"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type ls struct {

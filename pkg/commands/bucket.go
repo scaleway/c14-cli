@@ -3,11 +3,12 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/api"
 	"os"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/juju/errors"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type bucket struct {

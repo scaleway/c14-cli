@@ -10,7 +10,7 @@ import (
 
 	"github.com/QuentinPerez/go-encodeUrl"
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/utils/configstore"
+	"github.com/scaleway/c14-cli/pkg/utils/configstore"
 )
 
 var (

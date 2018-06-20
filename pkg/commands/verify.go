@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/apex/log"
-	"github.com/online-net/c14-cli/pkg/api"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type verify struct {

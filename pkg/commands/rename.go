@@ -1,6 +1,6 @@
 package commands
 
-import "github.com/online-net/c14-cli/pkg/api"
+import "github.com/scaleway/c14-cli/pkg/api"
 
 type rename struct {
 	Base
