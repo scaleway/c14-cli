@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/api/auth"
+	"github.com/scaleway/c14-cli/pkg/api/auth"
 )
 
 type login struct {

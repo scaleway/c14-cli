@@ -6,7 +6,7 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/text"
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/commands"
+	"github.com/scaleway/c14-cli/pkg/commands"
 )
 
 func main() {

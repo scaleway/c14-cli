@@ -7,8 +7,8 @@ import (
 	pb "gopkg.in/cheggaaa/pb.v1"
 
 	"github.com/apex/log"
-	"github.com/online-net/c14-cli/pkg/api"
-	"github.com/online-net/c14-cli/pkg/utils/pgbar"
+	"github.com/scaleway/c14-cli/pkg/api"
+	"github.com/scaleway/c14-cli/pkg/utils/pgbar"
 	"github.com/pkg/errors"
 )
 

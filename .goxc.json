@@ -20,7 +20,7 @@
 	"PackageVersion": "0.0.1",
 	"TaskSettings": {
 		"publish-github": {
-			"owner": "online-net",
+			"owner": "scaleway",
 			"prerelease": false,
 			"repository": "c14-cli"
 		},
