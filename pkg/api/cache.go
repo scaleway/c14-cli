@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/apex/log"
-	"github.com/online-net/c14-cli/pkg/utils/configstore"
+	"github.com/scaleway/c14-cli/pkg/utils/configstore"
 )
 
 type cacheSafe struct {

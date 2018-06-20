@@ -10,7 +10,7 @@ import (
 
 	"github.com/QuentinPerez/go-encodeUrl"
 	"github.com/juju/errors"
-	"github.com/online-net/c14-cli/pkg/utils/configstore"
+	"github.com/scaleway/c14-cli/pkg/utils/configstore"
 )
 
 var (
@@ -44,12 +44,10 @@ func getURL(url string, encode, decode interface{}) (err error) {
 		return
 	}
 	resp, err = http.DefaultClient.Get(fmt.Sprintf("%v?%v", url, values.Encode()))
-	if resp == nil {
-		err = errors.Errorf("Cannot connect to Api")
+	if err != nil {
 		return
-	} else {
-		defer resp.Body.Close()
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		buf, _ := ioutil.ReadAll(resp.Body)
 		err = errors.Errorf(string(buf))
