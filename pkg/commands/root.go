@@ -38,6 +38,7 @@ func init() {
 			Upload(),
 			Verify(),
 			Bucket(),
+			Version(),
 		},
 	}
 }
