@@ -21,6 +21,7 @@ Interact with [Online C14](https://www.online.net/en/c14) API from the command l
     * [`remove`](#c14-remove)
     * [`unfreeze`](#c14-unfreeze)
     * [`upload`](#c14-upload)
+    * [`version`](#c14-version)
   * [Examples](#examples)
 4. [Changelog](#changelog)
 5. [Development](#development)
@@ -64,6 +65,7 @@ Commands:
     unfreeze  Unlock an archive
     upload    Upload your file or directory into an archive
     bucket    Displays all information of bucket
+    version   Show the version information
 
 Run 'c14 COMMAND --help' for more information on a command.
 ```
@@ -274,6 +276,20 @@ Examples:
         $ c14 bucket -p 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
 
+#### `c14 version`
+
+```console
+Usage: c14 version
+
+Show the version information.
+
+Options:
+  -h, --help=false      Print usage
+
+Examples:
+        $ c14 version
+```
+
 
 
 ### Examples
@@ -297,6 +313,7 @@ Soon
  * Support of `remove` command
  * Support of `unfreeze` command
  * Support of `upload` command
+ * Support of `version` command
 
 ---
 
