@@ -44,7 +44,7 @@ func getURL(url string, encode, decode interface{}) (err error) {
 		return
 	}
 	resp, err = http.DefaultClient.Get(fmt.Sprintf("%v?%v", url, values.Encode()))
-	if resp == nil {
+	if err != nil {
 		return
 	}
 	defer resp.Body.Close()
