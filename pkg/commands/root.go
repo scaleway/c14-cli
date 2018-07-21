@@ -39,6 +39,7 @@ func init() {
 			Verify(),
 			Bucket(),
 			Version(),
+			Download(),
 		},
 	}
 }
