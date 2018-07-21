@@ -10,6 +10,8 @@ import (
 	"github.com/scaleway/c14-cli/pkg/utils/ssh"
 )
 
+// TODO : flag for download in dest : ./c14 download --dest="~/Documents"
+
 type download struct {
 	Base
 	isPiped bool
@@ -29,12 +31,10 @@ func Download() Command {
 		Help:        "Download your file or directory into an archive, use SFTP protocol.",
 		Examples: `
 $ c14 download
-$ c14 download test.go 83b93179-32e0-11e6-be10-10604b9b0ad9
-$ c14 download /download 83b93179-32e0-11e6-be10-10604b9b0ad9
-$ tar cvf - /download 2> /dev/null | ./c14 download --name "file.tar.gz" fervent_austin
+$ c14 download toto 83b93179-32e0-11e6-be10-10604b9b0ad9
 `,
 	})
-	ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
+	//ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
 	return ret
 }
 
@@ -80,7 +80,7 @@ func (d *download) Run(args []string) (err error) {
 	sftpCred.Password = bucket.Credentials[0].Password
 	sftpCred.User = bucket.Credentials[0].Login
 
-	// connect
+	// SFTP connection
 	if sftpConn, err = sftpCred.NewSFTPClient(); err != nil {
 		return
 	}
@@ -94,30 +94,58 @@ func (d *download) Run(args []string) (err error) {
 	//=======================Connection end====================================
 
 	var fileName string
+	var RemoteFile string = "/buffer/" + args[0]
+	var fdLocal *os.File
 
-	splittedString := strings.Split(args[0], "/")
-	if splittedString != nil {
-		fileName = splittedString[len(splittedString)-1]
-	} else {
-		fileName = args[0]
-	}
-
-	fdLocal, err := os.Create(fileName)
-	if err != nil {
-		return
-	}
-	defer fdLocal.Close()
-	fmt.Println("file created")
-
-	file := "/buffer/" + args[0]
-	fmt.Println("file =", file)
-	fdRemote, err := sftpConn.Open(file)
+	fmt.Println("file =", RemoteFile)
+	// Open remote file
+	fdRemote, err := sftpConn.Open(RemoteFile)
 	if err != nil {
 		return
 	}
 	defer fdRemote.Close()
 
-	fdRemote.WriteTo(fdLocal)
+	// stat Remote file
+	statRemoteFile, err := fdRemote.Stat()
+	if err != nil {
+		return
+	}
+	if statRemoteFile.IsDir() == true {
+		// download directory
+		fmt.Println("Not implemented yet")
+	} else {
+		//download file
+
+		// Extract name of new file
+		splittedString := strings.Split(args[0], "/")
+		if splittedString != nil {
+			fileName = splittedString[len(splittedString)-1]
+		} else {
+			fileName = args[0]
+		}
+
+		// Create new file
+		fdLocal, err = os.Create(fileName)
+		if err != nil {
+			return
+		}
+		defer fdLocal.Close()
+		fmt.Println("file created")
+
+		// Open remote file
+		fmt.Println("file =", RemoteFile)
+		fdRemote, err = sftpConn.Open(RemoteFile)
+		if err != nil {
+			return
+		}
+		defer fdRemote.Close()
+
+		// Copy remote file to local file
+		_, err = fdRemote.WriteTo(fdLocal)
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }
