@@ -42,15 +42,70 @@ func (u *download) GetName() string {
 	return "download"
 }
 
+func getCredentials(d *download, archive string) (api.OnlineGetBucket, error) {
+	var (
+		bucket      api.OnlineGetBucket
+		safe        api.OnlineGetSafe
+		uuidArchive string
+		err         error
+	)
+
+	// get UUID
+	if safe, uuidArchive, err = d.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
+		if safe, uuidArchive, err = d.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
+			return bucket, err
+		}
+	}
+
+	// get bucket
+	if bucket, err = d.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {
+		return bucket, err
+	}
+
+	return bucket, err
+}
+
+func connectToSFTP(bucket api.OnlineGetBucket, sftpCred sshUtils.Credentials) (*sftp.Client, error) {
+
+	var sftpConn *sftp.Client
+
+	// fill credentials
+	sftpCred.Host = strings.Split(bucket.Credentials[0].URI, "@")[1]
+	sftpCred.Password = bucket.Credentials[0].Password
+	sftpCred.User = bucket.Credentials[0].Login
+
+	// SFTP connection
+	sftpConn, err := sftpCred.NewSFTPClient()
+
+	return sftpConn, err
+}
+
+func downloadFile(fileName string, fdRemote *sftp.File) (err error) {
+	var fdLocal *os.File // file descriptor to local file
+
+	// Create new file
+	if fdLocal, err = os.Create(fileName); err != nil {
+		return
+	}
+	defer fdLocal.Close()
+
+	// Copy remote file to local file
+	if _, err = fdRemote.WriteTo(fdLocal); err != nil {
+		return
+	}
+
+	return
+}
+
 func (d *download) Run(args []string) (err error) {
 	var (
-		safe     api.OnlineGetSafe
-		bucket   api.OnlineGetBucket
-		sftpCred sshUtils.Credentials
-		sftpConn *sftp.Client
-		//files       []uploadFile
-		uuidArchive string
-		//padding     int
+		bucket         api.OnlineGetBucket
+		sftpCred       sshUtils.Credentials
+		sftpConn       *sftp.Client
+		RemoteFile     string     // Path to file to download
+		fileName       string     // Name of file to download
+		fdRemote       *sftp.File // file descriptor to remote file
+		statRemoteFile os.FileInfo
 	)
 
 	if err = d.InitAPI(); err != nil {
@@ -59,90 +114,44 @@ func (d *download) Run(args []string) (err error) {
 
 	archive := args[len(args)-1]
 	args = args[:len(args)-1]
-	fmt.Println("args =", args[0])
-	fmt.Println("archive =", archive)
 
-	// get UUID
-	if safe, uuidArchive, err = d.OnlineAPI.FindSafeUUIDFromArchive(archive, true); err != nil {
-		if safe, uuidArchive, err = d.OnlineAPI.FindSafeUUIDFromArchive(archive, false); err != nil {
-			return
-		}
-	}
-
-	// get bucket
-	if bucket, err = d.OnlineAPI.GetBucket(safe.UUIDRef, uuidArchive); err != nil {
-		return
-	}
-	fmt.Println("bucket =", bucket)
-
-	// fill credentials
-	sftpCred.Host = strings.Split(bucket.Credentials[0].URI, "@")[1]
-	sftpCred.Password = bucket.Credentials[0].Password
-	sftpCred.User = bucket.Credentials[0].Login
-
-	// SFTP connection
-	if sftpConn, err = sftpCred.NewSFTPClient(); err != nil {
+	// get credentials for SFTP connection
+	if bucket, err = getCredentials(d, archive); err != nil {
 		return
 	}
 
+	// connection in SFTP with previous credentials
+	if sftpConn, err = connectToSFTP(bucket, sftpCred); err != nil {
+		return
+	}
 	defer sftpCred.Close()
 	defer sftpConn.Close()
 
-	fmt.Println("Host =", sftpCred.Host)
-	fmt.Println("Password =", sftpCred.Password)
-	fmt.Println("User =", sftpCred.User)
-	//=======================Connection end====================================
+	// assign path + filename
+	RemoteFile = "/buffer/" + args[0]
 
-	var fileName string
-	var RemoteFile string = "/buffer/" + args[0]
-	var fdLocal *os.File
-
-	fmt.Println("file =", RemoteFile)
 	// Open remote file
-	fdRemote, err := sftpConn.Open(RemoteFile)
-	if err != nil {
+	if fdRemote, err = sftpConn.Open(RemoteFile); err != nil {
 		return
 	}
 	defer fdRemote.Close()
 
-	// stat Remote file
-	statRemoteFile, err := fdRemote.Stat()
-	if err != nil {
+	// stat remote file in case file not exist
+	if statRemoteFile, err = fdRemote.Stat(); err != nil {
 		return
 	}
+
+	// check is dir or regular file
 	if statRemoteFile.IsDir() == true {
 		// download directory
 		fmt.Println("Not implemented yet")
 	} else {
 		//download file
 
-		// Extract name of new file
-		splittedString := strings.Split(args[0], "/")
-		if splittedString != nil {
-			fileName = splittedString[len(splittedString)-1]
-		} else {
-			fileName = args[0]
-		}
+		// Extract name of file to download
+		fileName = filepath.Base(args[0])
 
-		// Create new file
-		fdLocal, err = os.Create(fileName)
-		if err != nil {
-			return
-		}
-		defer fdLocal.Close()
-		fmt.Println("file created")
-
-		// Open remote file
-		fmt.Println("file =", RemoteFile)
-		fdRemote, err = sftpConn.Open(RemoteFile)
-		if err != nil {
-			return
-		}
-		defer fdRemote.Close()
-
-		// Copy remote file to local file
-		_, err = fdRemote.WriteTo(fdLocal)
-		if err != nil {
+		if downloadFile(fileName, fdRemote); err != nil {
 			return
 		}
 	}
