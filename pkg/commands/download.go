@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/pkg/sftp"
@@ -102,10 +103,10 @@ func (d *download) Run(args []string) (err error) {
 		bucket         api.OnlineGetBucket
 		sftpCred       sshUtils.Credentials
 		sftpConn       *sftp.Client
-		RemoteFile     string     // Path to file to download
+		remoteFile     string     // Path to file to download
 		fileName       string     // Name of file to download
 		fdRemote       *sftp.File // file descriptor to remote file
-		statRemoteFile os.FileInfo
+		statremoteFile os.FileInfo
 	)
 
 	if err = d.InitAPI(); err != nil {
@@ -127,27 +128,55 @@ func (d *download) Run(args []string) (err error) {
 	defer sftpCred.Close()
 	defer sftpConn.Close()
 
-	// assign path + filename
-	RemoteFile = "/buffer/" + args[0]
+	// Path of remote file
+	remoteFile = "/buffer/" + args[0]
 
 	// Open remote file
-	if fdRemote, err = sftpConn.Open(RemoteFile); err != nil {
+	if fdRemote, err = sftpConn.Open(remoteFile); err != nil {
 		return
 	}
 	defer fdRemote.Close()
 
 	// stat remote file in case file not exist
-	if statRemoteFile, err = fdRemote.Stat(); err != nil {
+	if statremoteFile, err = fdRemote.Stat(); err != nil {
 		return
 	}
 
 	// check is dir or regular file
-	if statRemoteFile.IsDir() == true {
+	if statremoteFile.IsDir() == true {
 		// download directory
-		fmt.Println("Not implemented yet")
-	} else {
-		//download file
+		walker := sftpConn.Walk(remoteFile)
 
+		for walker.Step() {
+			// TODO DownloadDir() function
+			if err = walker.Err(); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				continue
+			}
+			info, err := sftpConn.ReadDir(walker.Path())
+			if err != nil {
+				continue
+			}
+			for i := 0; i < len(info); i++ {
+				fileName = walker.Path()[len("/buffer/"):] + "/" + info[i].Name() // filename - "/buffer/"
+				fmt.Println("file =", fileName)
+
+				if info[i].IsDir() == true {
+					if err = os.MkdirAll(fileName, os.ModePerm); err != nil {
+						fmt.Println(err)
+					}
+				} else {
+					if fdRemote, err = sftpConn.Open("/buffer/" + fileName); err != nil {
+						fmt.Println("err =", err)
+					}
+					if err = downloadFile(fileName, fdRemote); err != nil {
+						fmt.Println("err download =", err)
+					}
+					fdRemote.Close()
+				}
+			}
+		}
+	} else {
 		// Extract name of file to download
 		fileName = filepath.Base(args[0])
 
