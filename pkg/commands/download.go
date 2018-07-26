@@ -31,15 +31,23 @@ func Download() Command {
 		Description: "Download your file or directory into an archive",
 		Help:        "Download your file or directory into an archive, use SFTP protocol.",
 		Examples: `
-$ c14 download
-$ c14 download toto 83b93179-32e0-11e6-be10-10604b9b0ad9
+        $ c14 download
+        $ c14 download file 83b93179-32e0-11e6-be10-10604b9b0ad9
 `,
 	})
 	//ret.Flags.StringVar(&ret.flName, []string{"n", "-name"}, "", "Assigns a name (only with tar method)")
 	return ret
 }
 
-func (u *download) GetName() string {
+func (d *download) CheckFlags(args []string) (err error) {
+	if len(args) < 2 {
+		d.PrintUsage()
+		os.Exit(1)
+	}
+	return
+}
+
+func (d *download) GetName() string {
 	return "download"
 }
 
@@ -98,6 +106,45 @@ func downloadFile(fileName string, fdRemote *sftp.File) (err error) {
 	return
 }
 
+func downloadDir(dirName string, sftpConn *sftp.Client) {
+	var (
+		fileName string     // Name of file to download
+		fdRemote *sftp.File // file descriptor to remote file
+	)
+
+	walker := sftpConn.Walk(dirName)
+
+	for walker.Step() {
+		if err := walker.Err(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
+		info, err := sftpConn.ReadDir(walker.Path())
+		if err != nil {
+			continue
+		}
+		for i := 0; i < len(info); i++ {
+			// path of filename - "/buffer/"
+			fileName = walker.Path()[len("/buffer/"):] + "/" + info[i].Name()
+
+			fmt.Println(fileName)
+			if info[i].IsDir() == true {
+				if err = os.MkdirAll(fileName, os.ModePerm); err != nil {
+					fmt.Println(err)
+				}
+			} else {
+				if fdRemote, err = sftpConn.Open("/buffer/" + fileName); err != nil {
+					fmt.Println("err =", err)
+				}
+				if err = downloadFile(fileName, fdRemote); err != nil {
+					fmt.Println("err download =", err)
+				}
+				fdRemote.Close()
+			}
+		}
+	}
+}
+
 func (d *download) Run(args []string) (err error) {
 	var (
 		bucket         api.OnlineGetBucket
@@ -128,60 +175,29 @@ func (d *download) Run(args []string) (err error) {
 	defer sftpCred.Close()
 	defer sftpConn.Close()
 
-	// Path of remote file
-	remoteFile = "/buffer/" + args[0]
+	for i := 0; i < len(args); i++ {
+		// Path of remote file
+		remoteFile = "/buffer/" + args[i]
 
-	// Open remote file
-	if fdRemote, err = sftpConn.Open(remoteFile); err != nil {
-		return
-	}
-	defer fdRemote.Close()
-
-	// stat remote file in case file not exist
-	if statremoteFile, err = fdRemote.Stat(); err != nil {
-		return
-	}
-
-	// check is dir or regular file
-	if statremoteFile.IsDir() == true {
-		// download directory
-		walker := sftpConn.Walk(remoteFile)
-
-		for walker.Step() {
-			// TODO DownloadDir() function
-			if err = walker.Err(); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				continue
-			}
-			info, err := sftpConn.ReadDir(walker.Path())
-			if err != nil {
-				continue
-			}
-			for i := 0; i < len(info); i++ {
-				fileName = walker.Path()[len("/buffer/"):] + "/" + info[i].Name() // filename - "/buffer/"
-				fmt.Println("file =", fileName)
-
-				if info[i].IsDir() == true {
-					if err = os.MkdirAll(fileName, os.ModePerm); err != nil {
-						fmt.Println(err)
-					}
-				} else {
-					if fdRemote, err = sftpConn.Open("/buffer/" + fileName); err != nil {
-						fmt.Println("err =", err)
-					}
-					if err = downloadFile(fileName, fdRemote); err != nil {
-						fmt.Println("err download =", err)
-					}
-					fdRemote.Close()
-				}
-			}
-		}
-	} else {
-		// Extract name of file to download
-		fileName = filepath.Base(args[0])
-
-		if downloadFile(fileName, fdRemote); err != nil {
+		// Open remote file
+		if fdRemote, err = sftpConn.Open(remoteFile); err != nil {
 			return
+		}
+		defer fdRemote.Close()
+
+		// stat remote file in case file not exist
+		if statremoteFile, err = fdRemote.Stat(); err != nil {
+			return
+		}
+
+		if statremoteFile.IsDir() == true {
+			downloadDir(remoteFile, sftpConn)
+		} else {
+			// Extract name of file to download
+			fileName = filepath.Base(args[i])
+			if downloadFile(fileName, fdRemote); err != nil {
+				return
+			}
 		}
 	}
 
