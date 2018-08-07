@@ -92,6 +92,7 @@ func connectToSFTP(bucket api.OnlineGetBucket, sftpCred sshUtils.Credentials) (*
 func downloadFile(fileName string, fdRemote *sftp.File) (err error) {
 	var fdLocal *os.File // file descriptor to local file
 
+	fmt.Println(fileName)
 	// Create new file
 	if fdLocal, err = os.Create(fileName); err != nil {
 		return
@@ -112,6 +113,7 @@ func downloadDir(dirName string, sftpConn *sftp.Client) {
 		fdRemote *sftp.File // file descriptor to remote file
 	)
 
+	dirName = strings.TrimSuffix(dirName, "/")
 	walker := sftpConn.Walk(dirName)
 
 	for walker.Step() {
@@ -127,7 +129,6 @@ func downloadDir(dirName string, sftpConn *sftp.Client) {
 			// path of filename - "/buffer/"
 			fileName = walker.Path()[len("/buffer/"):] + "/" + info[i].Name()
 
-			fmt.Println(fileName)
 			if info[i].IsDir() == true {
 				if err = os.MkdirAll(fileName, os.ModePerm); err != nil {
 					fmt.Println(err)
@@ -135,6 +136,7 @@ func downloadDir(dirName string, sftpConn *sftp.Client) {
 			} else {
 				if fdRemote, err = sftpConn.Open("/buffer/" + fileName); err != nil {
 					fmt.Println("err =", err)
+					continue
 				}
 				if err = downloadFile(fileName, fdRemote); err != nil {
 					fmt.Println("err download =", err)
@@ -168,7 +170,7 @@ func (d *download) Run(args []string) (err error) {
 		return
 	}
 
-	// connection in SFTP with previous credentials
+	// connection in SFTP with credentials
 	if sftpConn, err = connectToSFTP(bucket, sftpCred); err != nil {
 		return
 	}
@@ -176,6 +178,9 @@ func (d *download) Run(args []string) (err error) {
 	defer sftpConn.Close()
 
 	for i := 0; i < len(args); i++ {
+		if args[i] == "" {
+			continue
+		}
 		// Path of remote file
 		remoteFile = "/buffer/" + args[i]
 
@@ -191,6 +196,9 @@ func (d *download) Run(args []string) (err error) {
 		}
 
 		if statremoteFile.IsDir() == true {
+			if err = os.MkdirAll(args[i], os.ModePerm); err != nil {
+				fmt.Println(err)
+			}
 			downloadDir(remoteFile, sftpConn)
 		} else {
 			// Extract name of file to download
