@@ -34,7 +34,7 @@ COVERPROFILE_LIST =	$(foreach int, $(subst $(GODIR),./,$(PACKAGES)), $(int)/prof
 all: build
 build: $(NAME)
 clean: $(CLEAN_LIST)
-	rm -rf bin
+	rm -rf $(NAME)
 install: $(INSTALL_LIST)
 test: $(TEST_LIST)
 fmt: $(FMT_LIST)

@@ -22,6 +22,7 @@ Interact with [Online C14](https://www.online.net/en/c14) API from the command l
     * [`unfreeze`](#c14-unfreeze)
     * [`upload`](#c14-upload)
     * [`version`](#c14-version)
+    * [`download`](#c14-download)
   * [Examples](#examples)
 4. [Changelog](#changelog)
 5. [Development](#development)
@@ -66,6 +67,7 @@ Commands:
     upload    Upload your file or directory into an archive
     bucket    Displays all information of bucket
     version   Show the version information
+    download  Download your file or directory into an archive
 
 Run 'c14 COMMAND --help' for more information on a command.
 ```
@@ -259,6 +261,21 @@ Examples:
         $ tar cvf - /upload 2> /dev/null | ./c14 upload --name "file.tar.gz" fervent_austin
 ```
 
+#### `c14 download`
+
+```console
+Usage: c14 download [DIR|FILE]* ARCHIVE
+
+Download your file or directory into an archive, use SFTP protocol.
+
+Options:
+  -h, --help=false      Print usage
+
+Examples:
+        $ c14 download
+        $ c14 download file 83b93179-32e0-11e6-be10-10604b9b0ad9
+```
+
 #### `c14 bucket`
 
 ```console
@@ -314,6 +331,7 @@ Soon
  * Support of `unfreeze` command
  * Support of `upload` command
  * Support of `version` command
+ * Support of `download` command
 
 ---
 
