@@ -139,10 +139,15 @@ Options:
   -h, --help=false      Print usage
   -p, --platform=false  Show the platforms
   -q, --quiet=false     Only display UUIDs
+  -t, --ts=false        Show unix timestamp of archives (to script deletion for instance)
 
 Examples:
         $ c14 ls
         $ c14 ls -a
+        $ c14 ls -t
+
+        archives older than one week
+        $ c14 ls -t | awk '$NF < '$(date -d '1 week ago' +%s)' { print }'
 ```
 
 #### `c14 help`
