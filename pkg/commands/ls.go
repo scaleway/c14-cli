@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/scaleway/c14-cli/pkg/api"
 	"github.com/pkg/errors"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type ls struct {
@@ -22,6 +22,7 @@ type lsFlags struct {
 	flQuiet    bool
 	flPlatform bool
 	flAll      bool
+	flTimeTS   bool
 }
 
 // Ls returns a new command "ls"
@@ -33,11 +34,16 @@ func Ls() Command {
 		Help:        "Displays the archives, by default only the NAME, STATUS, UUID.",
 		Examples: `
         $ c14 ls
-        $ c14 ls -a`,
+        $ c14 ls -a
+        $ c14 ls -t
+
+        archives older than one week
+        $ c14 ls -t | awk '$NF < '$(date -d '1 week ago' +%s)' { print }'`,
 	})
 	ret.Flags.BoolVar(&ret.flQuiet, []string{"q", "-quiet"}, false, "Only display UUIDs")
 	ret.Flags.BoolVar(&ret.flPlatform, []string{"p", "-platform"}, false, "Show the platforms")
 	ret.Flags.BoolVar(&ret.flAll, []string{"a", "-all"}, false, "Show all information on archives (size,parity,creationDate,description)")
+	ret.Flags.BoolVar(&ret.flTimeTS, []string{"t", "-ts"}, false, "Show unix timestamp of archives (to script deletion for instance)")
 	return ret
 }
 
@@ -102,7 +108,11 @@ func (l *ls) displayArchives(archives []api.OnlineGetArchive) {
 		if l.flAll {
 			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tPARITY\tUUID SAFE\tCREATION DATE\tSIZE\tDESCRIPTION\n")
 		} else {
-			fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
+			if l.flTimeTS {
+				fmt.Fprintf(w, "NAME\tSTATUS\tUUID\tts\n")
+			} else {
+				fmt.Fprintf(w, "NAME\tSTATUS\tUUID\n")
+			}
 		}
 	}
 	sort.Sort(api.OnlineGetArchives(archives))
@@ -123,7 +133,12 @@ func (l *ls) displayArchives(archives []api.OnlineGetArchive) {
 				}
 				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef, archive.Parity, archive.Safe.UUIDRef, t.Format(time.Stamp), humanSize, archive.Description)
 			} else {
-				fmt.Fprintf(w, "%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef)
+				if l.flTimeTS {
+					t, _ := time.Parse(time.RFC3339, archive.CreationDate)
+					fmt.Fprintf(w, "%s\t%s\t%s\t%d\n", archive.Name, archive.Status, archive.UUIDRef, t.Unix())
+				} else {
+					fmt.Fprintf(w, "%s\t%s\t%s\n", archive.Name, archive.Status, archive.UUIDRef)
+				}
 			}
 		}
 	}
