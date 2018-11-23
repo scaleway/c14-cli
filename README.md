@@ -67,7 +67,7 @@ Commands:
     upload    Upload your file or directory into an archive
     bucket    Displays all information of bucket
     version   Show the version information
-    download  Download your file or directory into an archive
+    download  Download your file or directory from an archive
 
 Run 'c14 COMMAND --help' for more information on a command.
 ```

@@ -28,8 +28,8 @@ func Download() Command {
 	ret := &download{}
 	ret.Init(Config{
 		UsageLine:   "download [DIR|FILE]* ARCHIVE",
-		Description: "Download your file or directory into an archive",
-		Help:        "Download your file or directory into an archive, use SFTP protocol.",
+		Description: "Download your file or directory from an archive",
+		Help:        "Download your file or directory from an archive, use SFTP protocol.",
 		Examples: `
         $ c14 download
         $ c14 download file 83b93179-32e0-11e6-be10-10604b9b0ad9
