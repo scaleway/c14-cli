@@ -5,7 +5,7 @@ GOBUILD ?=	$(GO) build
 GOCLEAN ?=	$(GO) clean
 GOINSTALL ?=	$(GO) install
 GOTEST ?=	$(GO) test
-GOFMT ?=	gofmt -w -s
+GOFMT ?=	go fmt
 GODIR ?=	github.com/c14-cli
 
 NAME =		c14
@@ -43,8 +43,8 @@ fmt: $(FMT_LIST)
 	touch $@
 
 $(NAME): $(SOURCES)
-	$(GOFMT) $(SOURCES)
-	$(GO) tool vet --all=true $(SOURCES)
+	$(GOFMT) ./...
+	$(GO) vet --all=true ./...
 	$(GOBUILD) -ldflags $(LDFLAGS) ./cmd/c14
 
 $(CLEAN_LIST): %_clean:
