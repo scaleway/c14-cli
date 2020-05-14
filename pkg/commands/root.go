@@ -40,6 +40,7 @@ func init() {
 			Bucket(),
 			Version(),
 			Download(),
+			Migrate(),
 		},
 	}
 }
