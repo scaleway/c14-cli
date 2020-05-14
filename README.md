@@ -351,7 +351,7 @@ Feel free to contribute :smiley::beers:
 2. Ensure you have `$GOPATH` and `$PATH` well configured, something like:
   * `export GOPATH=$HOME/go`
   * `export PATH=$PATH:$GOPATH/bin`
-3. Fetch the project: `go get -u github.com/scaleway/c14-cli`
+3. Fetch the project: `go get -u github.com/scaleway/c14-cli/cmd/c14`
 4. Go to c14-cli directory: `cd $GOPATH/src/github.com/scaleway/c14-cli`
 5. Hack: `vim`
 6. Build: `make`
