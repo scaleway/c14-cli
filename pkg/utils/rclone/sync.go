@@ -20,7 +20,7 @@ func CheckRcloneExists() (err error) {
 }
 
 // Sync : run rclone sync command
-func Sync(safeUUID string, archiveUUID string, s3Profile string) (err error) {
+func Sync(safeUUID string, archiveUUID string, s3Profile string, bucketName string, bucketPrefix string) (err error) {
 
 	// rclone destination will be named after awscli profile if --s3-profile is used
 	destRemote := "s3"
@@ -39,14 +39,12 @@ func Sync(safeUUID string, archiveUUID string, s3Profile string) (err error) {
 		return
 	}
 
-	bucketName := fmt.Sprintf("c14-%s", safeUUID)
-
 	app := "rclone"
 
 	config := "--config=" + configPath
 	action := "sync"
 	src := "c14:/buffer/"
-	dest := destRemote + ":" + bucketName + "/" + archiveUUID
+	dest := destRemote + ":" + bucketName + "/" + bucketPrefix
 	logLevel := "--log-level=INFO"
 
 	rcloneCmd := fmt.Sprintf("%s %s %s %s %s %s", app, config, action, src, dest, logLevel)

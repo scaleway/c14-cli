@@ -21,9 +21,12 @@ type migrate struct {
 }
 
 type migrateFlags struct {
-	fls3AccessKey string
-	fls3SecretKey string
-	fls3Profile   string
+	fls3AccessKey    string
+	fls3SecretKey    string
+	fls3Profile      string
+	fls3Bucket       string
+	fls3Prefix       string
+	fls3CreateBucket bool
 }
 
 // Migrate returns a new command "migrate"
@@ -39,6 +42,9 @@ func Migrate() Command {
 	ret.Flags.StringVar(&ret.fls3AccessKey, []string{"-s3-access-key"}, "", "aws_access_key_id")
 	ret.Flags.StringVar(&ret.fls3SecretKey, []string{"-s3-secret-key"}, "", "aws_secret_access_key")
 	ret.Flags.StringVar(&ret.fls3Profile, []string{"-s3-profile"}, "", "aws_profile")
+	ret.Flags.StringVar(&ret.fls3Bucket, []string{"-s3-bucket"}, "", "Destination bucket name")
+	ret.Flags.StringVar(&ret.fls3Prefix, []string{"-s3-prefix"}, "", "Prefix in destination bucket")
+	ret.Flags.BoolVar(&ret.fls3CreateBucket, []string{"-s3-create-bucket"}, false, "Prefix in destination bucket")
 
 	return ret
 }
@@ -132,7 +138,10 @@ func (m *migrate) precheck(args []string) (err error) {
 		return
 	}
 
-	bucketName := fmt.Sprintf("c14-%s", safe.UUIDRef)
+	bucketName := m.fls3Bucket
+	if bucketName == "" {
+		bucketName = fmt.Sprintf("c14-%s", safe.UUIDRef)
+	}
 
 	fmt.Printf("Checking if S3 migration destination bucket %s exists...\n", bucketName)
 	bucketExists, err := sis.CheckBucket(bucketName, m.fls3AccessKey, m.fls3SecretKey, m.fls3Profile)
@@ -141,10 +150,14 @@ func (m *migrate) precheck(args []string) (err error) {
 	}
 
 	if !bucketExists {
-		fmt.Println("Creating bucket...")
-		err = sis.CreateBucket(bucketName, m.fls3AccessKey, m.fls3SecretKey, m.fls3Profile)
-		if err != nil {
-			return
+		if m.fls3CreateBucket {
+			fmt.Println("Creating bucket...")
+			err = sis.CreateBucket(bucketName, m.fls3AccessKey, m.fls3SecretKey, m.fls3Profile)
+			if err != nil {
+				return
+			}
+		} else {
+			fmt.Println("You can use --create-bucket to automatically create the bucket")
 		}
 	}
 
@@ -205,8 +218,18 @@ func (m *migrate) runRcloneSync(args []string) (err error) {
 		return
 	}
 
+	bucketName := m.fls3Bucket
+	if bucketName == "" {
+		bucketName = fmt.Sprintf("c14-%s", safe.UUIDRef)
+	}
+
+	bucketPrefix := m.fls3Prefix
+	if bucketPrefix == "" {
+		bucketPrefix = archiveUUID
+	}
+
 	fmt.Println("Running sync")
-	err = rclone.Sync(safe.UUIDRef, archiveUUID, m.fls3Profile)
+	err = rclone.Sync(safe.UUIDRef, archiveUUID, m.fls3Profile, bucketName, bucketPrefix)
 	if err != nil {
 		return
 	}
