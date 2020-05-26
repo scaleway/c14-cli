@@ -7,7 +7,7 @@ Interact with [Online C14](https://www.online.net/en/c14) API from the command l
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Setup](#setup)
+2. [Install](#install)
 3. [Usage](#usage)
    - [Login](#login)
    - [Commands](#commands)
