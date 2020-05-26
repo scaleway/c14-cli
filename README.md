@@ -31,13 +31,9 @@ Interact with [Online C14](https://www.online.net/en/c14) API from the command l
 
 A command-line tool to manage your C14 storage easily
 
-## Setup
+## Install
 
-⚠️ Ensure you have a go version >= 1.14
-
-```shell
-go get -u github.com/scaleway/c14-cli/cmd/c14
-```
+Grab your binary on the [releases](https://github.com/scaleway/c14-cli/releases) page.
 
 ## Usage
 
@@ -334,12 +330,12 @@ Feel free to contribute! 😃🍻
 
 ### Hack
 
-1. [Install go](https://golang.org/doc/install)
+1. [Install Go](https://golang.org/doc/install)
 2. Ensure you have `$GOPATH` and `$PATH` well configured, something like:
    - `export GOPATH=$HOME/go`
    - `export PATH=$PATH:$GOPATH/bin`
-3. Fetch the project: `go get -u github.com/scaleway/c14-cli/cmd/c14`
-4. Go to c14-cli directory: `cd $GOPATH/src/github.com/scaleway/c14-cli`
+3. Fetch the project: `git clone https://github.com/scaleway/c14-cli.git`
+4. Go to c14-cli directory: `cd c14-cli`
 5. Hack: `vim`
 6. Build: `make`
 7. Run: `./c14`
