@@ -4,30 +4,28 @@ Interact with [Online C14](https://www.online.net/en/c14) API from the command l
 
 ![Online C14 logo](https://raw.githubusercontent.com/scaleway/c14-cli/master/assets/logo.png)
 
-#### Table of Contents
+## Table of Contents
 
 1. [Overview](#overview)
 2. [Setup](#setup)
 3. [Usage](#usage)
-  * [Login](#login)
-  * [Commands](#commands)
-    * [`create`](#c14-create)
-    * [`freeze`](#c14-freeze)
-    * [`help`](#c14-help)
-    * [`ls`](#c14-ls)
-    * [`login`](#c14-login)
-    * [`files`](#c14-files)
-    * [`rename`](#c14-rename)
-    * [`remove`](#c14-remove)
-    * [`unfreeze`](#c14-unfreeze)
-    * [`upload`](#c14-upload)
-    * [`version`](#c14-version)
-    * [`download`](#c14-download)
-  * [Examples](#examples)
-4. [Changelog](#changelog)
-5. [Development](#development)
-  * [Hack](#hack)
-6. [License](#license)
+   - [Login](#login)
+   - [Commands](#commands)
+     - [`create`](#c14-create)
+     - [`freeze`](#c14-freeze)
+     - [`help`](#c14-help)
+     - [`ls`](#c14-ls)
+     - [`login`](#c14-login)
+     - [`files`](#c14-files)
+     - [`rename`](#c14-rename)
+     - [`remove`](#c14-remove)
+     - [`unfreeze`](#c14-unfreeze)
+     - [`upload`](#c14-upload)
+     - [`version`](#c14-version)
+     - [`download`](#c14-download)
+4. [Development](#development)
+   - [Hack](#hack)
+5. [License](#license)
 
 ## Overview
 
@@ -35,14 +33,13 @@ A command-line tool to manage your C14 storage easily
 
 ## Setup
 
-⚠️ Ensure you have a go version >= 1.6
+⚠️ Ensure you have a go version >= 1.14
 
 ```shell
 go get -u github.com/scaleway/c14-cli/cmd/c14
 ```
 
 ## Usage
-
 
 ```console
 $ c14
@@ -68,6 +65,7 @@ Commands:
     bucket    Displays all information of bucket
     version   Show the version information
     download  Download your file or directory from an archive
+    migrate   Migration helper to S3 Cold Storage
 
 Run 'c14 COMMAND --help' for more information on a command.
 ```
@@ -126,7 +124,6 @@ Examples:
         $ c14 freeze 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
 
-
 #### `c14 ls`
 
 ```console
@@ -168,7 +165,6 @@ Examples:
         $ c14 help create
 ```
 
-
 #### `c14 login`
 
 ```console
@@ -184,7 +180,6 @@ Examples:
     $ c14 login
 ```
 
-
 #### `c14 files`
 
 ```console
@@ -198,7 +193,6 @@ Options:
 Examples:
         $ c14 files 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
-
 
 #### `c14 rename`
 
@@ -215,7 +209,6 @@ Examples:
         $ c14 rename old_name new_name
 ```
 
-
 #### `c14 remove`
 
 ```console
@@ -229,7 +222,6 @@ Options:
 Examples:
         $ c14 remove 83b93179-32e0-11e6-be10-10604b9b0ad9 2d752399-429f-447f-85cd-c6104dfed5db
 ```
-
 
 #### `c14 unfreeze`
 
@@ -246,7 +238,6 @@ Options:
 Examples:
         $ c14 unfreeze 83b93179-32e0-11e6-be10-10604b9b0ad9
 ```
-
 
 #### `c14 upload`
 
@@ -312,45 +303,41 @@ Examples:
         $ c14 version
 ```
 
+#### `c14 migrate`
 
+```console
+Usage: c14 migrate [OPTIONS] [ACTION] [ARCHIVE]
 
-### Examples
+Migrate an archive to Cold Storage
 
-Soon
+[ACTION] is one of [precheck, generate-rclone-config, rclone-sync]
 
----
+Options:
+  -h, --help=false      Print usage
+  --s3-access-key=""    aws_access_key_id
+  --s3-bucket=""        Destination bucket name
+  --s3-create-bucket=false Prefix in destination bucket
+  --s3-prefix=""        Prefix in destination bucket
+  --s3-profile=""       aws_profile
+  --s3-secret-key=""    aws_secret_access_key
 
-## Changelog
-
-### master (unreleased)
-
- * Support of `verify` command
- * Support of `create` command
- * Support of `freeze` command
- * Support of `help` command
- * Support of `ls` command
- * Support of `login` command
- * Support of `files` command
- * Support of `rename` command
- * Support of `remove` command
- * Support of `unfreeze` command
- * Support of `upload` command
- * Support of `version` command
- * Support of `download` command
+Examples:
+        $ c14 migrate --s3-access-key xxx --s3-secret-key yyy precheck d28d0f7b-4524-4f7c-a7a3-7341503e9110
+        $ c14 migrate --s3-profile scw-par generate-rclone-config d28d0f7b-4524-4f7c-a7a3-7341503e9110
+```
 
 ---
 
 ## Development
 
-Feel free to contribute :smiley::beers:
-
+Feel free to contribute! 😃🍻
 
 ### Hack
 
 1. [Install go](https://golang.org/doc/install)
 2. Ensure you have `$GOPATH` and `$PATH` well configured, something like:
-  * `export GOPATH=$HOME/go`
-  * `export PATH=$PATH:$GOPATH/bin`
+   - `export GOPATH=$HOME/go`
+   - `export PATH=$PATH:$GOPATH/bin`
 3. Fetch the project: `go get -u github.com/scaleway/c14-cli/cmd/c14`
 4. Go to c14-cli directory: `cd $GOPATH/src/github.com/scaleway/c14-cli`
 5. Hack: `vim`
