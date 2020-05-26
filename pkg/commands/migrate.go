@@ -36,7 +36,9 @@ func Migrate() Command {
 		UsageLine:   "migrate [OPTIONS] [ACTION] [ARCHIVE]",
 		Description: "Migration helper to S3 Cold Storage",
 		Help:        "Migrate an archive to Cold Storage\n\n[ACTION] is one of [precheck, generate-rclone-config, rclone-sync]",
-		Examples:    "  $ c14 migrate --s3-access-key xxx --s3-secret-key yyy precheck d28d0f7b-4524-4f7c-a7a3-7341503e9110",
+		Examples: `
+        $ c14 migrate --s3-access-key xxx --s3-secret-key yyy precheck d28d0f7b-4524-4f7c-a7a3-7341503e9110"
+        $ c14 migrate --s3-profile scw-par generate-rclone-config d28d0f7b-4524-4f7c-a7a3-7341503e9110`,
 	})
 
 	ret.Flags.StringVar(&ret.fls3AccessKey, []string{"-s3-access-key"}, "", "aws_access_key_id")
@@ -157,7 +159,7 @@ func (m *migrate) precheck(args []string) (err error) {
 				return
 			}
 		} else {
-			fmt.Println("You can use --create-bucket to automatically create the bucket")
+			fmt.Println("You can use --s3-create-bucket to automatically create the bucket")
 		}
 	}
 
