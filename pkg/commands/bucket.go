@@ -3,11 +3,12 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/juju/errors"
-	"github.com/scaleway/c14-cli/pkg/api"
 	"os"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/juju/errors"
+	"github.com/scaleway/c14-cli/pkg/api"
 )
 
 type bucket struct {
@@ -84,15 +85,15 @@ func (l *bucket) displayBucketInfo(bucket api.OnlineGetBucket, archiveUUIDRef st
 
 		fmt.Fprintf(w, "TYPE\tID\tPASSWORD\tURI\tSSH KEYS (SSH TYPE ONLY)\n")
 		for _, cred := range bucket.Credentials {
-			ssh_descs := ""
+			sshDescs := ""
 			if len(cred.SSHKeys) > 0 {
 				descKeys := []string{}
 				for _, key := range cred.SSHKeys {
 					descKeys = append(descKeys, key.Desc)
 				}
-				ssh_descs = strings.Join(descKeys, ",")
+				sshDescs = strings.Join(descKeys, ",")
 			}
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cred.Protocol, cred.Login, cred.Password, cred.URI, ssh_descs)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cred.Protocol, cred.Login, cred.Password, cred.URI, sshDescs)
 		}
 	} else {
 		fmt.Println(string(bucketCred))

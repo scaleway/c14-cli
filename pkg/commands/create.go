@@ -24,7 +24,7 @@ type createFlags struct {
 	flParity   string
 	flLarge    bool
 	flCrypto   bool
-	flSshKeys  string
+	flSSHKeys  string
 	flPlatform string
 }
 
@@ -49,7 +49,7 @@ func Create() Command {
 	ret.Flags.StringVar(&ret.flParity, []string{"p", "-parity"}, "standard", "Specify a parity to use")
 	ret.Flags.BoolVar(&ret.flLarge, []string{"l", "-large"}, false, "Ask for a large bucket")
 	ret.Flags.BoolVar(&ret.flCrypto, []string{"c", "-crypto"}, true, "Enable aes-256-cbc cryptography, enabled by default.")
-	ret.Flags.StringVar(&ret.flSshKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
+	ret.Flags.StringVar(&ret.flSSHKeys, []string{"k", "-sshkey"}, "", "A list of UUIDs corresponding to the SSH keys (separated by a comma) that will be used for the connection.")
 	ret.Flags.StringVar(&ret.flPlatform, []string{"P", "-platform"}, "2", "Select the platform (by default at DC4)")
 	return ret
 }
@@ -82,10 +82,10 @@ func (c *create) Run(args []string) (err error) {
 		safeName    string
 		keys        []api.OnlineGetSSHKey
 		crypto      string
-		UuidSshKeys []string
+		UUIDSSHKeys []string
 	)
 
-	if len(c.flSshKeys) == 0 {
+	if len(c.flSSHKeys) == 0 {
 		if keys, err = c.OnlineAPI.GetSSHKeys(); err != nil {
 			err = errors.Annotate(err, "Run:GetSSHKey")
 			return
@@ -94,10 +94,10 @@ func (c *create) Run(args []string) (err error) {
 			err = errors.New("Please add your SSH key here: https://console.online.net/en/account/ssh-keys")
 			return
 		}
-		UuidSshKeys = append(UuidSshKeys, keys[0].UUIDRef)
+		UUIDSSHKeys = append(UUIDSSHKeys, keys[0].UUIDRef)
 	} else {
-		UuidSshKeys = strings.Split(c.flSshKeys, ",")
-		for _, keyArg := range UuidSshKeys {
+		UUIDSSHKeys = strings.Split(c.flSSHKeys, ",")
+		for _, keyArg := range UUIDSSHKeys {
 			_, checkErr := c.OnlineAPI.GetSSHKey(keyArg)
 			if checkErr != nil {
 				err = errors.New(fmt.Sprintf("%s : %s", checkErr.Error(), keyArg))
@@ -122,7 +122,7 @@ func (c *create) Run(args []string) (err error) {
 		SafeName:    safeName,
 		ArchiveName: c.flName,
 		Desc:        c.flDesc,
-		UUIDSSHKeys: UuidSshKeys,
+		UUIDSSHKeys: UUIDSSHKeys,
 		Platforms:   []string{c.flPlatform},
 		Days:        7,
 		Quiet:       c.flQuiet,

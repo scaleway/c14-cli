@@ -10,7 +10,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/pkg/sftp"
 	"github.com/scaleway/c14-cli/pkg/api"
-	"github.com/scaleway/c14-cli/pkg/utils/ssh"
+	sshUtils "github.com/scaleway/c14-cli/pkg/utils/ssh"
 )
 
 type files struct {
