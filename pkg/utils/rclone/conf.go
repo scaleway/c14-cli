@@ -6,10 +6,7 @@ import (
 	"text/template"
 
 	fsConfig "github.com/rclone/rclone/fs/config/obscure"
-	"github.com/sirupsen/logrus"
 )
-
-var log = logrus.New()
 
 type Config struct {
 	SafeUUID    string
