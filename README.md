@@ -2,30 +2,41 @@
 
 Interact with [Online C14](https://www.online.net/en/c14) API from the command line.
 
+---
+
+**⚠️ C14 Classic has been discontinued**
+
+**Discover our new [C14 Cold Storage service on Scaleway Elements](https://www.scaleway.com/en/c14-cold-storage/), compatible with S3 Glacier!**
+
+---
+
 ![Online C14 logo](https://raw.githubusercontent.com/scaleway/c14-cli/master/assets/logo.png)
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Install](#install)
-3. [Usage](#usage)
-   - [Login](#login)
-   - [Commands](#commands)
-     - [`create`](#c14-create)
-     - [`freeze`](#c14-freeze)
-     - [`help`](#c14-help)
-     - [`ls`](#c14-ls)
-     - [`login`](#c14-login)
-     - [`files`](#c14-files)
-     - [`rename`](#c14-rename)
-     - [`remove`](#c14-remove)
-     - [`unfreeze`](#c14-unfreeze)
-     - [`upload`](#c14-upload)
-     - [`version`](#c14-version)
-     - [`download`](#c14-download)
-4. [Development](#development)
-   - [Hack](#hack)
-5. [License](#license)
+- [Table of Contents](#table-of-contents)
+- [Overview](#overview)
+- [Install](#install)
+- [Usage](#usage)
+  - [Login](#login)
+  - [Commands](#commands)
+    - [`c14 create`](#c14-create)
+    - [`c14 freeze`](#c14-freeze)
+    - [`c14 ls`](#c14-ls)
+    - [`c14 help`](#c14-help)
+    - [`c14 login`](#c14-login)
+    - [`c14 files`](#c14-files)
+    - [`c14 rename`](#c14-rename)
+    - [`c14 remove`](#c14-remove)
+    - [`c14 unfreeze`](#c14-unfreeze)
+    - [`c14 upload`](#c14-upload)
+    - [`c14 download`](#c14-download)
+    - [`c14 bucket`](#c14-bucket)
+    - [`c14 version`](#c14-version)
+    - [`c14 migrate`](#c14-migrate)
+- [Development](#development)
+  - [Hack](#hack)
+- [License](#license)
 
 ## Overview
 
